@@ -94,10 +94,14 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Open Questions
 
+### Echo (Tier 1 Prototype 미해결)
+- **[NEW]** ECHO 성별 — 성별 없는 코드명 유지 vs 명시적 설정? (Tier 1 콘셉트아트 후 결정)
+- **[NEW]** Sigma Unit 생존자 서브플롯 — 전 파트너 배반 아크를 Tier 3에 포함할지 (Tier 2 게이트 후 결정)
+
 ### Solo Contra 2026 (베이스라인 미해결)
+- **[OPEN]** 스토리 톤 — 디스토피아 진지(Blade Runner) vs 풍자 펑크(Bioshock × Monty Python)? ([[Echo Story Spine]]은 디스토피아 진지로 *기본 가정* — 콘셉트아트 후 최종 락인)
 - **[NEW]** 시간 되감기 시 적·탄환 동시 vs 플레이어만? (Braid 모델 vs 체크포인트 모델)
 - **[NEW]** 콜라주 캐릭터 사진 출처 — 스톡 / 직접 촬영 / 생성형 AI? IP·라이선스 비교
-- **[NEW]** 스토리 톤 — 디스토피아 진지 vs 풍자 펑크?
 - **[NEW]** Godot 4 시간 되감기 구현 패턴 — 상태 스냅샷 vs 입력 리플레이?
 - **[NEW]** 무기 4-5종 카탈로그 — Contra M/F/L/S/R/B 중 어느 3-4개를 SF 재해석?
 - **[NEW]** Easy/Hard 토큰 슬라이더 — 단일 토글(Cuphead Simple) vs 슬라이더(Hades God Mode)?
