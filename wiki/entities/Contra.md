@@ -14,11 +14,17 @@ status: stable
 related:
   - "[[Run and Gun Genre]]"
   - "[[Weapon Letter Pickup System]]"
+  - "[[Contra Weapon System]]"
+  - "[[Konami Code]]"
   - "[[Arcade Difficulty Design]]"
+  - "[[Cooperative Run and Gun Design]]"
   - "[[Metal Slug]]"
   - "[[Gunstar Heroes]]"
+  - "[[Contra Operation Galuga]]"
 sources:
   - "[[Wikipedia Run and Gun]]"
+  - "[[Wikipedia Contra Series]]"
+  - "[[Wikipedia Konami Code]]"
   - "[[Megacat Studios Run and Gun History]]"
 confidence: high
 ---
