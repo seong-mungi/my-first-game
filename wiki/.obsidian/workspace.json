@@ -195,6 +195,7 @@
   },
   "active": "069d84cd14959ebb",
   "lastOpenFiles": [
+    "entities/Hotline Miami.md",
     "entities/Katana Zero.md",
     "entities/Pizza Tower.md",
     "concepts/Indie Self Publishing Run and Gun.md",
@@ -220,7 +221,6 @@
     "concepts/Abstract Base Class Pattern.md",
     "concepts/Brownfield Project Onboarding.md",
     "concepts/CCGS Subagent Tier Architecture.md",
-    "concepts/CCGS Framework.md",
     "wiki/questions/zhc-cosmetics-execution-plan-presentation.html",
     "wiki/questions/zhc-cosmetics-proposal-2026-04-28.html",
     "bin/setup-vault.sh",
