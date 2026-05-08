@@ -41,6 +41,10 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[Run and Gun Extension Systems]] — Successful extension catalog (roguelite, RPG, multiplayer, vehicles)
 - [[Weapon Letter Pickup System]] — Metal Slug H/R/F/L/S/I letter-coded weapon swap pattern
 - [[Arcade Difficulty Design]] — Quarter-coin difficulty philosophy; lives, continues, attract-mode
+- [[Contra Weapon System]] — Contra M/F/L/S/R/B 코드 분석 + Metal Slug 체계와 차이
+- [[Konami Code]] — ↑↑↓↓←→←→BA 30 lives 치트 + 문화적 확산
+- [[Cooperative Run and Gun Design]] — 진정한 동시 협동 vs 양보형 비교 (Contra/Metal Slug/Broforce/Cuphead)
+- [[Run and Gun Success Pattern Matrix]] — 5작품 시스템 공통점 매트릭스 + my-game 체크리스트
 
 ### Production / IP / Legal
 - [[IP Avoidance For Game Clones]] — Idea/expression dichotomy; safe-clone strategy matrix
