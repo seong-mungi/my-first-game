@@ -131,6 +131,9 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - **#design-pattern / #architecture**: Abstract Base Class Pattern, Boss Two Phase Design
 - **#unity / #godot-vs-unity**: MetalSlugClone giacoballoccu, metal-slug alfredo1995, Opinion MetalSlugClone Base Plus Metal Slug Reference
 - **#code-repository / #scaffold**: MetalSlugClone giacoballoccu, metal-slug alfredo1995, Donchitos CCGS Repo
+- **#contra / #konami**: Contra, Contra Weapon System, Konami Code, Contra Operation Galuga, Wikipedia Contra Series, Wikipedia Konami Code, Research Contra System Analysis
+- **#success-pattern / #meta-analysis**: Run and Gun Success Pattern Matrix, Research Run and Gun Success Patterns, Cooperative Run and Gun Design
+- **#cheat-code / #cultural-impact**: Konami Code, Wikipedia Konami Code
 
 ## Folders
 
