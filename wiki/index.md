@@ -46,6 +46,11 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[Konami Code]] — ↑↑↓↓←→←→BA 30 lives 치트 + 문화적 확산
 - [[Cooperative Run and Gun Design]] — 진정한 동시 협동 vs 양보형 비교 (Contra/Metal Slug/Broforce/Cuphead)
 - [[Run and Gun Success Pattern Matrix]] — 5작품 시스템 공통점 매트릭스 + my-game 체크리스트
+- [[Modern Difficulty Accessibility]] — 2018-2026 접근성 표준 + 1히트 즉사의 현대적 조건
+- [[Indie Self Publishing Run and Gun]] — 자가퍼블리싱 정의·경계 + 매출 임계값 매트릭스(10-20만 천장)
+
+### My Game Design Baselines
+- [[Solo Contra 2026 Concept]] — 디자인 베이스라인 v0: 시간 되감기 + 콜라주 + 가까운 미래 SF (status: design-baseline-v0)
 
 ### Production / IP / Legal
 - [[IP Avoidance For Game Clones]] — Idea/expression dichotomy; safe-clone strategy matrix
