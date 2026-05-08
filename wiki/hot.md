@@ -28,12 +28,13 @@ Most-relevant pages for current project context. Read this first when picking up
 2. [[Solo Contra 2026 Concept]] — 디자인 베이스라인 v0. 7코어 적용 매트릭스 + 시간 되감기 v0 규칙 + 16개월 작업량.
 3. [[Research Contra Best Story Series]] — **NEW**. 콘트라 시나리오 톱: Shattered Soldier(2002) — Triumvirate 음모 + 다중 엔딩.
 4. [[Followup Modern Acceptance And Indie RnG Threshold]] — Q4/Q5 통합 답변. 1히트 현대 수용성 + 자가퍼블리싱 천장(10-20만).
-3. [[Modern Difficulty Accessibility]] — **NEW**. 2018-2026 접근성 표준 + 1히트 즉사의 현대적 조건.
-4. [[Indie Self Publishing Run and Gun]] — **NEW**. 자가퍼블리싱 정의·경계 + 매출 임계값 매트릭스.
-5. [[Katana Zero]] — **NEW**. 시간 메커닉 + 1히트 즉사 50만 장 모범 사례.
-6. [[Run and Gun Success Pattern Matrix]] — 5작품 불변 코어 7가지 + 매출 임계값 + 3D 실패 원인.
-7. [[Research Run and Gun Success Patterns]] — 메타 합성 — 인디 부활 공식 + 실패 케이스 분석.
-8. [[Cooperative Run and Gun Design]] — 진정한 동시 협동 vs 양보형 비교.
+5. [[Modern Difficulty Accessibility]] — 2018-2026 접근성 표준 + 1히트 즉사의 현대적 조건.
+6. [[Indie Self Publishing Run and Gun]] — 자가퍼블리싱 정의·경계 + 매출 임계값 매트릭스.
+7. [[Katana Zero]] — 시간 메커닉 + 1히트 즉사 50만 장 모범 사례.
+8. [[The Entity AI Villain]] — **NEW**. MI Final Reckoning AI 빌런 → VEIL 변환 매핑.
+9. [[Run and Gun Success Pattern Matrix]] — 5작품 불변 코어 7가지 + 매출 임계값 + 3D 실패 원인.
+10. [[Research Run and Gun Success Patterns]] — 메타 합성 — 인디 부활 공식 + 실패 케이스 분석.
+11. [[Cooperative Run and Gun Design]] — 진정한 동시 협동 vs 양보형 비교.
 9. [[Research Contra System Analysis]] — 콘트라 무기·생명·시리즈 진화·문화적 영향 종합.
 10. [[Contra Weapon System]] — M/F/L/S/R/B 코드 분석 + Metal Slug H/R/F/L/S/I와 차이.
 11. [[Brownfield Project Onboarding]] — `/adopt` 공식 4-Phase + 7-Step + 6 원칙.
