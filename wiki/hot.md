@@ -9,11 +9,13 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Active Research Topic
 
-**Contra 시스템 분석 + 런앤건 성공 패턴 메타 분석** — 5번째 리서치 라운드 (2026-05-08).
+**Solo Contra 2026 — 컨셉 락인** (2026-05-08). 사용자 결정: 시간 되감기 + 콜라주 + 가까운 미래 SF.
 
-→ 최신 합성 (Topic 2 메타): [[Research Run and Gun Success Patterns]] — 5작품 불변 코어 7가지 + my-game 체크리스트
-→ 최신 합성 (Topic 1): [[Research Contra System Analysis]] — 콘트라 시스템·시리즈·문화 종합
-→ 핵심 매트릭스: [[Run and Gun Success Pattern Matrix]] (5작품 시스템 비교)
+→ **현재 디자인 베이스라인**: [[Solo Contra 2026 Concept]] — 7코어 적용 매트릭스 + 16개월 작업량 + 다음 3단계 의사결정 트리
+→ Q4/Q5 결론: [[Followup Modern Acceptance And Indie RnG Threshold]] — 1히트 현대 수용성 + 인디 매출 천장
+→ 최신 합성 (런앤건 메타): [[Research Run and Gun Success Patterns]] — 5작품 불변 코어 7가지
+→ 최신 합성 (콘트라): [[Research Contra System Analysis]]
+→ 핵심 매트릭스: [[Run and Gun Success Pattern Matrix]]
 → 이전 결정 출처: [[Brownfield Project Onboarding]] · [[CCGS Adopt SKILL Definition]] · [[Opinion MetalSlugClone Base Plus Metal Slug Reference]]
 → 이전 합성: [[Research CCGS Brownfield Onboarding]] · [[Research CCGS Framework And Local Drift]] · [[Research Run and Gun Genre]] · [[Research Battle Cats Subgenre]] · [[Research Lane Defense Game Systems]]
 
