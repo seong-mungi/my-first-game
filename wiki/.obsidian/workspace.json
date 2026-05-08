@@ -1,0 +1,255 @@
+{
+  "main": {
+    "id": "cb698273c33e48de",
+    "type": "split",
+    "children": [
+      {
+        "id": "b8ce121bc84c8189",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "069d84cd14959ebb",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "wiki/entities/_index.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "_index"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "db8d83ac47ae599f",
+    "type": "split",
+    "children": [
+      {
+        "id": "554fd2b4fa6f8741",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "5565f1231fe95c42",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "파일 탐색기"
+            }
+          },
+          {
+            "id": "832ab43d08cf9e30",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "godot",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "검색"
+            }
+          },
+          {
+            "id": "097e8347bb8aa054",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "북마크"
+            }
+          }
+        ],
+        "currentTab": 1
+      }
+    ],
+    "direction": "horizontal",
+    "width": 440.5
+  },
+  "right": {
+    "id": "7092b65be1e76349",
+    "type": "split",
+    "children": [
+      {
+        "id": "9f4de9402eae371b",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "a32b7215b7814fbb",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks"
+            }
+          },
+          {
+            "id": "7936f8ba26007091",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links"
+            }
+          },
+          {
+            "id": "ed8ccb323a603d61",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "b140a331162907cf",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "111a21e12ab1a293",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline"
+            }
+          },
+          {
+            "id": "20a272e103b5d792",
+            "type": "leaf",
+            "state": {
+              "type": "calendar",
+              "state": {},
+              "icon": "lucide-ghost",
+              "title": "calendar"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:빠른 전환기 열기": false,
+      "graph:그래프 뷰 열기": false,
+      "canvas:새 캔버스 만들기": false,
+      "daily-notes:오늘의 일일 노트 열기": false,
+      "templates:템플릿 삽입": false,
+      "command-palette:명령어 팔레트 열기": false,
+      "bases:새 베이스 생성하기": false,
+      "obsidian-excalidraw-plugin:New drawing": false,
+      "obsidian-memos:Thino": false,
+      "obsidian-memos:Thino Super": false
+    }
+  },
+  "active": "832ab43d08cf9e30",
+  "lastOpenFiles": [
+    "wiki/sources/omc-gstack-build-loop-research-2026-05-06.md",
+    "wiki/concepts/GStack vs OMC Ralplan.md",
+    "wiki/concepts/OMC GStack Build Loop Integration.md",
+    "wiki/sources/gstack-gsd-superpowers-workflow-2026-05-06.md",
+    "wiki/log.md",
+    "wiki/concepts/Agentic OS.md",
+    "wiki/concepts/Build Loop Pattern.md",
+    "wiki/concepts/Superpower Framework.md",
+    "wiki/concepts/GSD Framework.md",
+    "wiki/concepts/GStack.md",
+    "wiki/concepts/Spectrum Frameworks.md",
+    "wiki/sources/stop-using-claude-code-without-agentic-os-2026-05-06.md",
+    "wiki/sources/Everything Claude Code Harness Analysis.md",
+    "wiki/concepts/Ralph Pattern.md",
+    "wiki/sources/ralph-steps-2026-05-06.md",
+    "wiki/hot.md",
+    "wiki/sources/omc-ralplan-ralph-effective-usage-2026-05-06.md",
+    "wiki/questions/zhc-cosmetics-execution-plan-2026-04-28.md",
+    "wiki/concepts/OMC Automation Modes.md",
+    "wiki/entities/zilliztech-claude-context.md",
+    "wiki/entities/ComposioHQ-awesome-codex-skills.md",
+    "wiki/entities/ruvnet-ruflo.md",
+    "wiki/entities/TauricResearch-TradingAgents.md",
+    "wiki/entities/warpdotdev-warp.md",
+    "wiki/sources/github-trending-weekly-2026-05-06.md",
+    "wiki/concepts/Ralplan.md",
+    "wiki/questions/zhc-cosmetics-execution-plan-presentation.html",
+    "wiki/questions/zhc-cosmetics-proposal-2026-04-28.html",
+    "bin/setup-vault.sh",
+    "bin/setup-multi-agent.sh",
+    "bin/setup-dragonscale.sh",
+    "bin",
+    "skills/wiki-query-workspace/iteration-4/eval-q1/with_skill/run-1/timing.json",
+    "skills/wiki-query-workspace/iteration-4/eval-q1/with_skill/run-1/outputs",
+    "skills/wiki-query-workspace/iteration-4/eval-q1/with_skill/run-1/grading.json",
+    "skills/wiki-query-workspace/iteration-4/eval-q1/with_skill/run-1",
+    "무제.canvas",
+    "wiki/meta/claude-obsidian-cover.gif",
+    "wiki/meta/image-example-wiki-map-view.png",
+    "wiki/meta/image-example-graph-view.png",
+    "Untitled 2.canvas",
+    "wiki/meta/claude-obsidian-gif-cover-16x9.gif",
+    "wiki/meta/cover.gif",
+    "wiki/canvases/welcome.canvas",
+    "wiki/meta/welcome-canvas.gif",
+    "wiki/canvases/main.canvas",
+    "Demo Images.canvas",
+    "_attachments/the-frontier.png",
+    "_attachments/neural-voyager.png",
+    "_attachments/code-genesis.png",
+    "wiki/Wiki Map.canvas",
+    "Banana Images.canvas",
+    "Untitled 1.canvas",
+    "Untitled.canvas",
+    "projects/visual-vault/design-ideas.canvas"
+  ]
+}
