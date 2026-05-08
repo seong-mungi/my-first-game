@@ -7,6 +7,16 @@ updated: 2026-05-08
 
 Reverse chronological log of wiki operations. Newest at top.
 
+## [2026-05-08] ingest | Metal Slug IP Avoidance Guide
+
+- **Source:** `.raw/metal-slug-ip-avoidance-guide.md` (hash `d98067bd4644448714f8ab30e2279122`)
+- **Summary:** [[Metal Slug IP Avoidance Guide]]
+- **Pages created (3):** [[Metal Slug IP Avoidance Guide]] (source), [[IP Avoidance For Game Clones]] (concept), [[Broforce]] (entity)
+- **Pages updated:** [[index.md]] (Concepts: Production/IP/Legal 섹션 신설; Entities/Sources/Tags 등록), [[hot.md]], [[log.md]]
+- **Key insight:** 게임 메카닉은 미국·한국 공통 저작권 보호 대상이 아니므로 메탈슬러그 8대 시스템(이동·무기·근접·차량·HP·적·스코어·레벨)은 자유 모방 가능. 비주얼·이름·음악만 100% 교체하면 합법적 상업 출시까지 가능하며, [[Broforce]]가 모범 사례다. my-game이 런앤건 노선을 채택할 경우 즉시 적용 가능한 실무 체크리스트 확보.
+- **Cross-links:** [[Metal Slug]], [[SNK]], [[Run and Gun Base Systems]], [[Run and Gun Extension Systems]], [[Weapon Letter Pickup System]], [[Cuphead]]
+- **Open questions:** SNK 본사 추적 임계점 / 한국 캐릭터 외형 유사도 판단 기준 / AI 생성 자산 책임 귀속 / 메카닉 특허 검색 절차
+
 ## [2026-05-08] autoresearch | Metal Slug · Run and Gun Genre
 
 - **Rounds:** 2 (broad search × 7 queries + deep fetches × 4 URLs; gap fill × 4 searches + 4 fetches)
