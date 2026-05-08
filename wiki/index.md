@@ -43,6 +43,13 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 ### Production / IP / Legal
 - [[IP Avoidance For Game Clones]] — Idea/expression dichotomy; safe-clone strategy matrix
 
+### Tooling / Framework / Process
+- [[CCGS Framework]] — Claude Code Game Studios 49-에이전트·72-스킬 멀티에이전트 프레임워크
+- [[CCGS Subagent Tier Architecture]] — 3-Tier 계층, 엔진별 서브트리, 병렬 실행 프로토콜
+- [[Brownfield Project Onboarding]] — 기존 코드베이스에 에이전트 프레임워크 도입하는 일반 절차
+- [[Abstract Base Class Pattern]] — GDScript/C# Godot 4 추상 기반 클래스 구현 가이드
+- [[Boss Two Phase Design]] — HP 임계값 분기 + State Machine 기반 보스 2페이즈 전투 설계
+
 ## Entities
 
 ### Games
