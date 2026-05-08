@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "log.md",
+                "file": "questions/Research Run and Gun Genre.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "log"
+              "title": "Research Run and Gun Genre"
             }
           }
         ]
@@ -78,7 +78,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 440.5
+    "width": 200
   },
   "right": {
     "id": "7092b65be1e76349",
@@ -195,6 +195,7 @@
   },
   "active": "069d84cd14959ebb",
   "lastOpenFiles": [
+    "log.md",
     "sources/CCGS Adopt SKILL Definition.md",
     "sources/CCGS Reverse Document Workflow Example.md",
     "sources/CCGS Adopt Brownfield Example.md",
@@ -215,7 +216,6 @@
     "questions/Research Run and Gun Genre.md",
     "entities/Broforce.md",
     "concepts/IP Avoidance For Game Clones.md",
-    "log.md",
     "sources/Metal Slug IP Avoidance Guide.md",
     "hot.md",
     "questions/Research Lane Defense Game Systems.md",
