@@ -195,6 +195,7 @@
   },
   "active": "069d84cd14959ebb",
   "lastOpenFiles": [
+    "questions/Research CCGS Brownfield Onboarding.md",
     "questions/Research CCGS Framework And Local Drift.md",
     "concepts/Boss Two Phase Design.md",
     "concepts/Abstract Base Class Pattern.md",
@@ -220,7 +221,6 @@
     "wiki/concepts/OMC GStack Build Loop Integration.md",
     "wiki/sources/gstack-gsd-superpowers-workflow-2026-05-06.md",
     "wiki/log.md",
-    "wiki/concepts/Agentic OS.md",
     "wiki/questions/zhc-cosmetics-execution-plan-presentation.html",
     "wiki/questions/zhc-cosmetics-proposal-2026-04-28.html",
     "bin/setup-vault.sh",
