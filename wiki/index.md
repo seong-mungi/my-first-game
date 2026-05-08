@@ -37,6 +37,9 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[Weapon Letter Pickup System]] — Metal Slug H/R/F/L/S/I letter-coded weapon swap pattern
 - [[Arcade Difficulty Design]] — Quarter-coin difficulty philosophy; lives, continues, attract-mode
 
+### Production / IP / Legal
+- [[IP Avoidance For Game Clones]] — Idea/expression dichotomy; safe-clone strategy matrix
+
 ## Entities
 
 ### Games
