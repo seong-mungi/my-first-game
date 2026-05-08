@@ -35,10 +35,10 @@ Most-relevant pages for current project context. Read this first when picking up
 9. [[Run and Gun Success Pattern Matrix]] — 5작품 불변 코어 7가지 + 매출 임계값 + 3D 실패 원인.
 10. [[Research Run and Gun Success Patterns]] — 메타 합성 — 인디 부활 공식 + 실패 케이스 분석.
 11. [[Cooperative Run and Gun Design]] — 진정한 동시 협동 vs 양보형 비교.
-9. [[Research Contra System Analysis]] — 콘트라 무기·생명·시리즈 진화·문화적 영향 종합.
-10. [[Contra Weapon System]] — M/F/L/S/R/B 코드 분석 + Metal Slug H/R/F/L/S/I와 차이.
-11. [[Brownfield Project Onboarding]] — `/adopt` 공식 4-Phase + 7-Step + 6 원칙.
-12. [[IP Avoidance For Game Clones]] — 클론 제작 합법 전략 매트릭스 + Solo Contra 2026 적용.
+12. [[Research Contra System Analysis]] — 콘트라 무기·생명·시리즈 진화·문화적 영향 종합.
+13. [[Contra Weapon System]] — M/F/L/S/R/B 코드 분석 + Metal Slug H/R/F/L/S/I와 차이.
+14. [[Brownfield Project Onboarding]] — `/adopt` 공식 4-Phase + 7-Step + 6 원칙.
+15. [[IP Avoidance For Game Clones]] — 클론 제작 합법 전략 매트릭스 + Echo IP 회피 적용.
 
 ## TL;DR For my-game
 
