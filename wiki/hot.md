@@ -71,6 +71,11 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Open Questions
 
+- **[NEW]** Contra 슈도-3D 기지 스테이지(2/4)가 후속 런앤건에서 거의 사라진 이유 — 구현 비용 대비 효과 불명?
+- **[NEW]** 코나미 코드의 판매 효과 — 접근성↑ → 판매↑ vs 클리어율↑ → 재판매↓?
+- **[NEW]** WayForward 외주 의존 패턴 — 코나미 내부 런앤건 역량 공백인지, 라이선싱 전략인지?
+- **[NEW]** 2026년 플레이어가 아케이드 1히트 즉사를 그대로 수용하는가? (접근성 표준화 시대)
+- **[NEW]** 인디 런앤건 + 퍼블리셔 없이 200만 장 달성 사례 존재? (Devolver/Xbox 도움 없이)
 - **[NEW]** CCGS로 출시된 완성 게임이 존재하는가? (이슈 #34 미해결 — 프레임워크 검증 부재)
 - **[NEW]** Godot 4 GDScript 전용 런앤건 오픈소스 스캐폴드 존재 여부 — Unity 레퍼런스 거부 후 대체 필요
 - **[NEW]** `/reverse-document` 스킬이 Godot 4 `.gd` 파일을 정확히 파싱하는가? (브라운필드 온보딩 핵심)
