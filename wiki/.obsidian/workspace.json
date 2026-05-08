@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "questions/Research Run and Gun Genre.md",
+                "file": "log.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Research Run and Gun Genre"
+              "title": "log"
             }
           }
         ]
@@ -195,10 +195,10 @@
   },
   "active": "069d84cd14959ebb",
   "lastOpenFiles": [
+    "questions/Research Run and Gun Genre.md",
     "entities/Broforce.md",
     "concepts/IP Avoidance For Game Clones.md",
     "log.md",
-    "questions/Research Run and Gun Genre.md",
     "sources/Metal Slug IP Avoidance Guide.md",
     "hot.md",
     "questions/Research Lane Defense Game Systems.md",
