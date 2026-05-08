@@ -73,6 +73,7 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[Wikipedia Run and Gun]] — Run-and-gun genre encyclopedia reference
 - [[Wikipedia Metal Slug Series]] — Metal Slug series mechanical and historical reference
 - [[Megacat Studios Run and Gun History]] — Indie retrospective on run-and-gun evolution
+- [[Metal Slug IP Avoidance Guide]] — 사내 리서치: 메탈슬러그 클론 제작 시 IP 회피 가이드 (Korean)
 
 ## By Tag
 
