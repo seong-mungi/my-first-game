@@ -50,6 +50,9 @@ Most-relevant pages for current project context. Read this first when picking up
 - 무기 픽업 시스템(Metal Slug H/R/F/L/S/I 패턴) 또는 무기 조합(Gunstar Heroes)
 - 세 가지 포지셔닝 선택: 순수계승 / 보스러시(Cuphead) / 로그라이트(Huntdown: Overtime)
 - 코어가 재미없으면 어떤 확장도 구제 불가 — 코어 프로토타입 우선
+- **5작품 불변 코어 7가지** ([[Run and Gun Success Pattern Matrix]]): 횡스크롤 2D / 1히트 즉사 / 무기 다변화 / 보스 전투 / 2인+ 협동 / 결정론적 적 / 기본 무기 안전망
+- **차별화 메커닉 1개 집중** — Metal Slug(탈것), Broforce(파괴 환경), Gunstar(무기 조합). 전부 다 X
+- **3D 전환 금지** — 콘트라 시리즈 3차례(1996/1998/2019) 모두 실패. WayForward 2024 [[Contra Operation Galuga]]는 2D 회귀
 
 ### 공통 권장 사항
 - PvE vs PvP 조기 결정 (v1에서 둘 다 위험)
