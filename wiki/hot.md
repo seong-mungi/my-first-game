@@ -78,13 +78,26 @@ Most-relevant pages for current project context. Read this first when picking up
 - **[2026-05-08]** ❌ giacoballoccu/MetalSlugClone + alfredo1995/metal-slug 통합 전략 거부 — 엔진 불일치(Unity 2D ↔ Godot 4). 두 패턴(추상 기반 클래스, 2페이즈 보스)은 [[Abstract Base Class Pattern]] / [[Boss Two Phase Design]]의 Godot 4 예제로 처음부터 구현. (참고: [[Opinion MetalSlugClone Base Plus Metal Slug Reference]])
 - **[2026-05-08]** ✅ 로컬 my-game은 CCGS v1.0.0-beta 업스트림 현행 — 별도 동기화 불필요. (참고: [[Research CCGS Framework And Local Drift]])
 
+## Resolved Questions
+
+> [!key-insight] 2026-05-08 해소
+> - **Q4 (1히트 현대 수용성)**: 장르 팬은 *즉시 재시작 + 결정론 패턴 + Easy 토글 1개* 조건에서 수용. Hotline Miami 500만 / Katana Zero 50만 장 검증 ([[Followup Modern Acceptance And Indie RnG Threshold]]).
+> - **Q5 (0퍼블리셔 200만 장 인디 런앤건)**: 사례 미존재. Cuphead=Microsoft, Broforce·Katana Zero·Hotline Miami=Devolver. 자가퍼블리싱 런앤건 현실 천장 10-20만 ([[Indie Self Publishing Run and Gun]]).
+
 ## Open Questions
 
+### Solo Contra 2026 (베이스라인 미해결)
+- **[NEW]** 시간 되감기 시 적·탄환 동시 vs 플레이어만? (Braid 모델 vs 체크포인트 모델)
+- **[NEW]** 콜라주 캐릭터 사진 출처 — 스톡 / 직접 촬영 / 생성형 AI? IP·라이선스 비교
+- **[NEW]** 스토리 톤 — 디스토피아 진지 vs 풍자 펑크?
+- **[NEW]** Godot 4 시간 되감기 구현 패턴 — 상태 스냅샷 vs 입력 리플레이?
+- **[NEW]** 무기 4-5종 카탈로그 — Contra M/F/L/S/R/B 중 어느 3-4개를 SF 재해석?
+- **[NEW]** Easy/Hard 토큰 슬라이더 — 단일 토글(Cuphead Simple) vs 슬라이더(Hades God Mode)?
+
+### 콘트라/장르 잔여
 - **[NEW]** Contra 슈도-3D 기지 스테이지(2/4)가 후속 런앤건에서 거의 사라진 이유 — 구현 비용 대비 효과 불명?
 - **[NEW]** 코나미 코드의 판매 효과 — 접근성↑ → 판매↑ vs 클리어율↑ → 재판매↓?
 - **[NEW]** WayForward 외주 의존 패턴 — 코나미 내부 런앤건 역량 공백인지, 라이선싱 전략인지?
-- **[NEW]** 2026년 플레이어가 아케이드 1히트 즉사를 그대로 수용하는가? (접근성 표준화 시대)
-- **[NEW]** 인디 런앤건 + 퍼블리셔 없이 200만 장 달성 사례 존재? (Devolver/Xbox 도움 없이)
 - **[NEW]** CCGS로 출시된 완성 게임이 존재하는가? (이슈 #34 미해결 — 프레임워크 검증 부재)
 - **[NEW]** Godot 4 GDScript 전용 런앤건 오픈소스 스캐폴드 존재 여부 — Unity 레퍼런스 거부 후 대체 필요
 - **[NEW]** `/reverse-document` 스킬이 Godot 4 `.gd` 파일을 정확히 파싱하는가? (브라운필드 온보딩 핵심)
