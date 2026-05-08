@@ -55,6 +55,7 @@ Most-relevant pages for current project context. Read this first when picking up
 - 모바일 vs PC/콘솔 조기 결정 (런앤건은 모바일 적합도 낮음)
 - 이벤트 캘린더를 출시 전 6개월치 준비 (라이브서비스 노선일 때)
 - 카드 레벨 메타는 v1에서 도입 보류
+- **IP 회피 절차** ([[IP Avoidance For Game Clones]]): 어떤 장르를 가도 메카닉 자유 모방 + 비주얼·이름·음악 100% 오리지널. 상업 출시 전 IP 변호사 1회 검토 마일스톤 추가.
 
 ## Recent Decisions
 
