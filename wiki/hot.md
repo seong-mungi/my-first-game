@@ -9,8 +9,11 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Active Research Topic
 
-**Solo Contra 2026 — 컨셉 락인** (2026-05-08). 사용자 결정: 시간 되감기 + 콜라주 + 가까운 미래 SF.
+**Echo Story Spine 락인** (2026-05-08). Contra: Shattered Soldier 시나리오 + MI Final Reckoning 모티프 병합 → ECHO vs VEIL(AI) 디스토피아 SF.
 
+→ **Echo 스토리 골격**: [[Echo Story Spine]] — 로그라인 "AI가 미래를 계산할 때, ECHO는 과거를 되돌린다" + 5 스테이지 아크 + Tier별 자산 budget + 인트로 5줄
+→ Step 1 출처: [[Research Contra Best Story Series]] — Shattered Soldier 선정 + 차용 근거
+→ Step 2 출처: [[MI Final Reckoning Plot]] · [[The Entity AI Villain]] — 디지털/아날로그 dichotomy + AI 빌런 변환
 → **현재 디자인 베이스라인**: [[Solo Contra 2026 Concept]] — 7코어 적용 매트릭스 + 16개월 작업량 + 다음 3단계 의사결정 트리
 → Q4/Q5 결론: [[Followup Modern Acceptance And Indie RnG Threshold]] — 1히트 현대 수용성 + 인디 매출 천장
 → 최신 합성 (런앤건 메타): [[Research Run and Gun Success Patterns]] — 5작품 불변 코어 7가지
