@@ -195,6 +195,7 @@
   },
   "active": "069d84cd14959ebb",
   "lastOpenFiles": [
+    "sources/CCGS Reverse Document Workflow Example.md",
     "sources/CCGS Adopt Brownfield Example.md",
     "questions/Opinion MetalSlugClone Base Plus Metal Slug Reference.md",
     "questions/Research CCGS Brownfield Onboarding.md",
@@ -220,7 +221,6 @@
     "index.md",
     "wiki/sources/omc-gstack-build-loop-research-2026-05-06.md",
     "wiki/concepts/GStack vs OMC Ralplan.md",
-    "wiki/concepts/OMC GStack Build Loop Integration.md",
     "wiki/questions/zhc-cosmetics-execution-plan-presentation.html",
     "wiki/questions/zhc-cosmetics-proposal-2026-04-28.html",
     "bin/setup-vault.sh",
