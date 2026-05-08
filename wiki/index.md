@@ -15,6 +15,8 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[Research CCGS Framework And Local Drift]] — CCGS 업스트림 분석 + 로컬 my-game 드리프트 (없음 확인) (2026-05-08)
 - [[Research CCGS Brownfield Onboarding]] — 기존 코드베이스에 CCGS 적용하는 4-Phase 절차 (2026-05-08)
 - [[Opinion MetalSlugClone Base Plus Metal Slug Reference]] — 통합 전략 검토: ❌ 거부 (Unity↔Godot 불일치) (2026-05-08)
+- [[Research Contra System Analysis]] — 콘트라 무기·생명·스테이지·협동·시리즈 진화·문화적 영향 종합 (2026-05-08)
+- [[Research Run and Gun Success Patterns]] — 5작품 메타 분석: 불변 코어 7가지 + my-game 체크리스트 (2026-05-08)
 
 ## Concepts
 
