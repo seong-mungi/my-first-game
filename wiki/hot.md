@@ -9,8 +9,9 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Active Research Topic
 
-**런앤건(메탈슬러그) + Battle Cats 서브장르 + 라인디펜스** — 세 세션의 리서치가 완료됨 (2026-05-08).
+**런앤건(메탈슬러그) + Battle Cats 서브장르 + 라인디펜스** — 세 세션의 리서치 완료 + IP 회피 가이드 인제스트 (2026-05-08).
 
+→ 최신 인제스트: [[Metal Slug IP Avoidance Guide]] · [[IP Avoidance For Game Clones]] · [[Broforce]]
 → 최신 합성: [[Research Run and Gun Genre]]
 → 이전 합성: [[Research Battle Cats Subgenre]]
 → 이전 합성: [[Research Lane Defense Game Systems]]
