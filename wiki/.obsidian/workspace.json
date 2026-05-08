@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "questions/Research Run and Gun Genre.md",
+                "file": "questions/Research Contra Best Story Series.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Research Run and Gun Genre"
+              "title": "Research Contra Best Story Series"
             }
           }
         ]
@@ -195,12 +195,14 @@
   },
   "active": "069d84cd14959ebb",
   "lastOpenFiles": [
+    "log.md",
+    "concepts/Solo Contra 2026 Concept.md",
+    "questions/Research Contra Best Story Series.md",
+    "questions/Research Run and Gun Genre.md",
     "concepts/Echo Story Spine.md",
     "entities/The Entity AI Villain.md",
     "sources/MI Final Reckoning Plot.md",
     "sources/Contra Shattered Soldier Story Source.md",
-    "questions/Research Contra Best Story Series.md",
-    "concepts/Solo Contra 2026 Concept.md",
     "sources/Steam Indie 1Hit Kill Reviews.md",
     "entities/Hotline Miami.md",
     "entities/Katana Zero.md",
@@ -217,10 +219,8 @@
     "concepts/Cooperative Run and Gun Design.md",
     "concepts/Konami Code.md",
     "concepts/Contra Weapon System.md",
-    "log.md",
     "sources/CCGS Adopt SKILL Definition.md",
     "sources/CCGS Reverse Document Workflow Example.md",
-    "sources/CCGS Adopt Brownfield Example.md",
     "wiki/questions/zhc-cosmetics-execution-plan-presentation.html",
     "wiki/questions/zhc-cosmetics-proposal-2026-04-28.html",
     "bin/setup-vault.sh",
