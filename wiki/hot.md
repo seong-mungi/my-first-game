@@ -76,6 +76,8 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Recent Decisions
 
+- **[2026-05-08]** 📖 **Echo Story Spine 락인** — Contra: Shattered Soldier(2002) Triumvirate 음모 + 다중 엔딩 + MI Final Reckoning(2025) 디지털/아날로그 dichotomy + AI 빌런 모티프 병합. 결과: ECHO(요원) vs VEIL(AI of ARCA Corporation) in NEXUS(2038 메가시티). 시간 되감기 = 인간 비합리성 = AI의 유일한 사각지대. 5 스테이지: 귀환→진실→추격→대결→귀결. (참고: [[Echo Story Spine]] · [[Research Contra Best Story Series]] · [[The Entity AI Villain]])
+- **[2026-05-08]** 📋 **Echo (working title) GDD 정식화** — `design/gdd/game-concept.md` 작성. Tier 1 Prototype(4-6주) / Tier 2 MVP(~6개월) / Tier 3 Full(~16개월) 3티어 락인. 5 Pillars + 6 Anti-Pillars + Visual Identity Anchor(콜라주 SF). Engine=Godot 4.6, Platform=PC Steam. (참고: `design/gdd/game-concept.md`)
 - **[2026-05-08]** 🎯 **Solo Contra 2026 컨셉 락인 (v0)** — 차별화 메커닉=시간 되감기, 비주얼=콜라주, 무대=가까운 미래 SF(2030-2040). 협동은 솔로 QA 부담으로 *제외 결정* 명시. 7코어 중 5개 유지, 1개 축소(무기 4-5), 1개 제거(협동). 다음 3단계: 시간 되감기 v0 프로토(1주) → 콜라주 컨셉아트(3-5일) → 스테이지 1 수직슬라이스(4주). (참고: [[Solo Contra 2026 Concept]])
 - **[2026-05-08]** 🔍 Q4/Q5 해소 — 1히트 즉사 현대 수용성: 즉시 재시작+결정론 패턴+Easy 토글 1개 조건부 수용 (Hotline Miami 500만, Katana Zero 50만 장 검증). 인디 런앤건+0퍼블리셔 200만 장: **사례 미존재** — 현실 천장 10-20만, 50만+는 마케팅 파트너 필요. (참고: [[Followup Modern Acceptance And Indie RnG Threshold]])
 - **[2026-05-08]** 🎯 런앤건 5작품 불변 코어 7가지 + my-game 체크리스트 확정 — Contra/Metal Slug/Gunstar Heroes/Cuphead/Broforce 횡단 분석 결과. 선택 C(런앤건) 시 비협상 원칙: "어렵지만 공정" / 2D 고수 / 1개 차별화 메커닉 집중 / 협동 필수. (참고: [[Research Run and Gun Success Patterns]] · [[Run and Gun Success Pattern Matrix]])
