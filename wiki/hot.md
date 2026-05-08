@@ -63,13 +63,19 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Recent Decisions
 
-(none yet — research-only phase)
+- **[2026-05-08]** ❌ giacoballoccu/MetalSlugClone + alfredo1995/metal-slug 통합 전략 거부 — 엔진 불일치(Unity 2D ↔ Godot 4). 두 패턴(추상 기반 클래스, 2페이즈 보스)은 [[Abstract Base Class Pattern]] / [[Boss Two Phase Design]]의 Godot 4 예제로 처음부터 구현. (참고: [[Opinion MetalSlugClone Base Plus Metal Slug Reference]])
+- **[2026-05-08]** ✅ 로컬 my-game은 CCGS v1.0.0-beta 업스트림 현행 — 별도 동기화 불필요. (참고: [[Research CCGS Framework And Local Drift]])
 
 ## Open Questions
 
-- **[NEW]** 장르 선택: 디펜스(A/B) vs 액션(C)? 팀 역량과 시장 포지션이 결정 변수
-- **[NEW]** 런앤건이라면 3가지 포지셔닝 — 순수계승 / 보스러시 / 로그라이트?
-- **[NEW]** 모바일 적합도 — A/B는 모바일 친화, C는 PC/콘솔 친화
+- **[NEW]** CCGS로 출시된 완성 게임이 존재하는가? (이슈 #34 미해결 — 프레임워크 검증 부재)
+- **[NEW]** Godot 4 GDScript 전용 런앤건 오픈소스 스캐폴드 존재 여부 — Unity 레퍼런스 거부 후 대체 필요
+- **[NEW]** `/reverse-document` 스킬이 Godot 4 `.gd` 파일을 정확히 파싱하는가? (브라운필드 온보딩 핵심)
+- **[NEW]** Godot 4.5+ `@abstract` 어노테이션의 정확한 동작 방식 — 4.6 환경에서 공식 문서 교차 확인 필요
+- **[NEW]** OMC와 CCGS 간 스킬 네임스페이스 충돌 가능성
+- 장르 선택: 디펜스(A/B) vs 액션(C)? 팀 역량과 시장 포지션이 결정 변수
+- 런앤건이라면 3가지 포지셔닝 — 순수계승 / 보스러시 / 로그라이트?
+- 모바일 적합도 — A/B는 모바일 친화, C는 PC/콘솔 친화
 - 단일 레인(Battle Cats형) vs 5레인(PvZ형)?
 - 가챠 수익화 여부 — 규제 환경과 팀 역량 고려 필요
 - 라이브서비스 목표 기간 — 1년 vs 5년+ vs 13년?
@@ -79,7 +85,8 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Cross-Reference Density
 
-- Genre concepts: 17 concept pages across 3 genres + 1 production/IP, dense interlinking
-- Reference games: 11 (PvZ, Random Dice, Bloons TD, Battle Cats, Cartoon Wars, Grow Castle, Metal Slug, Contra, Gunstar Heroes, Cuphead, Broforce)
-- Sources catalogued: 10
-- Developers/orgs: 3 (George Fan, PONOS, SNK)
+- Concepts: 22 (장르 17 + Production/IP 1 + Tooling/Framework/Process 5)
+- Reference games: 13 (PvZ, Random Dice, Bloons TD, Battle Cats, Cartoon Wars, Grow Castle, Metal Slug, Contra, Gunstar Heroes, Cuphead, Broforce, MetalSlugClone giacoballoccu, metal-slug alfredo1995)
+- Sources catalogued: 13
+- Developers / orgs / repos: 4 (George Fan, PONOS, SNK, Donchitos CCGS Repo)
+- Synthesis pages: 6 (3 genre research + CCGS framework + brownfield + MetalSlugClone verdict)
