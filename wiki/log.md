@@ -7,6 +7,42 @@ updated: 2026-05-08
 
 Reverse chronological log of wiki operations. Newest at top.
 
+## [2026-05-08] design-decision | Solo Contra 2026 컨셉 락인 (v0)
+
+- **Mode:** 사용자 결정 → 메인 에이전트가 합성 페이지 작성 + 메타 동기화
+- **Decision summary (사용자):**
+  - 차별화 메커닉: **시간 되감기** (Katana Zero × Contra)
+  - 비주얼 시그니처: **콜라주** (잡지 컷아웃·믹스드 미디어)
+  - 무대: **가까운 미래 SF** (2030-2040)
+- **Pages created (1):** [[Solo Contra 2026 Concept]] — design-baseline-v0, status: medium confidence. 7코어 적용 매트릭스(5 유지, 1 축소, 1 제거) + 시간 되감기 v0 규칙 + 콜라주 비주얼 + 5스테이지 후보 + 16개월 작업량 + 의사결정 트리 3단계 + 6 미해결 질문.
+- **Pages updated (meta):** [[index.md]] (Synthesis +1, Concepts Run-and-Gun +2, My Game Design Baselines 신규 섹션 +1, Entities Games +3, Sources +1), [[log.md]] (이 블록), [[hot.md]] (활성 토픽·Top 페이지 12개로 확장·Resolved Questions 신규·Open Questions 재구성·Cross-Reference Density 갱신)
+- **7코어 → Solo 적용 결과:**
+  - ✅ 유지 (5): 횡스크롤 2D / 1히트 즉사 + Easy 토글 / 결정론 적 / 기본 무기 안전망 / 보스 5-6개로 한정
+  - ⚠️ 축소 (1): 무기 다변화 — Contra 6종(M/F/L/S/R/B) → 4-5종으로 축소
+  - ❌ 제거 (1): 2인+ 협동 — 솔로 QA 비현실적, Katana Zero·Hotline Miami 솔로용 성공 검증
+- **다음 3단계 (의사결정 트리):**
+  1. 시간 되감기 v0 프로토타입 (1주, Godot 4) — 단독 재미 검증
+  2. 콜라주 비주얼 컨셉아트 1장 (3-5일) — 톤 락인
+  3. 스테이지 1 수직 슬라이스 (4주) — 핵심 재미 검증
+- **현실 매출 기대치 ([[Indie Self Publishing Run and Gun]]):** 마케팅 파트너 없으면 10-20만 장이 천장. 50만+는 시그니처 비주얼(콜라주가 강점) + 인디 페스티벌 + 인플루언서 캠페인 동시 필요.
+- **Cross-links:** [[Run and Gun Success Pattern Matrix]], [[Modern Difficulty Accessibility]], [[Followup Modern Acceptance And Indie RnG Threshold]], [[Katana Zero]], [[Cooperative Run and Gun Design]], [[Contra Weapon System]], [[IP Avoidance For Game Clones]]
+- **Open questions (6 신규):** 시간 되감기 적·탄환 동시 vs 플레이어만 / 콜라주 사진 출처(스톡/촬영/AI) / 스토리 톤(디스토피아 vs 펑크) / Godot 4 시간 되감기 구현 패턴(스냅샷 vs 입력 리플레이) / 무기 4-5종 SF 재해석 카탈로그 / Easy/Hard 토글 vs 슬라이더
+
+## [2026-05-08] followup | Q4/Q5 후속 리서치 — 1히트 현대 수용성 + 인디 매출 천장
+
+- **Mode:** sub-agent (sonnet) 콘텐츠 페이지 생성 → 메인 에이전트 메타 갱신
+- **Targets:** Q4 (2026 플레이어가 1히트 즉사 수용?) + Q5 (인디 런앤건 + 0퍼블리셔 200만 장 사례?)
+- **Pages created (7):**
+  - Synthesis (1): [[Followup Modern Acceptance And Indie RnG Threshold]]
+  - Concepts (2): [[Modern Difficulty Accessibility]], [[Indie Self Publishing Run and Gun]]
+  - Entities (3): [[Pizza Tower]], [[Katana Zero]], [[Hotline Miami]]
+  - Sources (1): [[Steam Indie 1Hit Kill Reviews]]
+- **Q4 결론:** 장르 팬은 *즉시 재시작 + 결정론 패턴 + Easy 토글 1개* 조건에서 1히트 즉사 수용. Hotline Miami(500만+) / Katana Zero(50만 1년) 검증. Steam "unfair" 논쟁의 실제 원인은 즉사가 아닌 랜덤 패턴·긴 재시작.
+- **Q5 결론:** 0-퍼블리셔 200만 장 인디 런앤건 사례 **미존재**. Cuphead=Microsoft, Broforce·Katana Zero·Hotline Miami=Devolver. 자가퍼블리싱 런앤건 현실 천장 10-20만, 50만+는 마케팅 파트너 + 시그니처 비주얼 + 페스티벌 동시 필요.
+- **Cross-links:** [[Run and Gun Success Pattern Matrix]], [[Cuphead]], [[Broforce]], [[Contra]], [[IP Avoidance For Game Clones]]
+- **Open questions:** Pizza Tower 정확 판매량 / Blazing Chrome·Huntdown 실제 판매 / 2024+ 인디 런앤건 난이도 옵션 표준화 비율
+- **Constraints:** Steam 판매량은 SteamSpy/VGInsights 추정 / "unfair" 빈도 정량 통계 부재 / Vampire Survivors 6M은 levvvel.com 집계치
+
 ## [2026-05-08] autoresearch | Contra 시스템 분석 + 런앤건 성공 패턴 메타 분석
 
 - **Mode:** sub-agent (sonnet) creates content pages → main agent updates index/log/hot
