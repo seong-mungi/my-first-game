@@ -11,6 +11,7 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 
 - [[Research Lane Defense Game Systems]] — 라인 디펜스 게임 시스템 리서치 (2026-05-08)
 - [[Research Battle Cats Subgenre]] — Battle Cats 서브장르 분석: 시스템·유사게임·성공요인 (2026-05-08)
+- [[Research Run and Gun Genre]] — 메탈슬러그·런앤건 장르 분석: 베이스 시스템·확장 시스템·성공 요인 (2026-05-08)
 
 ## Concepts
 
@@ -29,6 +30,13 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[Gacha Unit Acquisition]] — Gacha as mobile unit acquisition vector; Battle Cats model
 - [[Long Tail Mobile Live Service]] — 5+ year mobile longevity patterns; Battle Cats 13yr case
 
+### Run and Gun Genre (메탈슬러그·콘트라 계열)
+- [[Run and Gun Genre]] — Genre definition; vs platformer/shmup/twin-stick
+- [[Run and Gun Base Systems]] — Minimum viable mechanical set (5-piece core)
+- [[Run and Gun Extension Systems]] — Successful extension catalog (roguelite, RPG, multiplayer, vehicles)
+- [[Weapon Letter Pickup System]] — Metal Slug H/R/F/L/S/I letter-coded weapon swap pattern
+- [[Arcade Difficulty Design]] — Quarter-coin difficulty philosophy; lives, continues, attract-mode
+
 ## Entities
 
 ### Games
@@ -38,12 +46,17 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[Battle Cats]] — Side-scrolling tug-of-war defense, PONOS 2012; $700M revenue, 100M DL
 - [[Cartoon Wars]] — Korean side-scrolling defense pioneer, GAMEVIL 2009
 - [[Grow Castle]] — Korean idle wave defense, RAON Games ~2016
+- [[Metal Slug]] — Run-and-gun craft pinnacle, SNK 1996+; melee-pivot design
+- [[Contra]] — Run-and-gun progenitor, Konami 1987; "Contra code" cultural footprint
+- [[Gunstar Heroes]] — Treasure 1993; weapon-combination system, design-innovation pinnacle
+- [[Cuphead]] — StudioMDHR 2017; 1930s-cartoon aesthetic, modern indie revival, 6M+ sales
 
 ### People
 - [[George Fan]] — PvZ designer, lane defense pioneer
 
 ### Organizations
 - [[PONOS]] — Battle Cats developer; Kyoto, Japan; founded 1990
+- [[SNK]] — Metal Slug developer; Neo Geo arcade hardware; 1978 founded
 
 ## Sources
 
@@ -53,6 +66,9 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[Wikipedia The Battle Cats]] — Battle Cats encyclopedia reference; revenue/platform data
 - [[Campaign Asia Battle Cats Recovery]] — DAU/revenue recovery campaign data (Korea/Taiwan 2023)
 - [[Battle Cats 100M Downloads ANN]] — 100M download milestone press release (March 2025)
+- [[Wikipedia Run and Gun]] — Run-and-gun genre encyclopedia reference
+- [[Wikipedia Metal Slug Series]] — Metal Slug series mechanical and historical reference
+- [[Megacat Studios Run and Gun History]] — Indie retrospective on run-and-gun evolution
 
 ## By Tag
 
@@ -60,13 +76,22 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - **#tower-defense**: All concepts above + Bloons TD, Upgrade Path System
 - **#side-scrolling-defense**: Side Scrolling Tug Of War Defense, Auto Deploy Unit System, Battle Cats, Cartoon Wars, Grow Castle
 - **#tug-of-war-defense**: Side Scrolling Tug Of War Defense, Battle Cats, Cartoon Wars
+- **#run-and-gun**: Run and Gun Genre, Run and Gun Base Systems, Run and Gun Extension Systems, Weapon Letter Pickup System, Metal Slug, Contra, Gunstar Heroes, Cuphead
+- **#arcade**: Metal Slug, Contra, Gunstar Heroes, Arcade Difficulty Design, SNK
+- **#neo-geo**: Metal Slug, SNK
+- **#indie-revival**: Cuphead, Run and Gun Extension Systems
+- **#boss-rush**: Cuphead, Run and Gun Extension Systems
+- **#one-hit-kill**: Contra, Run and Gun Base Systems, Arcade Difficulty Design
+- **#coin-op**: Arcade Difficulty Design, SNK, Contra
+- **#weapon-system**: Weapon Letter Pickup System, Metal Slug, Gunstar Heroes
+- **#pixel-art**: Metal Slug, Cuphead
 - **#game-design**: All concepts
 - **#mobile**: Random Dice, Lane Defense, Resource Economy Tower Defense, Battle Cats, Gacha Unit Acquisition, Long Tail Mobile Live Service
 - **#gacha**: Gacha Unit Acquisition, Battle Cats, Random Dice
 - **#live-service**: Long Tail Mobile Live Service, Battle Cats, PONOS
 - **#korean-game**: Random Dice, Cartoon Wars, Grow Castle
-- **#japanese-game**: Battle Cats, PONOS
-- **#reference-game**: Plants vs Zombies, Bloons TD, Battle Cats, Cartoon Wars
+- **#japanese-game**: Battle Cats, PONOS, Metal Slug, SNK
+- **#reference-game**: Plants vs Zombies, Bloons TD, Battle Cats, Cartoon Wars, Metal Slug, Contra, Gunstar Heroes, Cuphead
 
 ## Folders
 
