@@ -18,5 +18,35 @@
       ]
     }
   },
+  "url_sources": {
+    "https://github.com/Donchitos/Claude-Code-Game-Studios/blob/main/docs/examples/session-adopt-brownfield.md": {
+      "fetched_at": "2026-05-08",
+      "source_type": "upstream-doc",
+      "pages_created": [
+        "wiki/sources/CCGS Adopt Brownfield Example.md"
+      ],
+      "pages_updated": [
+        "wiki/concepts/Brownfield Project Onboarding.md",
+        "wiki/questions/Research CCGS Brownfield Onboarding.md",
+        "wiki/index.md",
+        "wiki/log.md",
+        "wiki/hot.md"
+      ]
+    },
+    "https://github.com/Donchitos/Claude-Code-Game-Studios/blob/main/docs/examples/reverse-document-workflow-example.md": {
+      "fetched_at": "2026-05-08",
+      "source_type": "upstream-doc",
+      "pages_created": [
+        "wiki/sources/CCGS Reverse Document Workflow Example.md"
+      ],
+      "pages_updated": [
+        "wiki/concepts/Brownfield Project Onboarding.md",
+        "wiki/questions/Research CCGS Brownfield Onboarding.md",
+        "wiki/index.md",
+        "wiki/log.md",
+        "wiki/hot.md"
+      ]
+    }
+  },
   "address_map": {}
 }
