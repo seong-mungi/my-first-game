@@ -20,16 +20,16 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Top Pages To Read First
 
-1. [[Opinion MetalSlugClone Base Plus Metal Slug Reference]] — **NEW**. ❌ 거부 판정 + 대안 권고. Unity↔Godot 불일치 정리.
-2. [[Research CCGS Brownfield Onboarding]] — **NEW**. 4-Phase 절차(내성 → 감사 → 리팩터 → 검증) + 5가지 위험 함정.
-3. [[Research CCGS Framework And Local Drift]] — **NEW**. 로컬 my-game은 CCGS v1.0.0-beta 현행. 단일 기여자 + 완성 사례 0건 약점.
-4. [[CCGS Framework]] — **NEW**. 49 에이전트 / 72 스킬 / 12 훅 프레임워크 개요.
-5. [[Abstract Base Class Pattern]] — **NEW**. Godot 4 GDScript/C# 추상 기반 클래스 구현 가이드.
-6. [[Boss Two Phase Design]] — **NEW**. State Machine 기반 보스 2페이즈 + 페이즈 전환 연출 체크리스트.
-7. [[IP Avoidance For Game Clones]] — 클론 제작 합법 전략 매트릭스. my-game 어떤 장르를 가도 적용.
-8. [[Run and Gun Base Systems]] — 5요소 최소기능세트. my-game 코어 결정에 직결.
-9. [[Run and Gun Extension Systems]] — 확장 시스템 카탈로그.
-10. [[Brownfield Project Onboarding]] — **NEW**. 일반화된 온보딩 절차 (CCGS 의존성 분리).
+1. [[Brownfield Project Onboarding]] — **REVISED 2026-05-08 (high)**. `/adopt` 공식 4-Phase + 7-Step Migration Plan + 6 핵심 원칙. 캐노니컬 절차.
+2. [[CCGS Adopt Brownfield Example]] — **NEW**. `/adopt` 8턴 30분 공식 데모 세션. forked context, 갭 4단계, BLOCKING 우선 표면화.
+3. [[CCGS Reverse Document Workflow Example]] — **NEW**. `/reverse-document` 4-Stage(Code Analysis → Intent Discovery → Vision Alignment → Generation).
+4. [[Opinion MetalSlugClone Base Plus Metal Slug Reference]] — ❌ 거부 판정 + 대안 권고. Unity↔Godot 불일치 정리.
+5. [[Research CCGS Brownfield Onboarding]] — Topic 2 합성 + 공식 절차 vs 추론 차이 비교 표.
+6. [[Research CCGS Framework And Local Drift]] — 로컬 my-game은 CCGS v1.0.0-beta 현행. 단일 기여자 + 완성 사례 0건 약점.
+7. [[CCGS Framework]] — 49 에이전트 / 72 스킬 / 12 훅 프레임워크 개요.
+8. [[Abstract Base Class Pattern]] — Godot 4 GDScript/C# 추상 기반 클래스 구현 가이드.
+9. [[Boss Two Phase Design]] — State Machine 기반 보스 2페이즈 + 페이즈 전환 연출 체크리스트.
+10. [[IP Avoidance For Game Clones]] — 클론 제작 합법 전략 매트릭스. my-game 어떤 장르를 가도 적용.
 
 ## TL;DR For my-game
 
