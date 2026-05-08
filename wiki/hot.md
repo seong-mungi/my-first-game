@@ -75,7 +75,7 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Cross-Reference Density
 
-- Genre concepts: 16 concept pages across 3 genres, dense interlinking
-- Reference games: 10 (PvZ, Random Dice, Bloons TD, Battle Cats, Cartoon Wars, Grow Castle, Metal Slug, Contra, Gunstar Heroes, Cuphead)
-- Sources catalogued: 9
+- Genre concepts: 17 concept pages across 3 genres + 1 production/IP, dense interlinking
+- Reference games: 11 (PvZ, Random Dice, Bloons TD, Battle Cats, Cartoon Wars, Grow Castle, Metal Slug, Contra, Gunstar Heroes, Cuphead, Broforce)
+- Sources catalogued: 10
 - Developers/orgs: 3 (George Fan, PONOS, SNK)
