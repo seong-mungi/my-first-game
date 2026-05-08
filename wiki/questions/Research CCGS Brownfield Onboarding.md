@@ -10,12 +10,18 @@ tags:
   - refactoring
   - process
   - research
+  - adopt-skill
 related:
   - "[[Brownfield Project Onboarding]]"
   - "[[CCGS Framework]]"
   - "[[CCGS Subagent Tier Architecture]]"
   - "[[Research CCGS Framework And Local Drift]]"
-confidence: medium
+  - "[[CCGS Adopt Brownfield Example]]"
+  - "[[CCGS Reverse Document Workflow Example]]"
+sources:
+  - "[[CCGS Adopt Brownfield Example]]"
+  - "[[CCGS Reverse Document Workflow Example]]"
+confidence: high
 ---
 
 # Research CCGS Brownfield Onboarding
@@ -24,12 +30,15 @@ confidence: medium
 
 기존 코드·아트·디자인이 있는 프로젝트(브라운필드)에 CCGS를 적용하는 절차는 무엇인가? 온보딩 이후 리팩터 단계는 어떤 순서로 진행해야 하는가?
 
-## 중요 전제: 공식 가이드 없음
+## 보완 (2026-05-08) — 공식 가이드 발견 → 신뢰도 격상
 
-> [!gap] 중요
-> CCGS 공식 저장소에는 브라운필드 온보딩 전용 문서가 존재하지 않는다.
-> 이 연구는 CCGS 구조 분석(`.claude/docs/`, 스킬 목록, 훅 로직)과 일반적 AI 에이전트 온보딩 원칙을 종합한 **추론된 절차**다.
-> 신뢰도: medium
+> [!update] 초기 진단 정정
+> 초기 작성 시 "공식 브라운필드 가이드 부재(medium)"으로 결론 냈으나, 사용자 지시로 업스트림 저장소를 재조사한 결과 **공식 예제 2건이 존재함**을 확인:
+> - [[CCGS Adopt Brownfield Example]] — `/adopt` 스킬 8턴 30분 데모 세션
+> - [[CCGS Reverse Document Workflow Example]] — `/reverse-document` 4-Stage 워크플로
+>
+> 이 두 출처는 본 페이지의 절차를 **공식 워크플로 기반**으로 재정의하며, 전체 신뢰도를 medium → **high**로 격상한다.
+> 본 페이지의 추론 기반 절차는 [[Brownfield Project Onboarding]]에 통합 후 공식 절차로 교체되었다.
 
 ## 브라운필드 온보딩이 그린필드와 다른 이유
 
