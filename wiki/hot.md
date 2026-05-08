@@ -9,25 +9,26 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Active Research Topic
 
-**런앤건(메탈슬러그) + Battle Cats 서브장르 + 라인디펜스** — 세 세션의 리서치 완료 + IP 회피 가이드 인제스트 (2026-05-08).
+**CCGS 프레임워크 분석 + 브라운필드 온보딩 + MetalSlugClone 통합 검토** — 4번째 리서치 라운드 완료 (2026-05-08).
 
-→ 최신 인제스트: [[Metal Slug IP Avoidance Guide]] · [[IP Avoidance For Game Clones]] · [[Broforce]]
-→ 최신 합성: [[Research Run and Gun Genre]]
-→ 이전 합성: [[Research Battle Cats Subgenre]]
-→ 이전 합성: [[Research Lane Defense Game Systems]]
+→ 최신 합성 (Topic 3 판정): [[Opinion MetalSlugClone Base Plus Metal Slug Reference]] (❌ 거부 — 엔진 불일치)
+→ 최신 합성 (Topic 2): [[Research CCGS Brownfield Onboarding]]
+→ 최신 합성 (Topic 1): [[Research CCGS Framework And Local Drift]] (드리프트 없음 확인)
+→ 이전 인제스트: [[Metal Slug IP Avoidance Guide]] · [[IP Avoidance For Game Clones]] · [[Broforce]]
+→ 이전 합성: [[Research Run and Gun Genre]] · [[Research Battle Cats Subgenre]] · [[Research Lane Defense Game Systems]]
 
 ## Top Pages To Read First
 
-1. [[IP Avoidance For Game Clones]] — **NEW**. 클론 제작 합법 전략 매트릭스. my-game 어떤 장르를 가도 적용.
-2. [[Metal Slug IP Avoidance Guide]] — **NEW**. 메탈슬러그 클론 실무 체크리스트.
-3. [[Broforce]] — **NEW**. IP-safe 런앤건 모범 사례. 포지셔닝 모델.
-4. [[Research Run and Gun Genre]] — 메탈슬러그·런앤건 시스템·성공요인·확장패턴.
-5. [[Research Battle Cats Subgenre]] — Battle Cats 시스템·유사 게임·성공 요인 종합.
-6. [[Research Lane Defense Game Systems]] — 라인디펜스 전체 시스템 분해.
-7. [[Run and Gun Base Systems]] — 5요소 최소기능세트. my-game 코어 결정에 직결.
-8. [[Run and Gun Extension Systems]] — 확장 시스템 카탈로그.
-9. [[Side Scrolling Tug Of War Defense]] — Battle Cats형 vs PvZ형 차이.
-10. [[Metal Slug]] — 런앤건 크래프트 정점 레퍼런스.
+1. [[Opinion MetalSlugClone Base Plus Metal Slug Reference]] — **NEW**. ❌ 거부 판정 + 대안 권고. Unity↔Godot 불일치 정리.
+2. [[Research CCGS Brownfield Onboarding]] — **NEW**. 4-Phase 절차(내성 → 감사 → 리팩터 → 검증) + 5가지 위험 함정.
+3. [[Research CCGS Framework And Local Drift]] — **NEW**. 로컬 my-game은 CCGS v1.0.0-beta 현행. 단일 기여자 + 완성 사례 0건 약점.
+4. [[CCGS Framework]] — **NEW**. 49 에이전트 / 72 스킬 / 12 훅 프레임워크 개요.
+5. [[Abstract Base Class Pattern]] — **NEW**. Godot 4 GDScript/C# 추상 기반 클래스 구현 가이드.
+6. [[Boss Two Phase Design]] — **NEW**. State Machine 기반 보스 2페이즈 + 페이즈 전환 연출 체크리스트.
+7. [[IP Avoidance For Game Clones]] — 클론 제작 합법 전략 매트릭스. my-game 어떤 장르를 가도 적용.
+8. [[Run and Gun Base Systems]] — 5요소 최소기능세트. my-game 코어 결정에 직결.
+9. [[Run and Gun Extension Systems]] — 확장 시스템 카탈로그.
+10. [[Brownfield Project Onboarding]] — **NEW**. 일반화된 온보딩 절차 (CCGS 의존성 분리).
 
 ## TL;DR For my-game
 
