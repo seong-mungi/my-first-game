@@ -7,6 +7,38 @@ updated: 2026-05-08
 
 Reverse chronological log of wiki operations. Newest at top.
 
+## [2026-05-08] autoresearch | Contra 시스템 분석 + 런앤건 성공 패턴 메타 분석
+
+- **Mode:** sub-agent (sonnet) creates content pages → main agent updates index/log/hot
+- **Topics (2):**
+  1. Contra 시스템 분석 (deep dive: 무기·생명·스테이지·협동·시리즈 진화·문화적 영향)
+  2. 성공한 런앤건 5작품 공통 요소 메타 분석 (Contra/Metal Slug/Gunstar Heroes/Cuphead/Broforce)
+- **Pages created (9):**
+  - Synthesis (2): [[Research Contra System Analysis]] (158줄), [[Research Run and Gun Success Patterns]] (235줄)
+  - Concepts (4): [[Contra Weapon System]], [[Konami Code]], [[Cooperative Run and Gun Design]], [[Run and Gun Success Pattern Matrix]] (210줄)
+  - Entities (1): [[Contra Operation Galuga]] (WayForward 2024 리메이크)
+  - Sources (2): [[Wikipedia Contra Series]], [[Wikipedia Konami Code]]
+- **Pages enriched (1):** [[Contra]] — 103줄 → 186줄. 생명/콘티뉴 심층, NES 8스테이지 전체 테이블, 협동 설계 함의, 시리즈 진화 타임라인(1987~2024), Open Questions 3개 추가.
+- **Pages updated (meta):** [[index.md]] (Synthesis +2, Concepts Run-and-Gun +4, Entities Games +1, Sources +2, Tags 3 신규 카테고리), [[log.md]] (이 블록), [[hot.md]] (활성 토픽·Top 페이지·결정 로그·교차참조 밀도 갱신)
+- **Topic 1 핵심 결론 (Contra):** 콘트라의 차별성은 *무기 차별화* + *동시 협동(2P 양보 X)* + *코나미 코드 문화 전파*에 있다. 1987 NES 출시 이후 1996년 이미 누적 400만 장. 3D 전환은 3차례(1996 Legacy of War, 1998 Adventure, 2019 Rogue Corps) 모두 실패하고 2024 Operation Galuga로 2D 회귀. WayForward의 외부 개발 의존이 구조화됨.
+- **Topic 2 핵심 결론 — 불변 코어 7가지 (5작품 모두 공유):**
+  1. 횡스크롤 2D + 점프 + 이동 중 동시 사격
+  2. 1히트 즉사 (체력바 X)
+  3. 무기 다변화 — 상황별 최적 무기 명확
+  4. 보스 전투 (스테이지당 최소 1개)
+  5. 2인 이상 협동
+  6. 패턴 학습 가능한 결정론적 적
+  7. 기본 무기 안전망 (무한 탄약 보장)
+- **my-game 체크리스트 Top 5:**
+  1. "어렵지만 공정"은 비협상 — 랜덤 X + 패턴 학습 가능 = "just one more try"
+  2. 독보적 비주얼이 인디 마케팅 (Cuphead 600만 장 근거)
+  3. 2D 고수 — 3D 전환은 콘트라 시리즈에서만 3번 반복 실패
+  4. 협동 필수, 온라인은 선택 (Cuphead 로컬만으로 600만)
+  5. 차별화는 1개 메커닉 집중 (Metal Slug 탈것, Broforce 파괴 환경, Gunstar 무기 조합)
+- **Cross-links:** [[Run and Gun Genre]], [[Run and Gun Base Systems]], [[Run and Gun Extension Systems]], [[Metal Slug]], [[Gunstar Heroes]], [[Cuphead]], [[Broforce]], [[Arcade Difficulty Design]], [[IP Avoidance For Game Clones]], [[Research Run and Gun Genre]]
+- **Open questions:** 슈도-3D 기지 스테이지 미계승 이유 / 코나미 코드의 판매 효과 정량 데이터 / WayForward 반복 외주 패턴 / 2026년 플레이어가 아케이드 1히트 즉사를 동일하게 수용하는가 / 인디 런앤건 + 퍼블리셔 없이 200만 장 사례 존재 여부
+- **Constraints:** GiantBomb 403 (Operation Galuga 상세 미확보) / namu.wiki 우회 / Operation Galuga 판매 수치 비공개 / Metal Slug·Gunstar 판매 비공개 정책
+
 ## [2026-05-08] q&a | /adopt 엔진 선결 조건 해소
 
 - **트리거:** 사용자 질문 — "/adopt가 [TO BE CONFIGURED] 미완료 CLAUDE.md로도 동작하는가, 엔진 설정이 선결 조건인가?"
