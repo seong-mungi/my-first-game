@@ -40,6 +40,39 @@ confidence: high
 > 이 두 출처는 본 페이지의 절차를 **공식 워크플로 기반**으로 재정의하며, 전체 신뢰도를 medium → **high**로 격상한다.
 > 본 페이지의 추론 기반 절차는 [[Brownfield Project Onboarding]]에 통합 후 공식 절차로 교체되었다.
 
+## 공식 절차 요약 (`/adopt` 스킬)
+
+캐노니컬 절차는 [[Brownfield Project Onboarding]]에 통합 정리되었다. 핵심만 요약:
+
+- **공식 엔트리포인트**: `/adopt` (technical-director 에이전트, **forked context** 실행 → 메인 세션 토큰 보호)
+- **4-Phase 구조**: State Detection → Format Audit → Gap Classification → Migration Plan (`docs/adoption-plan-YYYY-MM-DD.md`)
+- **갭 등급**: BLOCKING / HIGH / MEDIUM / LOW — `design/gdd/systems-index.md` 부재가 대표 BLOCKING
+- **7-Step Migration Plan** (BLOCKING은 Step 1만, 나머지는 병렬·재정렬 가능):
+  1. systems-index 생성 (`/map-systems`) — **BLOCKING**
+  2. 기존 GDD retrofit (`/design-system retrofit [path]`)
+  3. 기타 비완성 GDD retrofit
+  4. 비정형 노트는 신규 작성 (`/design-system [name]`)
+  5. ADR 추출 (`/reverse-document` + `/architecture-decision`)
+  6. 마스터 아키텍처 (`/create-architecture`)
+  7. 프로덕션 트래킹 (`/sprint-plan new`)
+- **6 핵심 원칙**: 포맷 감사·마이그레이션 보존·BLOCKING 우선·인라인 즉시 수정·코드에서 추론·retrofit vs 신규 구분
+
+상세는 [[Brownfield Project Onboarding]] · [[CCGS Adopt Brownfield Example]] · [[CCGS Reverse Document Workflow Example]] 참조.
+
+---
+
+## 초기 추론 절차 (보완 자료 발견 전 — 참고용)
+
+다음 본문은 공식 예제 발견 전(2026-05-08 오전) 작성된 추론 절차다. 일부 항목은 공식 절차와 다르므로 [[Brownfield Project Onboarding]]의 캐노니컬 버전을 우선 참조할 것. 추론과 공식의 주요 차이:
+
+| 항목 | 추론 (이 페이지 본문) | 공식 (`/adopt`) |
+|---|---|---|
+| 엔트리포인트 | `/reverse-document` 단일 | `/adopt` 오케스트레이터 (forked context) |
+| Phase 명칭 | 내성 → 감사 → 리팩터 시퀀싱 → 검증 | State Detection → Format Audit → Gap Classification → Migration Plan |
+| 첫 산출물 | `[TO BE CONFIGURED]` 채우기 | systems-index BLOCKING 갭 해결 |
+| 컨텍스트 격리 | 미언급 | forked context 명시 |
+| Retrofit 개념 | 없음 | `/design-system retrofit`이 핵심 패턴 |
+
 ## 브라운필드 온보딩이 그린필드와 다른 이유
 
 | 항목 | 그린필드 | 브라운필드 |
