@@ -79,6 +79,9 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[MetalSlugClone giacoballoccu]] — Unity 2D 기반 비공식 메탈슬러그 클론 (2021 비활성, 라이선스 없음)
 - [[metal-slug alfredo1995]] — Unity 2D 학습용 메탈슬러그 구현 (abstract 클래스 + 단순 2페이즈 보스 코드)
 - [[Contra Operation Galuga]] — WayForward 2024 리메이크 (캐릭터 선택+스킬, 2D 회귀 전략)
+- [[Pizza Tower]] — Tour De Pizza 2023; 자가퍼블리싱 액션 플랫포머, 1-2M 추정 (런앤건은 아니나 인접 사례)
+- [[Katana Zero]] — Askiisoft 2019; 시간 되감기 + 1히트 즉사 50만 장 (Devolver, 솔로 모범 사례)
+- [[Hotline Miami]] — Dennaton 2012; 1히트 즉사 + 즉시 재시작 정점 (Devolver, 500만 장+)
 
 ### People
 - [[George Fan]] — PvZ designer, lane defense pioneer
