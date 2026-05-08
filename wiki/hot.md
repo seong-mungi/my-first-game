@@ -24,8 +24,10 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Top Pages To Read First
 
-1. [[Solo Contra 2026 Concept]] — **NEW**. 디자인 베이스라인 v0. 7코어 적용 매트릭스 + 시간 되감기 v0 규칙 + 16개월 작업량 + 다음 3단계.
-2. [[Followup Modern Acceptance And Indie RnG Threshold]] — **NEW**. Q4/Q5 통합 답변. 1히트 현대 수용성 + 자가퍼블리싱 천장(10-20만).
+1. [[Echo Story Spine]] — **NEW**. Echo 메인 시나리오. ECHO vs VEIL(AI) 디스토피아 + 5 스테이지 + Tier별 자산 budget + 인트로 5줄.
+2. [[Solo Contra 2026 Concept]] — 디자인 베이스라인 v0. 7코어 적용 매트릭스 + 시간 되감기 v0 규칙 + 16개월 작업량.
+3. [[Research Contra Best Story Series]] — **NEW**. 콘트라 시나리오 톱: Shattered Soldier(2002) — Triumvirate 음모 + 다중 엔딩.
+4. [[Followup Modern Acceptance And Indie RnG Threshold]] — Q4/Q5 통합 답변. 1히트 현대 수용성 + 자가퍼블리싱 천장(10-20만).
 3. [[Modern Difficulty Accessibility]] — **NEW**. 2018-2026 접근성 표준 + 1히트 즉사의 현대적 조건.
 4. [[Indie Self Publishing Run and Gun]] — **NEW**. 자가퍼블리싱 정의·경계 + 매출 임계값 매트릭스.
 5. [[Katana Zero]] — **NEW**. 시간 메커닉 + 1히트 즉사 50만 장 모범 사례.
