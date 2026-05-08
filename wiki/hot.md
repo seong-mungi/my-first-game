@@ -57,6 +57,9 @@ Most-relevant pages for current project context. Read this first when picking up
 - 이벤트 캘린더를 출시 전 6개월치 준비 (라이브서비스 노선일 때)
 - 카드 레벨 메타는 v1에서 도입 보류
 - **IP 회피 절차** ([[IP Avoidance For Game Clones]]): 어떤 장르를 가도 메카닉 자유 모방 + 비주얼·이름·음악 100% 오리지널. 상업 출시 전 IP 변호사 1회 검토 마일스톤 추가.
+- **외부 스캐폴드 채택 전 엔진 일치 확인 의무** ([[Opinion MetalSlugClone Base Plus Metal Slug Reference]]): Unity 코드는 Godot에 이식 불가. 패턴 *아이디어*만 차용하고 Godot 4에서 처음부터 작성 — 더 빠르다.
+- **CCGS 활용 시 절차** ([[Research CCGS Brownfield Onboarding]]): 그린필드면 `/start`, 브라운필드면 먼저 `/reverse-document` → 슬롯 채우기 → 에이전트 시드. 테스팅 하네스 구축 전 컨벤션 변경 금지.
+- **에이전트 자동 재작성 금지** — 인간 검토 후 시스템 단위 점진적 리팩터.
 
 ## Recent Decisions
 
