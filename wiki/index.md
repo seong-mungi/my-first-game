@@ -18,6 +18,7 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[Research Contra System Analysis]] — 콘트라 무기·생명·스테이지·협동·시리즈 진화·문화적 영향 종합 (2026-05-08)
 - [[Research Run and Gun Success Patterns]] — 5작품 메타 분석: 불변 코어 7가지 + my-game 체크리스트 (2026-05-08)
 - [[Followup Modern Acceptance And Indie RnG Threshold]] — Q4/Q5 통합 답변: 1히트 현대 수용성 + 자가퍼블리싱 천장(10-20만) (2026-05-08)
+- [[Research Contra Best Story Series]] — 콘트라 시나리오 톱 작품 식별: Shattered Soldier(2002) 선정 + 차용 근거 (2026-05-08)
 
 ## Concepts
 
