@@ -93,9 +93,10 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Cross-Reference Density
 
-- Concepts: 22 (장르 17 + Production/IP 1 + Tooling/Framework/Process 5)
-- Reference games: 13 (PvZ, Random Dice, Bloons TD, Battle Cats, Cartoon Wars, Grow Castle, Metal Slug, Contra, Gunstar Heroes, Cuphead, Broforce, MetalSlugClone giacoballoccu, metal-slug alfredo1995)
-- Sources catalogued: **15** (+2 공식 CCGS 예제: Adopt Brownfield, Reverse Document Workflow)
+- Concepts: **26** (장르 17 + Production/IP 1 + Tooling/Framework/Process 5 + Run-and-Gun deep 4: Contra Weapon System, Konami Code, Cooperative Run and Gun Design, Run and Gun Success Pattern Matrix)
+- Reference games: **14** (+1 Contra Operation Galuga 2024 리메이크)
+- Sources catalogued: **18** (+2 Wikipedia Contra Series, Wikipedia Konami Code; +1 CCGS Adopt SKILL Definition)
 - Developers / orgs / repos: 4 (George Fan, PONOS, SNK, Donchitos CCGS Repo)
-- Synthesis pages: 6 (3 genre research + CCGS framework + brownfield + MetalSlugClone verdict)
-- High-confidence pages: **+1** (Brownfield Project Onboarding medium → high after supplement)
+- Synthesis pages: **8** (3 genre research + CCGS framework + brownfield + MetalSlugClone verdict + Contra system + Run-and-gun success patterns)
+- High-confidence pages: Brownfield Project Onboarding (medium → high), Run-and-Gun Success Pattern Matrix (high)
+- Total wiki files: **73** (.md)
