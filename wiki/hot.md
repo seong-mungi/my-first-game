@@ -19,16 +19,16 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Top Pages To Read First
 
-1. [[Brownfield Project Onboarding]] — **REVISED 2026-05-08 (high)**. `/adopt` 공식 4-Phase + 7-Step Migration Plan + 6 핵심 원칙. 캐노니컬 절차.
-2. [[CCGS Adopt Brownfield Example]] — **NEW**. `/adopt` 8턴 30분 공식 데모 세션. forked context, 갭 4단계, BLOCKING 우선 표면화.
-3. [[CCGS Reverse Document Workflow Example]] — **NEW**. `/reverse-document` 4-Stage(Code Analysis → Intent Discovery → Vision Alignment → Generation).
-4. [[Opinion MetalSlugClone Base Plus Metal Slug Reference]] — ❌ 거부 판정 + 대안 권고. Unity↔Godot 불일치 정리.
-5. [[Research CCGS Brownfield Onboarding]] — Topic 2 합성 + 공식 절차 vs 추론 차이 비교 표.
-6. [[Research CCGS Framework And Local Drift]] — 로컬 my-game은 CCGS v1.0.0-beta 현행. 단일 기여자 + 완성 사례 0건 약점.
-7. [[CCGS Framework]] — 49 에이전트 / 72 스킬 / 12 훅 프레임워크 개요.
-8. [[Abstract Base Class Pattern]] — Godot 4 GDScript/C# 추상 기반 클래스 구현 가이드.
-9. [[Boss Two Phase Design]] — State Machine 기반 보스 2페이즈 + 페이즈 전환 연출 체크리스트.
-10. [[IP Avoidance For Game Clones]] — 클론 제작 합법 전략 매트릭스. my-game 어떤 장르를 가도 적용.
+1. [[Run and Gun Success Pattern Matrix]] — **NEW**. 5작품 시스템 공통점 매트릭스 + 상업 성공 임계값 + 3D 실패 원인 + my-game 체크리스트.
+2. [[Research Run and Gun Success Patterns]] — **NEW**. 메타 합성 — 불변 코어 7가지 + 인디 부활 공식 + 실패 케이스 분석.
+3. [[Cooperative Run and Gun Design]] — **NEW**. 진정한 동시 협동 vs 양보형 비교 (Contra/Metal Slug/Broforce/Cuphead).
+4. [[Research Contra System Analysis]] — **NEW**. 콘트라 무기·생명·시리즈 진화·문화적 영향 종합.
+5. [[Contra Weapon System]] — **NEW**. M/F/L/S/R/B 코드 분석 + Metal Slug H/R/F/L/S/I와 차이.
+6. [[Brownfield Project Onboarding]] — `/adopt` 공식 4-Phase + 7-Step + 6 원칙. 캐노니컬 절차.
+7. [[Opinion MetalSlugClone Base Plus Metal Slug Reference]] — ❌ 거부 판정. Unity↔Godot 불일치.
+8. [[Konami Code]] — **NEW**. ↑↑↓↓←→←→BA 30 lives 치트 + 문화적 확산.
+9. [[Abstract Base Class Pattern]] — Godot 4 추상 기반 클래스 구현 가이드.
+10. [[IP Avoidance For Game Clones]] — 클론 제작 합법 전략 매트릭스.
 
 ## TL;DR For my-game
 
