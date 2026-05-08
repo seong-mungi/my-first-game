@@ -92,6 +92,7 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[GitHub alfredo1995 metal-slug]] — Unity 2D 메탈슬러그 학습 구현 (라이선스 없음)
 - [[CCGS Adopt Brownfield Example]] — `/adopt` 스킬 8턴 30분 데모 세션 (공식 예제, MIT)
 - [[CCGS Reverse Document Workflow Example]] — `/reverse-document` 4-Stage 워크플로 (공식 예제, MIT)
+- [[CCGS Adopt SKILL Definition]] — `/adopt` 스킬 권위 정의(.claude/skills/adopt/SKILL.md, 17.8KB) — Phase 1-7 분기 조건과 갭 등급 매핑
 
 ## By Tag
 
