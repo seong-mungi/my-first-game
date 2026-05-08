@@ -90,6 +90,8 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[GitHub Donchitos Claude Code Game Studios]] — CCGS 업스트림 저장소 (MIT, v1.0.0-beta, 17.7K stars)
 - [[GitHub giacoballoccu MetalSlugClone]] — Unity 2D 메탈슬러그 클론 저장소 (라이선스 없음)
 - [[GitHub alfredo1995 metal-slug]] — Unity 2D 메탈슬러그 학습 구현 (라이선스 없음)
+- [[CCGS Adopt Brownfield Example]] — `/adopt` 스킬 8턴 30분 데모 세션 (공식 예제, MIT)
+- [[CCGS Reverse Document Workflow Example]] — `/reverse-document` 4-Stage 워크플로 (공식 예제, MIT)
 
 ## By Tag
 
