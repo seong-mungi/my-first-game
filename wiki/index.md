@@ -85,6 +85,9 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[Katana Zero]] — Askiisoft 2019; 시간 되감기 + 1히트 즉사 50만 장 (Devolver, 솔로 모범 사례)
 - [[Hotline Miami]] — Dennaton 2012; 1히트 즉사 + 즉시 재시작 정점 (Devolver, 500만 장+)
 
+### Characters / Fictional Entities
+- [[The Entity AI Villain]] — MI Final Reckoning(2025) AI 빌런 — Echo의 VEIL로 변환 매핑
+
 ### People
 - [[George Fan]] — PvZ designer, lane defense pioneer
 
