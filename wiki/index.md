@@ -81,7 +81,8 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - **#tower-defense**: All concepts above + Bloons TD, Upgrade Path System
 - **#side-scrolling-defense**: Side Scrolling Tug Of War Defense, Auto Deploy Unit System, Battle Cats, Cartoon Wars, Grow Castle
 - **#tug-of-war-defense**: Side Scrolling Tug Of War Defense, Battle Cats, Cartoon Wars
-- **#run-and-gun**: Run and Gun Genre, Run and Gun Base Systems, Run and Gun Extension Systems, Weapon Letter Pickup System, Metal Slug, Contra, Gunstar Heroes, Cuphead
+- **#run-and-gun**: Run and Gun Genre, Run and Gun Base Systems, Run and Gun Extension Systems, Weapon Letter Pickup System, Metal Slug, Contra, Gunstar Heroes, Cuphead, Broforce
+- **#ip / #legal**: IP Avoidance For Game Clones, Metal Slug IP Avoidance Guide, Broforce
 - **#arcade**: Metal Slug, Contra, Gunstar Heroes, Arcade Difficulty Design, SNK
 - **#neo-geo**: Metal Slug, SNK
 - **#indie-revival**: Cuphead, Run and Gun Extension Systems
