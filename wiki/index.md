@@ -73,6 +73,7 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 ### Organizations
 - [[PONOS]] — Battle Cats developer; Kyoto, Japan; founded 1990
 - [[SNK]] — Metal Slug developer; Neo Geo arcade hardware; 1978 founded
+- [[Donchitos CCGS Repo]] — CCGS 업스트림 저장소 메타데이터·구조·이슈 현황
 
 ## Sources
 
