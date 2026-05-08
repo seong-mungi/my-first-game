@@ -2,6 +2,21 @@
   "version": 1,
   "created": "2026-05-07",
   "description": "Ingest delta tracker and address map for the claude-obsidian vault. Do not hand-edit; wiki-ingest maintains this.",
-  "sources": {},
+  "sources": {
+    ".raw/metal-slug-ip-avoidance-guide.md": {
+      "hash": "d98067bd4644448714f8ab30e2279122",
+      "ingested_at": "2026-05-08",
+      "pages_created": [
+        "wiki/sources/Metal Slug IP Avoidance Guide.md",
+        "wiki/concepts/IP Avoidance For Game Clones.md",
+        "wiki/entities/Broforce.md"
+      ],
+      "pages_updated": [
+        "wiki/index.md",
+        "wiki/log.md",
+        "wiki/hot.md"
+      ]
+    }
+  },
   "address_map": {}
 }
