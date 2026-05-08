@@ -72,6 +72,7 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[Broforce]] — Free Lives 2015; 액션영화 패러디 런앤건, IP-safe 클론 모범 사례
 - [[MetalSlugClone giacoballoccu]] — Unity 2D 기반 비공식 메탈슬러그 클론 (2021 비활성, 라이선스 없음)
 - [[metal-slug alfredo1995]] — Unity 2D 학습용 메탈슬러그 구현 (abstract 클래스 + 단순 2페이즈 보스 코드)
+- [[Contra Operation Galuga]] — WayForward 2024 리메이크 (캐릭터 선택+스킬, 2D 회귀 전략)
 
 ### People
 - [[George Fan]] — PvZ designer, lane defense pioneer
