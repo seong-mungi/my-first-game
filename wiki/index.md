@@ -12,6 +12,9 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[Research Lane Defense Game Systems]] — 라인 디펜스 게임 시스템 리서치 (2026-05-08)
 - [[Research Battle Cats Subgenre]] — Battle Cats 서브장르 분석: 시스템·유사게임·성공요인 (2026-05-08)
 - [[Research Run and Gun Genre]] — 메탈슬러그·런앤건 장르 분석: 베이스 시스템·확장 시스템·성공 요인 (2026-05-08)
+- [[Research CCGS Framework And Local Drift]] — CCGS 업스트림 분석 + 로컬 my-game 드리프트 (없음 확인) (2026-05-08)
+- [[Research CCGS Brownfield Onboarding]] — 기존 코드베이스에 CCGS 적용하는 4-Phase 절차 (2026-05-08)
+- [[Opinion MetalSlugClone Base Plus Metal Slug Reference]] — 통합 전략 검토: ❌ 거부 (Unity↔Godot 불일치) (2026-05-08)
 
 ## Concepts
 
