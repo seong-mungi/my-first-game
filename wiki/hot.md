@@ -9,14 +9,13 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Active Research Topic
 
-**CCGS 프레임워크 분석 + 브라운필드 온보딩(공식 절차 보완) + MetalSlugClone 통합 검토** — 4번째 리서치 라운드 + 공식 예제 보완 (2026-05-08).
+**Contra 시스템 분석 + 런앤건 성공 패턴 메타 분석** — 5번째 리서치 라운드 (2026-05-08).
 
-→ 보완 (Topic 2 신뢰도 medium→high): [[CCGS Adopt Brownfield Example]] · [[CCGS Reverse Document Workflow Example]]
-→ 캐노니컬 절차: [[Brownfield Project Onboarding]] (`/adopt` 4-Phase + 7-Step + 6 원칙)
-→ 합성 (Topic 3 판정): [[Opinion MetalSlugClone Base Plus Metal Slug Reference]] (❌ 거부 — 엔진 불일치)
-→ 합성 (Topic 1): [[Research CCGS Framework And Local Drift]] (드리프트 없음 확인)
-→ 이전 인제스트: [[Metal Slug IP Avoidance Guide]] · [[IP Avoidance For Game Clones]] · [[Broforce]]
-→ 이전 합성: [[Research Run and Gun Genre]] · [[Research Battle Cats Subgenre]] · [[Research Lane Defense Game Systems]]
+→ 최신 합성 (Topic 2 메타): [[Research Run and Gun Success Patterns]] — 5작품 불변 코어 7가지 + my-game 체크리스트
+→ 최신 합성 (Topic 1): [[Research Contra System Analysis]] — 콘트라 시스템·시리즈·문화 종합
+→ 핵심 매트릭스: [[Run and Gun Success Pattern Matrix]] (5작품 시스템 비교)
+→ 이전 결정 출처: [[Brownfield Project Onboarding]] · [[CCGS Adopt SKILL Definition]] · [[Opinion MetalSlugClone Base Plus Metal Slug Reference]]
+→ 이전 합성: [[Research CCGS Brownfield Onboarding]] · [[Research CCGS Framework And Local Drift]] · [[Research Run and Gun Genre]] · [[Research Battle Cats Subgenre]] · [[Research Lane Defense Game Systems]]
 
 ## Top Pages To Read First
 
