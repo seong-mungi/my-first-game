@@ -53,6 +53,7 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[Contra]] — Run-and-gun progenitor, Konami 1987; "Contra code" cultural footprint
 - [[Gunstar Heroes]] — Treasure 1993; weapon-combination system, design-innovation pinnacle
 - [[Cuphead]] — StudioMDHR 2017; 1930s-cartoon aesthetic, modern indie revival, 6M+ sales
+- [[Broforce]] — Free Lives 2015; 액션영화 패러디 런앤건, IP-safe 클론 모범 사례
 
 ### People
 - [[George Fan]] — PvZ designer, lane defense pioneer
