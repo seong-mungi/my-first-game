@@ -7,6 +7,21 @@ updated: 2026-05-08
 
 Reverse chronological log of wiki operations. Newest at top.
 
+## [2026-05-08] supplement | Brownfield Onboarding 공식 예제 보완
+
+- **트리거:** 사용자가 Topic 2 보충용 업스트림 공식 예제 2건 제공
+- **출처 (2건, 공식 MIT):**
+  - https://github.com/Donchitos/Claude-Code-Game-Studios/blob/main/docs/examples/session-adopt-brownfield.md
+  - https://github.com/Donchitos/Claude-Code-Game-Studios/blob/main/docs/examples/reverse-document-workflow-example.md
+- **Pages created (2):** [[CCGS Adopt Brownfield Example]] (소스 + 4-Phase 분해), [[CCGS Reverse Document Workflow Example]] (소스 + 4-Stage 분해)
+- **Pages updated:**
+  - [[Brownfield Project Onboarding]] — **전면 개정**. `/adopt` 4-Phase + 7-Step Migration Plan + 6 핵심 원칙 + 컨텍스트 격리(forked context)로 교체. 신뢰도 medium→high.
+  - [[Research CCGS Brownfield Onboarding]] — 상단에 update 콜아웃 추가, 공식 절차 요약 섹션 추가, 기존 추론 본문은 "참고용"으로 명시 + 추론↔공식 차이 비교 표 추가.
+  - [[index.md]] (Sources +2), [[log.md]] (이 블록), [[hot.md]] (활성 토픽·Top 페이지·결정 로그·교차참조 밀도 갱신)
+- **Key correction:** 초기 진단 "공식 브라운필드 가이드 부재(medium)"는 **틀렸다**. CCGS는 `/adopt` 전용 스킬을 보유하고, 8턴 30분 예제 세션 + `/reverse-document` 4-Stage 워크플로를 공식 docs/examples/에 게시한다. 핵심 식별: `/adopt`는 'Context: fork'로 실행되어 코드베이스 전체 스캔이 메인 세션 토큰을 오염시키지 않으며, "FORMAT audit, not existence audit"(파일 존재가 아닌 *내부 구조* 감사)와 "Migration, not replacement"(기존 콘텐츠 절대 보존, retrofit으로 누락 섹션만 채움)가 두 핵심 원칙.
+- **Cross-links:** [[Donchitos CCGS Repo]], [[CCGS Framework]], [[Research CCGS Framework And Local Drift]]
+- **Open questions:** `/adopt`가 `[TO BE CONFIGURED]` 미완료 CLAUDE.md로 동작하는지 / forked context 토큰 한도 / `/reverse-document`의 .gd 파싱 정확도 / 50K+ 라인 코드베이스 처리 시간
+
 ## [2026-05-08] autoresearch | CCGS Framework + Brownfield + MetalSlugClone Verdict
 
 - **Mode:** sub-agent (sonnet) creates content pages → main agent updates index/log/hot
