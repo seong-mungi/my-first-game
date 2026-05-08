@@ -195,6 +195,7 @@
   },
   "active": "069d84cd14959ebb",
   "lastOpenFiles": [
+    "concepts/Abstract Base Class Pattern.md",
     "concepts/Brownfield Project Onboarding.md",
     "concepts/CCGS Subagent Tier Architecture.md",
     "concepts/CCGS Framework.md",
@@ -220,7 +221,6 @@
     "wiki/concepts/Agentic OS.md",
     "wiki/concepts/Build Loop Pattern.md",
     "wiki/concepts/Superpower Framework.md",
-    "wiki/concepts/GSD Framework.md",
     "wiki/questions/zhc-cosmetics-execution-plan-presentation.html",
     "wiki/questions/zhc-cosmetics-proposal-2026-04-28.html",
     "bin/setup-vault.sh",
