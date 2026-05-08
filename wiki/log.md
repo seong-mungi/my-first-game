@@ -7,6 +7,19 @@ updated: 2026-05-08
 
 Reverse chronological log of wiki operations. Newest at top.
 
+## [2026-05-08] q&a | /adopt 엔진 선결 조건 해소
+
+- **트리거:** 사용자 질문 — "/adopt가 [TO BE CONFIGURED] 미완료 CLAUDE.md로도 동작하는가, 엔진 설정이 선결 조건인가?"
+- **권위 출처:** 로컬 `.claude/skills/adopt/SKILL.md` (17,863 bytes) 직접 검토
+- **Pages created (1):** [[CCGS Adopt SKILL Definition]] — Phase 1-7 분기·갭 등급·5 audit mode·협업 프로토콜 분해 (key_claims 8건, confidence high)
+- **Pages updated:** [[Brownfield Project Onboarding]] (Open Questions의 Q1 해소 → Resolved Questions에 key-insight 콜아웃 이동), [[index.md]] Sources +1, [[log.md]] (이 블록), [[hot.md]] (Q&A 결정 로그 +1)
+- **Answer:** ❌ **엔진 설정은 선결 조건이 아니다.** `/adopt`는 미설정 상태에서도 작동하며 `[TO BE CONFIGURED]`를 자동 진단·등급화한다. 등급은 조건부:
+  - Engine·Language·Rendering·Physics 단독 미설정 → **HIGH** (Phase 2f, "ADR skills fail")
+  - 엔진 미설정 + ADR 존재 → **BLOCKING** (Phase 3 명시 케이스, ADR이 엔진 정보 참조)
+  - 코드·GDD·ADR 전부 부재 → `/adopt` 거부, `/start`로 라우팅 (Phase 1 fresh 분기)
+- **Phase 5 요약 출력에 `Engine: [configured / NOT CONFIGURED]`가 1차 항목으로 명시** — 엔진 상태는 입력 조건이 아닌 *진단 출력*임을 SKILL 정의가 직접 입증.
+- **Cross-links:** [[CCGS Adopt Brownfield Example]], [[CCGS Reverse Document Workflow Example]], [[CCGS Framework]]
+
 ## [2026-05-08] supplement | Brownfield Onboarding 공식 예제 보완
 
 - **트리거:** 사용자가 Topic 2 보충용 업스트림 공식 예제 2건 제공
