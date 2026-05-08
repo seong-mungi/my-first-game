@@ -64,6 +64,8 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[Gunstar Heroes]] — Treasure 1993; weapon-combination system, design-innovation pinnacle
 - [[Cuphead]] — StudioMDHR 2017; 1930s-cartoon aesthetic, modern indie revival, 6M+ sales
 - [[Broforce]] — Free Lives 2015; 액션영화 패러디 런앤건, IP-safe 클론 모범 사례
+- [[MetalSlugClone giacoballoccu]] — Unity 2D 기반 비공식 메탈슬러그 클론 (2021 비활성, 라이선스 없음)
+- [[metal-slug alfredo1995]] — Unity 2D 학습용 메탈슬러그 구현 (abstract 클래스 + 단순 2페이즈 보스 코드)
 
 ### People
 - [[George Fan]] — PvZ designer, lane defense pioneer
