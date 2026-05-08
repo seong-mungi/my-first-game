@@ -64,6 +64,7 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Recent Decisions
 
+- **[2026-05-08]** 🔍 `/adopt` 엔진 선결 조건 Q&A 해소 — SKILL.md 권위 출처 직접 검토. 결론: 선결 조건 아님. 엔진 미설정은 Phase 2f에서 자동 진단되며, ADR 존재 여부에 따라 HIGH/BLOCKING으로 등급화. 코드·GDD·ADR 전부 부재인 fresh project만 `/adopt`가 거부. (참고: [[CCGS Adopt SKILL Definition]])
 - **[2026-05-08]** 📘 브라운필드 온보딩 캐노니컬 절차 확정 — CCGS `/adopt` 스킬 4-Phase + 7-Step Migration Plan 공식 채택. 초기 추론 절차(medium) → 공식 절차(high)로 격상. (참고: [[Brownfield Project Onboarding]] · [[CCGS Adopt Brownfield Example]])
 - **[2026-05-08]** ❌ giacoballoccu/MetalSlugClone + alfredo1995/metal-slug 통합 전략 거부 — 엔진 불일치(Unity 2D ↔ Godot 4). 두 패턴(추상 기반 클래스, 2페이즈 보스)은 [[Abstract Base Class Pattern]] / [[Boss Two Phase Design]]의 Godot 4 예제로 처음부터 구현. (참고: [[Opinion MetalSlugClone Base Plus Metal Slug Reference]])
 - **[2026-05-08]** ✅ 로컬 my-game은 CCGS v1.0.0-beta 업스트림 현행 — 별도 동기화 불필요. (참고: [[Research CCGS Framework And Local Drift]])
