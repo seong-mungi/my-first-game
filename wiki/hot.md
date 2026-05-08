@@ -89,6 +89,7 @@ Most-relevant pages for current project context. Read this first when picking up
 
 - Concepts: 22 (장르 17 + Production/IP 1 + Tooling/Framework/Process 5)
 - Reference games: 13 (PvZ, Random Dice, Bloons TD, Battle Cats, Cartoon Wars, Grow Castle, Metal Slug, Contra, Gunstar Heroes, Cuphead, Broforce, MetalSlugClone giacoballoccu, metal-slug alfredo1995)
-- Sources catalogued: 13
+- Sources catalogued: **15** (+2 공식 CCGS 예제: Adopt Brownfield, Reverse Document Workflow)
 - Developers / orgs / repos: 4 (George Fan, PONOS, SNK, Donchitos CCGS Repo)
 - Synthesis pages: 6 (3 genre research + CCGS framework + brownfield + MetalSlugClone verdict)
+- High-confidence pages: **+1** (Brownfield Project Onboarding medium → high after supplement)
