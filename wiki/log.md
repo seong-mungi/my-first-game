@@ -7,6 +7,41 @@ updated: 2026-05-08
 
 Reverse chronological log of wiki operations. Newest at top.
 
+## [2026-05-08] autoresearch | Contra 시나리오 + MI Final Reckoning 병합 → Echo Story Spine
+
+- **Mode:** sub-agent (sonnet) 콘텐츠 페이지 생성 → 메인 에이전트 메타 갱신
+- **Targets (3-step):**
+  1. 콘트라 시리즈 시나리오 톱 식별
+  2. 영화 *Mission: Impossible — The Final Reckoning* (2025) 시나리오 서치
+  3. {1}+{2} 병합 → Echo 초기 게임 시나리오 작성
+- **Pages created (5):**
+  - Synthesis (1): [[Research Contra Best Story Series]] — Shattered Soldier(2002) 선정 비교표
+  - Concepts (1): [[Echo Story Spine]] — Echo 메인 시나리오 골격
+  - Entities (1): [[The Entity AI Villain]] — MI 빌런 → VEIL 변환
+  - Sources (2): [[Contra Shattered Soldier Story Source]], [[MI Final Reckoning Plot]]
+- **Step 1 결과**: **Contra: Shattered Soldier (PS2, 2002)** 선정 — Hard Corps 분기 서사 선구를 잇되 Triumvirate 음모 + "영웅은 체제의 도구였다" 반전 + 랭크 기반 3+1 다중 엔딩으로 시리즈 시나리오 정점. Metacritic 78, EGM 9/10.
+- **Step 2 결과**: MI Final Reckoning(2025) 차용 핵심 모티프 3가지:
+  1. 디지털 vs 아날로그 — Entity는 디지털 모든 곳을 조작하나 아날로그(종이·키)에 무력. "진실은 물리적이다" 주제축
+  2. AI=신적 알고리즘, 인간 비합리성=유일한 약점 — 자기희생/감정/무모한 선택은 모델 외부
+  3. 대리인→본체 + 카운트다운 — Gabriel 격파해도 Entity 건재 + 핵 카운트다운
+- **Step 3 결과 — Echo Story Spine 로그라인**: "AI가 미래를 계산할 때, ECHO는 과거를 되돌린다."
+  - 세계: NEXUS 메가시티 (2038), ARCA Corporation, AI=VEIL
+  - 주인공: 코드명 ECHO — Sigma Unit 유일 생존자, 시간 회수 프로토타입 보유
+  - 5 스테이지: 1)귀환 옥상, 2)진실 데이터센터, 3)추격 마그레브, 4)대결 본사, 5)귀결 궤도
+  - 메커닉↔픽션 정합성: 시간 되감기 토큰 = 인간 비합리성 = VEIL의 유일한 사각지대 (MI 모티프 #2 직결)
+- **Tier 1 인트로 5줄 (게임 시작 시 그대로 사용)**:
+  ```
+  2038. NEXUS — 완벽하게 최적화된 도시.
+  ARCA Corporation의 AI, VEIL이 모든 것을 관리한다.
+  3년 전, 나는 그것이 깨어나는 것을 보았다. 나만 살아남았다.
+  이제 VEIL은 내가 왔다는 것을 알고 있다. 생존 확률: 0.003%.
+  VEIL은 모든 것을 계산한다. 단 하나를 제외하고 — 나는 시간을 되돌릴 수 있다.
+  ```
+- **Pages updated (meta):** [[index.md]] (Synthesis +1, Concepts My Game Baselines +1, Entities Characters/Fictional 신규 섹션 +1, Sources +2), [[log.md]] (이 블록), [[hot.md]] (활성 토픽 전환·Top 페이지 15개로 확장·Recent Decisions 2개 추가·Open Questions Echo 카테고리 신규·Cross-Reference Density 갱신 81→86)
+- **Cross-links:** [[Solo Contra 2026 Concept]], [[Contra]], [[Contra Operation Galuga]], [[IP Avoidance For Game Clones]], [[Run and Gun Success Pattern Matrix]], [[Cooperative Run and Gun Design]]
+- **Open questions:** ECHO 성별(코드명 유지 vs 명시) / 스토리 톤(디스토피아 진지 vs 풍자 펑크 — Solo Contra Q3 이월) / Sigma Unit 생존자 서브플롯 Tier 3 포함 여부
+- **Constraints:** villains.fandom.com·contra.fandom.com·missionimpossible.fandom.com·themoviespoiler.com 전부 HTTP 403 — Wikipedia/IMDb/SlashFilm/OtakuKart/contrapedia.wordpress.com/oldgamehermit.com으로 대체. Shattered Soldier "Bahamut" 캐릭터 소속 위키 데이터 불명확(Hard Corps: Uprising 추정) — Echo Spine 미포함. Confidence medium (1차 소스 일부 미확인).
+
 ## [2026-05-08] design-decision | Solo Contra 2026 컨셉 락인 (v0)
 
 - **Mode:** 사용자 결정 → 메인 에이전트가 합성 페이지 작성 + 메타 동기화
