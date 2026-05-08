@@ -127,11 +127,13 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Cross-Reference Density
 
-- Concepts: **29** (+3: Modern Difficulty Accessibility, Indie Self Publishing Run and Gun, Solo Contra 2026 Concept)
-- Reference games: **17** (+3: Pizza Tower, Katana Zero, Hotline Miami)
-- Sources catalogued: **19** (+1: Steam Indie 1Hit Kill Reviews)
+- Concepts: **30** (+1: Echo Story Spine)
+- Reference games: 17 (no change)
+- Characters / fictional entities: **1** (+1: The Entity AI Villain — MI Final Reckoning 빌런)
+- Sources catalogued: **21** (+2: Contra Shattered Soldier Story Source, MI Final Reckoning Plot)
 - Developers / orgs / repos: 4 (George Fan, PONOS, SNK, Donchitos CCGS Repo)
-- Synthesis pages: **9** (+1: Followup Modern Acceptance And Indie RnG Threshold)
-- Design baselines: **1** (Solo Contra 2026 Concept — v0, status: design-baseline-v0)
+- Synthesis pages: **10** (+1: Research Contra Best Story Series)
+- Design baselines: 1 (Solo Contra 2026 Concept — v0)
+- Story spines: **1** (Echo Story Spine — ECHO vs VEIL, NEXUS 2038)
 - High-confidence pages: Brownfield Project Onboarding, Run-and-Gun Success Pattern Matrix
-- Total wiki files: **81** (.md)
+- Total wiki files: **86** (.md)
