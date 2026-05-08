@@ -97,7 +97,7 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - **#live-service**: Long Tail Mobile Live Service, Battle Cats, PONOS
 - **#korean-game**: Random Dice, Cartoon Wars, Grow Castle
 - **#japanese-game**: Battle Cats, PONOS, Metal Slug, SNK
-- **#reference-game**: Plants vs Zombies, Bloons TD, Battle Cats, Cartoon Wars, Metal Slug, Contra, Gunstar Heroes, Cuphead
+- **#reference-game**: Plants vs Zombies, Bloons TD, Battle Cats, Cartoon Wars, Metal Slug, Contra, Gunstar Heroes, Cuphead, Broforce
 
 ## Folders
 
