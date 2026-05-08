@@ -117,6 +117,8 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[Wikipedia Contra Series]] — 콘트라 시리즈 위키피디아 항목 (1996년 누적 400만 장, 3D 실패 타이틀 목록)
 - [[Wikipedia Konami Code]] — 코나미 코드 위키피디아 항목 (창안자 하시모토 카즈히사, 이스터에그 플랫폼 목록)
 - [[Steam Indie 1Hit Kill Reviews]] — Steam 포럼 정성적 패턴 — "unfair" 키워드는 즉사가 아닌 랜덤 패턴·긴 재시작 대기가 주원인
+- [[Contra Shattered Soldier Story Source]] — Contra: Shattered Soldier(2002) 세계관·캐릭터·스테이지·다중엔딩 전체 데이터
+- [[MI Final Reckoning Plot]] — Mission: Impossible — The Final Reckoning(2025) 줄거리 + 모티프 + Echo 차용 매핑
 
 ## By Tag
 
