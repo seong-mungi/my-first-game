@@ -141,15 +141,21 @@ status: design-baseline-v0
 > [!key-insight] 솔로 안전망 3중
 > 협동 제거 + 보스 5-6 한정 + 콜라주 비주얼 = 작업량 통제 3중 안전망. 그래도 12-18개월. 처음부터 *제외 결정*을 명시해 스코프 크리프 방지.
 
+## Resolved Questions
+
+> [!key-insight] 2026-05-08 해소: 스토리 톤 (Q3 → Echo Story Spine 채택)
+> [[Echo Story Spine]]이 **디스토피아 진지(Blade Runner / Ghost in the Shell)** 톤으로 락인됨. ARCA Corporation + VEIL(AI) + NEXUS 메가시티 (2038) + 코드명 ECHO. Contra: Shattered Soldier(2002)의 Triumvirate 음모 구조 + MI Final Reckoning(2025)의 "AI가 모든 걸 계산하나 인간 비합리성은 모델 외부" 모티프 병합. 풍자 펑크는 *Tier 3 광고판 풍자*에 부분 차용 가능하나 메인 톤 X. 콘셉트아트 후 최종 비주얼 톤 polish 가능.
+
 ## 미해결 질문 (다음 라운드)
 
 > [!gap] Solo Contra 2026 미해결
 > 1. 시간 되감기 시 적·탄환 동시 vs 플레이어만? (Braid vs 체크포인트)
 > 2. 콜라주 캐릭터 사진 출처 — 스톡/촬영/AI? IP·라이선스 비교
-> 3. 스토리 톤 — 디스토피아 진지 vs 풍자 펑크?
-> 4. Godot 4 시간 되감기 구현 패턴 — 상태 스냅샷 vs 입력 리플레이?
-> 5. 4-5개 무기 카탈로그 — Contra M/F/L/S/R/B 중 어느 3-4개를 SF 재해석?
-> 6. Easy/Hard 토큰 슬라이더 — 단일 토글(Cuphead Simple) vs 슬라이더(Hades God Mode)?
+> 3. Godot 4 시간 되감기 구현 패턴 — 상태 스냅샷 vs 입력 리플레이?
+> 4. 4-5개 무기 카탈로그 — Contra M/F/L/S/R/B 중 어느 3-4개를 SF 재해석?
+> 5. Easy/Hard 토큰 슬라이더 — 단일 토글(Cuphead Simple) vs 슬라이더(Hades God Mode)?
+> 6. ECHO 성별 — 코드명 유지 vs 명시? (콘셉트아트 후 결정)
+> 7. Sigma Unit 생존자 서브플롯 — Tier 3 포함 여부? (Tier 2 게이트 후)
 
 ## See Also
 
