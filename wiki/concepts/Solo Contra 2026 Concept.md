@@ -167,3 +167,5 @@ status: design-baseline-v0
 - [[IP Avoidance For Game Clones]] — 메카닉 모방·비주얼 오리지널 원칙
 - [[Cooperative Run and Gun Design]] — 협동 제외 근거
 - [[Followup Modern Acceptance And Indie RnG Threshold]] — Q4/Q5 결론
+- [[Echo Story Spine]] — 본 컨셉의 메인 시나리오 (2026-05-08 락인) — 스토리 톤·세계관·5스테이지 아크
+- [[Research Contra Best Story Series]] — Echo Story Spine의 Step 1 출처 (Shattered Soldier 선정)
