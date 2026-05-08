@@ -87,6 +87,9 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[Wikipedia Metal Slug Series]] — Metal Slug series mechanical and historical reference
 - [[Megacat Studios Run and Gun History]] — Indie retrospective on run-and-gun evolution
 - [[Metal Slug IP Avoidance Guide]] — 사내 리서치: 메탈슬러그 클론 제작 시 IP 회피 가이드 (Korean)
+- [[GitHub Donchitos Claude Code Game Studios]] — CCGS 업스트림 저장소 (MIT, v1.0.0-beta, 17.7K stars)
+- [[GitHub giacoballoccu MetalSlugClone]] — Unity 2D 메탈슬러그 클론 저장소 (라이선스 없음)
+- [[GitHub alfredo1995 metal-slug]] — Unity 2D 메탈슬러그 학습 구현 (라이선스 없음)
 
 ## By Tag
 
