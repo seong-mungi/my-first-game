@@ -195,6 +195,7 @@
   },
   "active": "069d84cd14959ebb",
   "lastOpenFiles": [
+    "concepts/Cooperative Run and Gun Design.md",
     "concepts/Konami Code.md",
     "concepts/Contra Weapon System.md",
     "log.md",
@@ -220,7 +221,6 @@
     "concepts/IP Avoidance For Game Clones.md",
     "sources/Metal Slug IP Avoidance Guide.md",
     "hot.md",
-    "questions/Research Lane Defense Game Systems.md",
     "wiki/questions/zhc-cosmetics-execution-plan-presentation.html",
     "wiki/questions/zhc-cosmetics-proposal-2026-04-28.html",
     "bin/setup-vault.sh",
