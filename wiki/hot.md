@@ -115,10 +115,11 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Cross-Reference Density
 
-- Concepts: **26** (장르 17 + Production/IP 1 + Tooling/Framework/Process 5 + Run-and-Gun deep 4: Contra Weapon System, Konami Code, Cooperative Run and Gun Design, Run and Gun Success Pattern Matrix)
-- Reference games: **14** (+1 Contra Operation Galuga 2024 리메이크)
-- Sources catalogued: **18** (+2 Wikipedia Contra Series, Wikipedia Konami Code; +1 CCGS Adopt SKILL Definition)
+- Concepts: **29** (+3: Modern Difficulty Accessibility, Indie Self Publishing Run and Gun, Solo Contra 2026 Concept)
+- Reference games: **17** (+3: Pizza Tower, Katana Zero, Hotline Miami)
+- Sources catalogued: **19** (+1: Steam Indie 1Hit Kill Reviews)
 - Developers / orgs / repos: 4 (George Fan, PONOS, SNK, Donchitos CCGS Repo)
-- Synthesis pages: **8** (3 genre research + CCGS framework + brownfield + MetalSlugClone verdict + Contra system + Run-and-gun success patterns)
-- High-confidence pages: Brownfield Project Onboarding (medium → high), Run-and-Gun Success Pattern Matrix (high)
-- Total wiki files: **73** (.md)
+- Synthesis pages: **9** (+1: Followup Modern Acceptance And Indie RnG Threshold)
+- Design baselines: **1** (Solo Contra 2026 Concept — v0, status: design-baseline-v0)
+- High-confidence pages: Brownfield Project Onboarding, Run-and-Gun Success Pattern Matrix
+- Total wiki files: **81** (.md)
