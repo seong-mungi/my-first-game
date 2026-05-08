@@ -7,6 +7,26 @@ updated: 2026-05-08
 
 Reverse chronological log of wiki operations. Newest at top.
 
+## [2026-05-08] autoresearch | CCGS Framework + Brownfield + MetalSlugClone Verdict
+
+- **Mode:** sub-agent (sonnet) creates content pages → main agent updates index/log/hot
+- **Topics (3):**
+  1. Donchitos/Claude-Code-Game-Studios 저장소 분석 + 로컬 my-game 드리프트 확인
+  2. CCGS 활용 브라운필드 프로젝트 온보딩 절차 + 후속 리팩터 단계
+  3. giacoballoccu/MetalSlugClone(기반) + alfredo1995/metal-slug(레퍼런스) 통합 전략에 대한 의견
+- **Pages created (12):**
+  - Synthesis (3): [[Research CCGS Framework And Local Drift]], [[Research CCGS Brownfield Onboarding]], [[Opinion MetalSlugClone Base Plus Metal Slug Reference]]
+  - Concepts (5): [[CCGS Framework]], [[CCGS Subagent Tier Architecture]], [[Brownfield Project Onboarding]], [[Abstract Base Class Pattern]], [[Boss Two Phase Design]]
+  - Entities (3): [[Donchitos CCGS Repo]], [[MetalSlugClone giacoballoccu]], [[metal-slug alfredo1995]]
+  - Sources (3): [[GitHub Donchitos Claude Code Game Studios]], [[GitHub giacoballoccu MetalSlugClone]], [[GitHub alfredo1995 metal-slug]]
+- **Pages updated:** [[index.md]] (Synthesis +3, Tooling/Framework/Process 신규 섹션, Entities Games +2 / Organizations +1, Sources +3, Tags +5 카테고리), [[log.md]], [[hot.md]]
+- **Topic 1 핵심 결론:** 로컬 my-game은 CCGS v1.0.0-beta 업스트림 현행이다. 에이전트 49개·훅 12개·CLAUDE.md 동일, 스킬은 +1(`omc-reference`) — OMC 통합 결과이지 CCGS 드리프트 아님. 단일 기여자(버스 팩터 1) + 완성 게임 사례 0건이 약점. 활발한 초기 유지보수(2026-04-07 v1 이후 5개 패치).
+- **Topic 2 핵심 결론:** 공식 브라운필드 가이드는 부재(신뢰도 medium). 추론 절차: Phase 1 내성(`/reverse-document` → 슬롯 채우기 → 에이전트 시드) → Phase 2 Tier 1·2·3 감사 → Phase 3 5단계 리팩터(디렉터리 → 네이밍 → 테스팅 하네스 → ADR 소급 → 코딩 표준). 핵심 함정: 테스트 없이 컨벤션 변경(회귀 탐지 불가), 일괄 변환(롤백 불가), 에이전트 자동 재작성(작동 코드 손상).
+- **Topic 3 판정:** ❌ **거부(Rejected).** 두 저장소 모두 Unity 2D / C# 기반 → my-game(Godot 4)과 엔진 불일치. Unity `MonoBehaviour`·`Rigidbody2D`·`Animator` API와 외부 에셋(Fungus 135+ 파일, DOTween, iTween)은 Godot에 직접 대응 없음. 추가로 giacoballoccu는 2021년 이후 비활성·라이선스 없음·Boss2에 2페이즈 분기 없음, alfredo1995도 라이선스 없음·페이즈 전환 연출 없음. 패턴(추상 기반 클래스, 2페이즈 보스)의 *아이디어*는 안전하게 참고 가능하나 Godot 4에서 처음 작성하는 것이 이식 비용보다 빠르다. 대안: [[Abstract Base Class Pattern]] / [[Boss Two Phase Design]] 페이지의 Godot 4 예제 코드 직접 사용.
+- **Cross-links:** [[IP Avoidance For Game Clones]], [[Run and Gun Genre]], [[Run and Gun Base Systems]], [[Metal Slug]], [[SNK]], [[Broforce]]
+- **Open questions:** CCGS로 출시된 완성 게임 존재 여부(이슈 #34) / Godot 4 GDScript 전용 런앤건 오픈소스 스캐폴드 존재 / `/reverse-document` 스킬의 .gd 파일 파싱 정확도 / Godot 4.5+ `@abstract` 어노테이션 정확한 동작 / `validate-skill-change.sh` 트리거 조건
+- **Constraints:** zsh 글로브 충돌(`?recursive=1` 따옴표 처리로 해결) / 두 Metal Slug 저장소 라이선스 파일 부재(소스 페이지에 기록) / CCGS 공식 브라운필드 가이드 없음(추론 절차로 대체)
+
 ## [2026-05-08] ingest | Metal Slug IP Avoidance Guide
 
 - **Source:** `.raw/metal-slug-ip-avoidance-guide.md` (hash `d98067bd4644448714f8ab30e2279122`)
