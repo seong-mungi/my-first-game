@@ -64,6 +64,7 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Recent Decisions
 
+- **[2026-05-08]** 📘 브라운필드 온보딩 캐노니컬 절차 확정 — CCGS `/adopt` 스킬 4-Phase + 7-Step Migration Plan 공식 채택. 초기 추론 절차(medium) → 공식 절차(high)로 격상. (참고: [[Brownfield Project Onboarding]] · [[CCGS Adopt Brownfield Example]])
 - **[2026-05-08]** ❌ giacoballoccu/MetalSlugClone + alfredo1995/metal-slug 통합 전략 거부 — 엔진 불일치(Unity 2D ↔ Godot 4). 두 패턴(추상 기반 클래스, 2페이즈 보스)은 [[Abstract Base Class Pattern]] / [[Boss Two Phase Design]]의 Godot 4 예제로 처음부터 구현. (참고: [[Opinion MetalSlugClone Base Plus Metal Slug Reference]])
 - **[2026-05-08]** ✅ 로컬 my-game은 CCGS v1.0.0-beta 업스트림 현행 — 별도 동기화 불필요. (참고: [[Research CCGS Framework And Local Drift]])
 
