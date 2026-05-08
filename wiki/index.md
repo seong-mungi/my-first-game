@@ -114,6 +114,11 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - **#korean-game**: Random Dice, Cartoon Wars, Grow Castle
 - **#japanese-game**: Battle Cats, PONOS, Metal Slug, SNK
 - **#reference-game**: Plants vs Zombies, Bloons TD, Battle Cats, Cartoon Wars, Metal Slug, Contra, Gunstar Heroes, Cuphead, Broforce
+- **#ccgs / #framework / #ai-agents**: CCGS Framework, CCGS Subagent Tier Architecture, Donchitos CCGS Repo, Research CCGS Framework And Local Drift, Research CCGS Brownfield Onboarding
+- **#brownfield / #onboarding / #refactoring**: Brownfield Project Onboarding, Research CCGS Brownfield Onboarding
+- **#design-pattern / #architecture**: Abstract Base Class Pattern, Boss Two Phase Design
+- **#unity / #godot-vs-unity**: MetalSlugClone giacoballoccu, metal-slug alfredo1995, Opinion MetalSlugClone Base Plus Metal Slug Reference
+- **#code-repository / #scaffold**: MetalSlugClone giacoballoccu, metal-slug alfredo1995, Donchitos CCGS Repo
 
 ## Folders
 
