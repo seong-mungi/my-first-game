@@ -152,10 +152,23 @@ CCGS는 브라운필드 온보딩을 위한 전용 스킬을 보유한다:
 - [[CCGS Framework]] — 상위 프레임워크 컨텍스트
 - [[CCGS Subagent Tier Architecture]] — Phase 2 감사에서 어느 티어가 무엇을 보는지
 
+## Resolved Questions
+
+> [!key-insight] 2026-05-08 해소: 엔진 미설정과 `/adopt`의 관계
+> **`/adopt`는 엔진 미설정 상태에서도 작동한다 — 선결 조건 아님.** `[TO BE CONFIGURED]` 슬롯은 Phase 2f에서 자동 진단되고 다음과 같이 등급화된다 (Source: [[CCGS Adopt SKILL Definition]]):
+>
+> | 상황 | 엔진 미설정 등급 |
+> |---|---|
+> | ADR이 *없음* (코드만 존재) | **HIGH** (단독 갭) |
+> | ADR이 *존재* | **BLOCKING** (ADR이 엔진 정보를 참조) |
+> | 코드·GDD·ADR이 *전부* 부재 | `/adopt` 거부 → `/start`로 라우팅 |
+>
+> Phase 5 요약 출력에 `Engine: [configured / NOT CONFIGURED]`가 1차 항목으로 명시된다 — 엔진 상태는 입력 조건이 아니라 *진단 출력*이다.
+
 ## Open Questions
 
 > [!gap] 미확인 사항
-> 1. `/adopt`가 `[TO BE CONFIGURED]` 슬롯이 미완료된 `CLAUDE.md`로도 작동하는가, 아니면 엔진 설정이 선결 조건인가?
-> 2. forked context의 정확한 토큰 한도와 메인 세션과의 통신 방식은?
-> 3. `/reverse-document`가 Godot `.gd` 파일을 정확히 파싱하는가? (예시는 GDScript 가정)
-> 4. 매우 큰 코드베이스(>50K 라인)에서 `/adopt` Phase 1-2가 완료되는 시간 한도?
+> 1. forked context의 정확한 토큰 한도와 메인 세션과의 통신 방식은?
+> 2. `/reverse-document`가 Godot `.gd` 파일을 정확히 파싱하는가? (예시는 GDScript 가정)
+> 3. 매우 큰 코드베이스(>50K 라인)에서 `/adopt` Phase 1-2가 완료되는 시간 한도?
+> 4. `/adopt` 재실행 시 이전 `docs/adoption-plan-*.md`와의 diff 동작이 없는데, 사용자가 수동 추적해야 하는가?
