@@ -18,16 +18,16 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Top Pages To Read First
 
-1. [[Research Run and Gun Genre]] — 메탈슬러그·런앤건 시스템·성공요인·확장패턴. **최신**.
-2. [[Research Battle Cats Subgenre]] — Battle Cats 시스템·유사 게임·성공 요인 종합.
-3. [[Research Lane Defense Game Systems]] — 라인디펜스 전체 시스템 분해.
-4. [[Run and Gun Base Systems]] — 5요소 최소기능세트(이동/점프/동시사격/적패턴/피격결과). my-game 코어 결정에 직결.
-5. [[Run and Gun Extension Systems]] — 확장 시스템 카탈로그(로그라이트/RPG/멀티/차량/분기).
-6. [[Side Scrolling Tug Of War Defense]] — Battle Cats형 vs PvZ형 차이.
-7. [[Metal Slug]] — 런앤건 크래프트 정점 레퍼런스.
-8. [[Battle Cats]] — $700M/1억 DL/13년 라이브서비스 레퍼런스.
-9. [[Lane Defense]] — Genre structural definition.
-10. [[Plants vs Zombies]] — Grid lane defense 앵커.
+1. [[IP Avoidance For Game Clones]] — **NEW**. 클론 제작 합법 전략 매트릭스. my-game 어떤 장르를 가도 적용.
+2. [[Metal Slug IP Avoidance Guide]] — **NEW**. 메탈슬러그 클론 실무 체크리스트.
+3. [[Broforce]] — **NEW**. IP-safe 런앤건 모범 사례. 포지셔닝 모델.
+4. [[Research Run and Gun Genre]] — 메탈슬러그·런앤건 시스템·성공요인·확장패턴.
+5. [[Research Battle Cats Subgenre]] — Battle Cats 시스템·유사 게임·성공 요인 종합.
+6. [[Research Lane Defense Game Systems]] — 라인디펜스 전체 시스템 분해.
+7. [[Run and Gun Base Systems]] — 5요소 최소기능세트. my-game 코어 결정에 직결.
+8. [[Run and Gun Extension Systems]] — 확장 시스템 카탈로그.
+9. [[Side Scrolling Tug Of War Defense]] — Battle Cats형 vs PvZ형 차이.
+10. [[Metal Slug]] — 런앤건 크래프트 정점 레퍼런스.
 
 ## TL;DR For my-game
 
