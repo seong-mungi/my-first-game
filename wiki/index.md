@@ -52,6 +52,7 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 
 ### My Game Design Baselines
 - [[Solo Contra 2026 Concept]] — 디자인 베이스라인 v0: 시간 되감기 + 콜라주 + 가까운 미래 SF (status: design-baseline-v0)
+- [[Echo Story Spine]] — Echo 메인 시나리오: ECHO vs VEIL(AI) in NEXUS 2038, 5 스테이지 아크 + Tier별 자산 budget + 인트로 5줄
 
 ### Production / IP / Legal
 - [[IP Avoidance For Game Clones]] — Idea/expression dichotomy; safe-clone strategy matrix
