@@ -7,6 +7,19 @@ updated: 2026-05-08
 
 Reverse chronological log of wiki operations. Newest at top.
 
+## [2026-05-08] autoresearch | Metal Slug · Run and Gun Genre
+
+- **Rounds:** 2 (broad search × 7 queries + deep fetches × 4 URLs; gap fill × 4 searches + 4 fetches)
+- **Sources found:** 11 search queries, 8 deep fetches; 3 new sources catalogued (Wikipedia Run and Gun, Wikipedia Metal Slug, Megacat Studios retrospective)
+- **Pages created:** 14 total (server: sub-agent / index update: main agent)
+  - Synthesis (1): [[Research Run and Gun Genre]]
+  - Concepts (5): [[Run and Gun Genre]], [[Run and Gun Base Systems]], [[Run and Gun Extension Systems]], [[Weapon Letter Pickup System]], [[Arcade Difficulty Design]]
+  - Entities (5): [[Metal Slug]], [[SNK]], [[Contra]], [[Gunstar Heroes]], [[Cuphead]]
+  - Sources (3): [[Wikipedia Run and Gun]], [[Wikipedia Metal Slug Series]], [[Megacat Studios Run and Gun History]]
+- **Key finding:** 런앤건의 최소 기능 세트는 5가지(이동·점프·동시사격·적패턴·피격결과)이며, 이 코어가 매력적이지 않으면 어떤 확장도 구제할 수 없다. Metal Slug의 차별점은 "근접공격이 총기보다 강하다"는 한 줄의 규칙이 장르 무게중심을 "쏘면서 달리기"에서 "적 속으로 뛰어들기"로 옮긴 것. 3D 전환은 구조적으로 실패했고(2D 평면 최적화 장르), 인디 부활(Cuphead 600만 장)은 "어렵지만 공정 + 무제한 재시도 + 비주얼이 마케팅"의 결합으로 가능했다.
+- **Key follow-ups:** 런앤건 모바일 실패의 구조적 원인 / 보스러시가 독립 장르인지 런앤건 하위인지 / 로그라이트 런앤건의 시장 검증 (Huntdown: Overtime 2026 Early Access 결과 추적) / my-game의 3가지 포지셔닝 선택 — 순수 계승 vs 보스러시 vs 로그라이트
+- **Constraints:** namu.wiki HTTP 403 (Wikipedia/검색결과로 우회), Treasure 스튜디오 단독 페이지는 Gunstar Heroes에 통합하여 14/15 페이지 사용
+
 ## [2026-05-08] autoresearch | Battle Cats Subgenre
 
 - **Rounds:** 2 (broad search × 7 queries + deep fetches × 5 URLs; gap fill × 5 searches + 2 fetches)
