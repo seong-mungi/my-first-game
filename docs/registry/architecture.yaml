@@ -30,7 +30,7 @@
 #   Superseded entries:     Grep pattern="status: superseded"
 
 version: 1
-last_updated: ""
+last_updated: "2026-05-09"  # damage GDD Round 2 review: DEC-5 boss_hit_absorbed 2-arg + DEC-6 hazard_grace_frames + boss_pattern_interrupted signal + start_hazard_grace invocation_api + emit ordering contract
 
 # ─── STATE OWNERSHIP ─────────────────────────────────────────────────────────
 # Who is the authoritative owner of each piece of shared game state.
@@ -43,7 +43,44 @@ last_updated: ""
 # interface: how other systems access this state (read-only property, method call,
 #   signal, shared resource, etc.) — this is the contract other ADRs depend on.
 
-state_ownership: []
+state_ownership:
+  - state: player_rewind_state
+    status: active
+    owner_system: time-rewind-controller
+    adr: docs/architecture/adr-0001-time-rewind-scope.md
+    interface: "TimeRewindController.get_remaining_tokens() (read-only int) + signals (rewind_started, rewind_completed, token_consumed, token_replenished)"
+    write_access: time-rewind-controller-only
+    referenced_by:
+      - docs/architecture/adr-0001-time-rewind-scope.md
+      - docs/architecture/adr-0002-time-rewind-storage-format.md
+    added: 2026-05-09
+    revised: ""
+    notes: "Ring buffer of last 90 frames of PlayerSnapshot resources. Only ECHO is rewound — enemies/bullets/environment continue normal simulation. See ADR-0001 Decision section. Storage format finalized in ADR-0002 (State Snapshot ring buffer, write-into-place pre-allocated)."
+
+  - state: echo_lifecycle_state
+    status: active
+    owner_system: echo-lifecycle-sm  # EchoLifecycleSM (StateMachine instance, child of ECHO node)
+    adr: design/gdd/state-machine.md  # GDD-owned (no ADR yet — framework-internal decision)
+    interface: "EchoLifecycleSM.current_state.name (read-only StringName) + signal state_changed(from, to) + method should_swallow_pause() -> bool"
+    write_access: echo-lifecycle-sm-only  # external systems must call transition_to(); direct current_state assignment is forbidden (see forbidden_patterns.direct_current_state_assignment)
+    referenced_by:
+      - design/gdd/state-machine.md
+      - design/gdd/time-rewind.md  # Time Rewind GDD imposes 6 hosting obligations on this SM (C.2.2 of state-machine.md)
+    added: 2026-05-09
+    revised: ""
+    notes: "4 states: ALIVE / DYING / REWINDING / DEAD. Behavior definition is single-sourced in design/gdd/time-rewind.md Section C; state-machine.md hosts only the framework obligations (latch, pause-swallow, signal subscriptions, scene clear). Pause system polls should_swallow_pause(); HUD/VFX/Audio subscribe to state_changed for visual/audio reactions."
+
+  - state: boss_phase_state
+    status: active
+    owner_system: boss-pattern-system  # per-boss host owns phase_index + phase_hits_remaining
+    adr: design/gdd/damage.md  # GDD-owned (boss host follows Damage GDD D.2 transition formula)
+    interface: "Boss host members (read-only): phase_index: int, phase_hits_remaining: int, phase_hp_table: Array[int], final_phase_index: int. Mutation only via Damage system's HitBox→HurtBox path triggering D.2.1 transition. Signals: boss_hit_absorbed(boss_id, phase_index, hits_remaining), boss_phase_advanced(boss_id, new_phase), boss_killed(boss_id)."
+    write_access: damage-system-mediated  # only Damage system's hurtbox_hit handler decrements; boss host validates table at _ready() (E.11 / AC-15)
+    referenced_by:
+      - design/gdd/damage.md
+    added: 2026-05-09
+    revised: ""
+    notes: "Discrete phase thresholds (DEC-2). NO HP bar (Anti-Pillar Reveal Through Action). HUD subscribes to boss_phase_advanced only. Multi-hit same-frame transition is single-step bounded (D.2.3 — phase_index += 1 max even if remaining' goes negative). phase_hp_table values are owned per-boss by Boss Pattern GDD #11; Damage GDD owns the format contract (Array[int], length = final_phase_index + 1)."
 
 # Example:
 #
@@ -71,7 +108,86 @@ state_ownership: []
 #
 # pattern options: signal | direct_call | event_bus | shared_resource | rpc | none
 
-interfaces: []
+interfaces:
+  - contract: rewind_lifecycle
+    status: active
+    pattern: signal
+    producer: time-rewind-controller
+    consumers:
+      - hud-system          # subscribes to update REWIND token counter UI
+      - vfx-system          # subscribes to trigger color-invert + glitch shader
+      - audio-system        # subscribes to play rewind SFX cue
+      - enemy-ai-base       # subscribes to optionally re-acquire ECHO target
+      - boss-pattern-system # subscribes to handle boss-kill token replenish
+      - state-machine       # subscribes to drive ALIVE / DYING / REWINDING / DEAD transitions
+    adr: docs/architecture/adr-0001-time-rewind-scope.md
+    signal_signature: |
+      rewind_started(remaining_tokens: int)
+      rewind_completed(player: Node2D, restored_to_frame: int)
+      rewind_protection_ended(player: Node2D)  # added by design/gdd/time-rewind.md (REWINDING → ALIVE, 30 frames after rewind_started)
+      token_consumed(remaining_tokens: int)
+      token_replenished(new_total: int)
+    referenced_by:
+      - docs/architecture/adr-0001-time-rewind-scope.md
+      - design/gdd/time-rewind.md  # extends contract with rewind_protection_ended (i-frame end signal)
+    added: 2026-05-09
+    revised: 2026-05-09
+
+  - contract: state_lifecycle
+    status: active
+    pattern: signal
+    producer: any-state-machine-instance  # every StateMachine node emits this — multiple producers across entities (ECHO, enemies, bosses)
+    consumers:
+      - vfx-system            # subscribes to trigger DYING pulse, REWINDING glitch shader
+      - audio-system          # subscribes to play state-entry SFX cues
+      - debug-overlay         # Tier 2 — displays "[ECHO] ALIVE → DYING (frame 12345)"
+    adr: design/gdd/state-machine.md  # GDD-owned framework primitive
+    signal_signature: |
+      state_changed(from_state: StringName, to_state: StringName)
+    referenced_by:
+      - design/gdd/state-machine.md
+    added: 2026-05-09
+    revised: ""
+
+  - contract: damage_signals
+    status: active
+    pattern: signal
+    producer: damage-system  # ECHO Damage component + per-host Damage handlers (enemy/boss/hazard)
+    consumers:
+      - state-machine                # subscribes to player_hit_lethal (DYING transition)
+      - time-rewind-controller       # subscribes to lethal_hit_detected (frame N cache) + death_committed (cleanup)
+      - hud-system                   # subscribes to boss_phase_advanced (UI notification, NO HP bar)
+      - vfx-system                   # subscribes to hurtbox_hit, boss_hit_absorbed, boss_phase_advanced
+      - audio-system                 # subscribes to hurtbox_hit, enemy_killed, boss_phase_advanced, death_committed
+      - boss-pattern-system          # subscribes to its own boss_phase_advanced (pattern SM re-entry)
+      - scene-manager                # subscribes to boss_killed (stage clear trigger)
+    adr: design/gdd/damage.md  # GDD-owned (8-signal catalog F.3)
+    signal_signature: |
+      lethal_hit_detected(cause: StringName)        # ECHO HurtBox area_entered, frame N
+      player_hit_lethal(cause: StringName)          # same frame N, SM-targeted
+      death_committed(cause: StringName)            # frame N+12, after grace expiry
+      hurtbox_hit(cause: StringName)                # per-HurtBox instance signal (any entity)
+      enemy_killed(enemy_id: StringName, cause: StringName)
+      boss_hit_absorbed(boss_id: StringName, phase_index: int)             # DEC-5 (Round 2): hits_remaining REMOVED for binary contract protection
+      boss_pattern_interrupted(boss_id: StringName, prev_phase_index: int) # NEW Round 2: phase advance/kill 직전 emit, Boss Pattern SM cleanup trigger
+      boss_phase_advanced(boss_id: StringName, new_phase: int)
+      boss_killed(boss_id: StringName)
+    invocation_api: |
+      Damage.commit_death() -> void                # called by SM DyingState.exit() on grace expiry; idempotent (no-op if _pending_cause empty)
+      Damage.cancel_pending_death() -> void        # called by SM RewindingState.enter() on rewind consume; idempotent
+      Damage.start_hazard_grace() -> void          # NEW Round 2 (DEC-6): called by SM RewindingState.exit(); 12-frame hazard-only grace
+    emit_ordering_contract: |
+      # F.4.1 — same-frame emit order (Pillar 2 determinism)
+      ECHO hurt path: _pending_cause set → lethal_hit_detected → player_hit_lethal → hurtbox_hit
+      Boss hurt path: hurtbox_hit → (boss_hit_absorbed | boss_pattern_interrupted → boss_phase_advanced | boss_pattern_interrupted → boss_killed)
+      Multi-enemy same-frame death: enemy_killed emit order = scene-tree-order (ADR-0003 spawn orchestrator)
+    referenced_by:
+      - design/gdd/damage.md
+      - design/gdd/time-rewind.md   # F.1 #8 row consumes lethal_hit_detected + death_committed
+      - design/gdd/state-machine.md # F.1 #8 row consumes player_hit_lethal + invokes Damage methods + start_hazard_grace at RewindingState.exit()
+    added: 2026-05-09
+    revised: 2026-05-09  # Round 2 review: DEC-5 + DEC-6 + boss_pattern_interrupted + start_hazard_grace + emit ordering contract
+    notes: "All cause-bearing signals use 1-arg cause: StringName (DEC-1, locked). cause taxonomy single-sourced in damage.md D.3 with hazard_ prefix invariant (DEC-6). 2-stage separation (lethal_hit_detected → grace → death_committed) is owned by Damage but timing controlled by SM DyingState (DEC-4 — Damage does NOT poll SM state). i-frame toggle is HurtBox.monitorable (NOT monitoring) per Godot 4.6 Area2D semantics. Boss phase advance is monotonic +1 (D.2.3 — perfect parry skip explicitly NOT supported, queued ADR boss-phase-advance-monotonicity)."
 
 # Example:
 #
@@ -131,7 +247,85 @@ performance_budgets: []
 # Register an API decision when the choice is non-obvious and other ADRs might
 # make a different choice for the same purpose without knowing this was decided.
 
-api_decisions: []
+api_decisions:
+  - purpose: time_rewind_scope
+    status: active
+    api: "Player-only checkpoint model — ECHO state ring buffer (90 frames @ 60fps)"
+    not: "Braid model (all dynamic entities) — explicitly rejected for Pillar 2 + solo budget + story integrity"
+    adr: docs/architecture/adr-0001-time-rewind-scope.md
+    reason: "ECHO-only rewind preserves deterministic enemy patterns (Pillar 2), aligns with REWIND Core personal-device fiction (Story Spine), and fits solo 4-6w Tier 1 budget (Pillar 5)."
+    referenced_by:
+      - docs/architecture/adr-0001-time-rewind-scope.md
+    added: 2026-05-09
+    revised: ""
+
+  - purpose: time_rewind_storage
+    status: active
+    api: "State Snapshot ring buffer — pre-allocated 90 PlayerSnapshot Resources, write-into-place, no per-tick allocation"
+    not: "Input Replay (rejected — Godot 4.6 2D physics determinism unguaranteed; Pillar 2 risk). Hybrid (rejected — solo budget waste; 1000-cycle automated test sufficient)."
+    adr: docs/architecture/adr-0002-time-rewind-storage-format.md
+    reason: "External-dependency-zero data restoration guarantees 100% determinism (Pillar 2 verifiable). 5KB memory budget (0.0003% of 1.5GB ceiling). Save system reuses same Resource serialization. ~90 lines GDScript estimated."
+    referenced_by:
+      - docs/architecture/adr-0002-time-rewind-storage-format.md
+      - docs/architecture/adr-0003-determinism-strategy.md
+    added: 2026-05-09
+    revised: ""
+
+  - purpose: physics_node_strategy
+    status: active
+    api: "CharacterBody2D for ECHO + all enemies; Area2D for all projectiles; RigidBody2D cosmetic-only (debris/gibs on layer disjoint from gameplay)"
+    not: "RigidBody2D unified (rejected — solver float drift breaks Pillar 2 + ADR-0002 snapshot contract). Mixed Player CharacterBody2D / Enemies+Projectiles RigidBody2D (rejected — Pillar 2 still broken for entities where it matters most)."
+    adr: docs/architecture/adr-0003-determinism-strategy.md
+    reason: "CharacterBody2D has no solver overriding directly-written transform — restore_from_snapshot() field assignment IS the next-tick state. Area2D has no integrator and never sleeps — projectile motion is fully script-owned. Single paradigm = solo-budget-friendly debug/profile surface. Verified via godot-specialist 2026-05-09."
+    referenced_by:
+      - docs/architecture/adr-0003-determinism-strategy.md
+    added: 2026-05-09
+    revised: ""
+
+  - purpose: determinism_clock
+    status: active
+    api: "Engine.get_physics_frames() — monotonic int incremented each physics step; sole source of game time for AI/timer logic"
+    not: "Time.get_ticks_msec() / wall-clock APIs (banned in gameplay-critical paths). Global RNG randi()/randf() (banned — use RandomNumberGenerator with explicit per-encounter seed)."
+    adr: docs/architecture/adr-0003-determinism-strategy.md
+    reason: "Wall-clock-derived behavior breaks 1000-cycle determinism test by construction. Frame-counter-driven AI is reproducible single-machine. Per-encounter seeded RNG keeps any randomness deterministic across player retries (Pillar 2)."
+    referenced_by:
+      - docs/architecture/adr-0003-determinism-strategy.md
+    added: 2026-05-09
+    revised: ""
+
+  - purpose: physics_step_ordering
+    status: active
+    api: "Node.process_physics_priority ladder — player=0, time-rewind-controller=1, enemies=10, projectiles=20 (lower priority steps first); spawn orchestrators MUST insert children sorted by (spawn_frame, spawn_id)"
+    not: "Node.process_priority (only orders _process(), NOT _physics_process — silent determinism break if used here). Implicit scene-tree-order fallback (unstable under runtime add_child/remove_child)."
+    adr: docs/architecture/adr-0003-determinism-strategy.md
+    reason: "process_physics_priority is the explicit physics-step-ordering knob in 4.6. Without it, sibling order falls back to scene-tree order which is stable only if the tree is never mutated at runtime. Determinism boundary requires explicit ordering for the 1000-cycle test to pass under runtime spawn/despawn (validation criterion #6). TRC=1 ensures snapshot capture reads PlayerMovement after PlayerMovement._physics_process completes (avoids stale-read; design/gdd/time-rewind.md Integration Risk I8)."
+    referenced_by:
+      - docs/architecture/adr-0003-determinism-strategy.md
+      - design/gdd/time-rewind.md  # adds time-rewind-controller=1 slot to the ladder
+      - design/gdd/state-machine.md  # explicitly declares SM has NO slot in the ladder (C.3.1) — SM transitions inherit host priority via signal-reactive + tick-driven dispatch (C.3.2)
+    added: 2026-05-09
+    revised: 2026-05-09
+
+  - purpose: collision_layer_assignment
+    status: active
+    api: |
+      6-bit Area2D collision_layer/mask matrix (Damage GDD C.2):
+        bit 1 = echo_hurtbox            (host: ECHO #6)
+        bit 2 = echo_projectile_hitbox  (host: Player Shooting #7)
+        bit 3 = enemy_hurtbox           (host: Enemy AI #10)
+        bit 4 = enemy_projectile_hitbox (host: Enemy AI #10 + Boss Pattern #11)
+        bit 5 = hazard_hitbox           (host: Stage #12)
+        bit 6 = boss_hurtbox            (host: Boss Pattern #11)
+      Mask matrix: ECHO HurtBox(L1) masks {L4,L5}; ECHO Projectile HitBox(L2) masks {L3,L6};
+        Enemy HurtBox(L3) masks {L2}; Enemy Projectile HitBox(L4) masks {L1};
+        Hazard HitBox(L5) masks {L1}; Boss HurtBox(L6) masks {L2}.
+    not: "Ad-hoc per-system layer allocation (would create silent collision graph conflicts). PhysicsServer2D direct queries (gameplay path uses Area2D signals only)."
+    adr: design/gdd/damage.md  # GDD-owned (D.1.1 / C.2)
+    reason: "Centralizing layer assignment in Damage GDD prevents two systems claiming the same bit and provides single source for self-harm prevention (L2 mask omits L1) + friendly-fire blocking (L4 mask omits L3). All 5 host systems #6/#7/#10/#11/#12 must read this matrix; changes require Damage GDD update + ADR. Bits 7+ reserved for Tier 2 expansion (Pickup #15)."
+    referenced_by:
+      - design/gdd/damage.md
+    added: 2026-05-09
+    revised: ""
 
 # Example:
 #
@@ -157,7 +351,61 @@ api_decisions: []
 # Register a pattern when an ADR explicitly bans it AND other ADRs might
 # unknowingly use it (i.e., it's a tempting but wrong approach for this project).
 
-forbidden_patterns: []
+forbidden_patterns:
+  - pattern: direct_player_state_write_during_rewind
+    status: active
+    description: "External systems must NOT directly write to PlayerMovement.global_position, .velocity, .facing_direction, or animation state during a rewind operation. The single legitimate restoration path is PlayerMovement.restore_from_snapshot(snap: PlayerSnapshot)."
+    why: "Direct state writes bypass the snapshot validation pipeline and create silent state-divergence bugs. The Snapshot ring buffer is the source of truth during rewind — multiple writers break determinism (Pillar 2)."
+    adr: docs/architecture/adr-0002-time-rewind-storage-format.md
+    referenced_by:
+      - docs/architecture/adr-0002-time-rewind-storage-format.md
+      - docs/architecture/adr-0003-determinism-strategy.md
+    added: 2026-05-09
+
+  - pattern: rigidbody2d_for_gameplay_entities
+    status: active
+    description: "ECHO, all enemies (drone/security bot/STRIDER boss/future archetypes), and all projectiles (player + enemy bullets, grenades, missiles) MUST NOT be RigidBody2D. Required types: ECHO + enemies = CharacterBody2D; projectiles = Area2D. RigidBody2D is permitted ONLY for cosmetic-only debris that (1) is on a collision layer disjoint from all gameplay layers, and (2) is destroyed before it could affect a snapshot capture cycle."
+    why: "Godot Physics 2D solver introduces float drift not bit-identical across runs/machines, breaking Pillar 2 (deterministic patterns). Solver-driven motion also violates ADR-0002's snapshot contract: after PhysicsServer2D.body_set_state() the solver may re-settle within the same frame, changing actual restored state from what the snapshot recorded. Bullet trajectory non-determinism (tunneling/bouncing) under RigidBody2D additionally breaks reproducibility."
+    adr: docs/architecture/adr-0003-determinism-strategy.md
+    referenced_by:
+      - docs/architecture/adr-0003-determinism-strategy.md
+    added: 2026-05-09
+
+  - pattern: direct_current_state_assignment
+    status: active
+    description: "External code MUST NOT directly assign StateMachine.current_state = some_state. The single legitimate path to change state is StateMachine.transition_to(new_state, payload, force_re_enter). Direct assignment bypasses exit/enter lifecycle, _is_transitioning lock, state_changed signal emission, and the transition queue (Q_cap)."
+    why: "Direct assignment is silently broken — no signal emit means VFX/Audio/debug-overlay observers miss the transition; no exit() call means resource cleanup (timers, animations) leaks; no _is_transitioning lock means re-entrancy guard is bypassed. The bug surfaces only as visual/audio drift, hard to trace. design/gdd/state-machine.md AC-21 enforces this as a negative test (assignment must produce zero state_changed emits, proving the misuse is detectable)."
+    adr: design/gdd/state-machine.md
+    referenced_by:
+      - design/gdd/state-machine.md
+    added: 2026-05-09
+
+  - pattern: state_machine_in_autoload
+    status: active
+    description: "StateMachine instances MUST NOT be Autoload Singletons. They must be child nodes of the host entity (ECHO, enemy, boss). Single-instance Autoload is incompatible with per-entity instantiation and breaks scene-reload lifecycle alignment."
+    why: "Autoload persists across scene changes; SM ephemeral state (latch, frame counters, _is_transitioning) becomes stale on scene reload. Furthermore, multi-entity reuse (Tier 1 M1/M2/M3 = ECHO + drone + boss) requires per-host instantiation — Autoload singleton enforcement contradicts the Reuse Across Entities goal (state-machine.md C.4.1)."
+    adr: design/gdd/state-machine.md
+    referenced_by:
+      - design/gdd/state-machine.md
+    added: 2026-05-09
+
+  - pattern: cross_entity_sm_transition_call
+    status: active
+    description: "An entity's StateMachine MUST NOT call StateMachine.transition_to() on another entity's StateMachine. For example, an enemy's SM must NOT directly call ECHO's EchoLifecycleSM.transition_to(DyingState). Cross-entity state changes must be communicated via signals — the signal recipient's own SM decides whether to transition."
+    why: "Direct cross-entity calls create strong coupling that breaks 1000-cycle determinism (call timing depends on scene-tree traversal order, which can shift if entity spawn order changes). Signal-mediated communication preserves the connect-order determinism guaranteed by C.3.4 of state-machine.md. Also: cross-entity calls let bugs in one entity's SM corrupt another entity's state — debugging surface explodes."
+    adr: design/gdd/state-machine.md
+    referenced_by:
+      - design/gdd/state-machine.md
+    added: 2026-05-09
+
+  - pattern: damage_polls_sm_state
+    status: active
+    description: "Damage system code MUST NOT read EchoLifecycleSM (or any StateMachine) state. This includes: state_machine.current_state, state_machine.is_rewinding(), state_machine.get_state(), or accessing the SM via NodePath. The i-frame mechanism is unidirectional: SM writes echo_hurtbox.monitoring; Damage observes that area_entered does not fire — no SM-aware code path in Damage."
+    why: "Bidirectional Damage↔SM coupling breaks single-source-of-truth (DEC-4). If Damage polls SM state, two outcomes are possible: (1) SM transition not yet complete when Damage reads (race), (2) Damage's i-frame logic diverges from SM's monitoring toggle. Both produce silent invariant violations. AC-21 enforces this as a static-analysis grep ban. Verified by damage.md C.6.1 + D.4.3 single-source contract."
+    adr: design/gdd/damage.md
+    referenced_by:
+      - design/gdd/damage.md
+    added: 2026-05-09
 
 # Example:
 #
