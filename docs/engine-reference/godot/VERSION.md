@@ -4,9 +4,11 @@
 |-------|-------|
 | **Engine Version** | Godot 4.6 |
 | **Release Date** | January 2026 |
-| **Project Pinned** | 2026-02-12 |
-| **Last Docs Verified** | 2026-02-12 |
+| **Project Pinned** | 2026-05-08 |
+| **Last Docs Verified** | 2026-05-08 |
 | **LLM Knowledge Cutoff** | May 2025 |
+| **Project Language** | GDScript (statically typed) |
+| **Risk Level** | HIGH — 4.6 is post-cutoff, full reference docs required |
 
 ## Knowledge Gap Warning
 

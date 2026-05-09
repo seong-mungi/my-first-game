@@ -5,14 +5,15 @@ Each agent owns a specific domain, enforcing separation of concerns and quality.
 
 ## Technology Stack
 
-- **Engine**: [CHOOSE: Godot 4 / Unity / Unreal Engine 5]
-- **Language**: [CHOOSE: GDScript / C# / C++ / Blueprint]
+- **Engine**: Godot 4.6
+- **Language**: GDScript
 - **Version Control**: Git with trunk-based development
-- **Build System**: [SPECIFY after choosing engine]
-- **Asset Pipeline**: [SPECIFY after choosing engine]
+- **Build System**: SCons (engine), Godot Export Templates
+- **Asset Pipeline**: Godot Import System + custom resource pipeline
 
-> **Note**: Engine-specialist agents exist for Godot, Unity, and Unreal with
-> dedicated sub-specialists. Use the set matching your engine.
+> **Note**: Engine specialists for Godot live under `.claude/agents/godot-*`.
+> Routing rules and file-extension mapping are in
+> `.claude/docs/technical-preferences.md` (Engine Specialists section).
 
 ## Project Structure
 
@@ -52,3 +53,21 @@ See `docs/COLLABORATIVE-DESIGN-PRINCIPLE.md` for full protocol and examples.
 ## Context Management
 
 @.claude/docs/context-management.md
+
+## knowledge base wiki
+**Structure:** `.raw/` (immutable sources, never modify) · `wiki/` (knowledge base)
+
+**Usage:** Drop file in `.raw/`, say "ingest [filename]". Claude reads `wiki/hot.md` → `wiki/index.md` → specific pages. Lint every 10-15 ingests.
+
+### Skills
+
+| Trigger | Action |
+|---|---|
+| `/wiki` | Setup, scaffold |
+| `ingest [source]` | Ingest source into wiki |
+| `query: [question]` | Answer from wiki |
+| `lint the wiki` | Health check |
+| `/save` | Save conversation to wiki |
+| `/autoresearch [topic]` | Autonomous research loop |
+| `/canvas` | Add to Obsidian canvas |
+
