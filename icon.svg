@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Echo: run-and-gun + time-rewind placeholder icon -->
+  <rect width="64" height="64" rx="8" fill="#1a1a1f"/>
+  <!-- Rewind arc -->
+  <path d="M 32 12 A 20 20 0 1 0 52 32" fill="none" stroke="#7ecfff" stroke-width="3" stroke-linecap="round"/>
+  <!-- Rewind arrow -->
+  <polygon points="52,24 52,32 44,28" fill="#7ecfff"/>
+  <!-- Player dot -->
+  <circle cx="32" cy="32" r="5" fill="#ffffff"/>
+</svg>
