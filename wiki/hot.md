@@ -74,6 +74,7 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Recent Decisions
 
+- **[2026-05-10]** 👥 **Tier 2: Echo 시그니처 강화 + 비-보스 커버리지** — 고스트 리플레이 시스템(시간 되감기 동기화 디폴트, 콜라주 시안 톤)과 비-보스 봇 스위트 4종(movement / mob / weapon / cross-system) 디자인 락. 잡몹 비협상 룰 = 되감기 없이 클리어 가능. 무기 매트릭스 자동 생성으로 dominant strategy 검출. (참고: [[Ghost Replay System For Time Rewind]] · [[Non-Boss Bot Validation Suites]])
 - **[2026-05-10]** 🌐 **9페이지 봇 검증 카탈로그 한글화 + 갭 클로저** — Tier 1 갭 3개 (인간 통합 / 결정론 검증 / 데스 히트맵) 추가하여 카탈로그 closure 도달. 9 페이지 모두 한글 변환 (제목 영문, 바디 한글, 코드/YAML/wikilink 영문 — 프로젝트 관습). (참고: [[Bot Human Validation Reconciliation]] · [[Determinism Verification Replay Diff]] · [[Death Heatmap Analytics]])
 - **[2026-05-10]** 🛠️ **봇 검증 풀스택 카탈로그 완성** — B+C+D 통합 파이프라인 + E (heuristic 9f lag) + F (GDD 8.2 YAML 템플릿) + G (RL 보상 함수). 솔로 개발자 Tier 1 (random+scripted+CI) 1주, Tier 2 (heuristic+lag+dashboard) 1개월, Tier 3 (RL+nightly) post-MVP. (참고: [[Bot Validation Pipeline Architecture]] · [[Heuristic Bot Reaction Lag Simulation]] · [[GDD Bot Acceptance Criteria Template]] · [[RL Reward Shaping For Deterministic Boss]])
 - **[2026-05-10]** 🤖 **결정론 게임 AI 활용 정책 정립** — AI는 패턴을 만들거나 측정하거나 미러링할 수 있지만, 런타임에 학습 대상 패턴을 변형해서는 안 된다. Echo Tier 1 권고 = Cuphead FSM 보스 + Trackmania-style 고스트 리플레이 + 사망 히트맵 분석. RL 봇은 Tier 3 이연. (참고: [[Deterministic Game AI Patterns]] · [[AI Playtest Bot For Boss Validation]])
