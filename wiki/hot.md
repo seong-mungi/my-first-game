@@ -11,7 +11,7 @@ Most-relevant pages for current project context. Read this first when picking up
 
 **결정론 게임 AI 봇 검증 풀스택 + Tier 1 갭 커버리지** (2026-05-10). PlayerMovement GDD → 학습/결정론 → 보스 디자인 → AI 4 zone → 봇 검증 방법론 → B+C+D 파이프라인 → E+F+G 구현 → Tier 1 갭 (인간/결정론/히트맵). **9 페이지 카탈로그 closure 도달** (3 synthesis + 6 concepts). 모두 한글화 (제목 영문, 바디 한글).
 
-### Bot Validation Full Stack (11 pages)
+### Bot Validation Full Stack (14 pages)
 → **Synthesis 1**: [[Bot Validation Pipeline Architecture]] — B+C+D 통합 (Godot↔Python 브릿지 + Dashboard CI + GDD 피드백)
 → **Synthesis 2**: [[AI Playtest Bot For Boss Validation]] — 4 봇 아키타입 + 메트릭 + 검증 시나리오
 → **Concept (WHY)**: [[Deterministic Game AI Patterns]] — AI 활용 4 zone (런타임/메타/오프라인/플레이어보조)
@@ -21,8 +21,11 @@ Most-relevant pages for current project context. Read this first when picking up
 → **Concept (Tier 1 gap)**: [[Bot Human Validation Reconciliation]] — 봇/인간 4사분면 매트릭스 + 표준 설문 + override 룰
 → **Concept (Tier 1 gap)**: [[Determinism Verification Replay Diff]] — Replay diff CI 게이트 + Godot 4.6 footgun + 시간 되감기 torture
 → **Concept (Tier 1 gap)**: [[Death Heatmap Analytics]] — 공간/시간/패턴 3 뷰 + DBSCAN + 안전지대 검출
-→ **Concept (NEW Tier 2)**: [[Ghost Replay System For Time Rewind]] — Echo 시그니처: PB + Dev Gold 고스트 + 9프레임 되감기 동기화
-→ **Concept (NEW Tier 2)**: [[Non-Boss Bot Validation Suites]] — 4 비-보스 스위트 (movement / mob / weapon / cross) + 무기 매트릭스 자동 생성
+→ **Concept (Tier 2)**: [[Ghost Replay System For Time Rewind]] — Echo 시그니처: PB + Dev Gold 고스트 + 9프레임 되감기 동기화
+→ **Concept (Tier 2)**: [[Non-Boss Bot Validation Suites]] — 4 비-보스 스위트 + 무기 매트릭스 자동 생성
+→ **Concept (NEW Tier 3)**: [[AI Assisted Boss Pattern Generation]] — LLM/절차/RL 후보 생성 + hard constraint 필터 + 디자이너 큐레이션
+→ **Concept (NEW Tier 3)**: [[Accessibility Mode Bot Validation]] — 모드별 lag 매핑 + Modes Matrix 자동 + 회귀 검출
+→ **Concept (NEW Tier 3)**: [[Speedrun Discovery Via RL Bot]] — RL 시간 보상 + 글리치 결정 매트릭스 + Trackmania 모델 + Echo 인프라 4단
 
 ### 이전 토픽 (변경 없음)
 → **이전**: 런앤건 시스템 카탈로그 3축 ([[Research Contra Series Per-Entry Differentiation]] · [[Research Run and Gun Innovative Systems]] · [[Research Cross-Genre Systems For Run and Gun]])
