@@ -84,6 +84,8 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[Bot Human Validation Reconciliation]] — **NEW** 봇 verdict ↔ 인간 플레이테스트 4사분면 매트릭스 + Echo 표준 설문지 + override 룰
 - [[Determinism Verification Replay Diff]] — **NEW** Replay diff CI 게이트 + Godot 4.6 footgun 카탈로그 + bisect 자동화 + 시간 되감기 torture
 - [[Death Heatmap Analytics]] — **NEW** 공간/시간/패턴 3 뷰 + DBSCAN 클러스터 + 안전지대 검출 + 빌드 diff 회귀 검출
+- [[Ghost Replay System For Time Rewind]] — **NEW** Echo 시그니처 확장: PB + Dev Gold 고스트 + 9프레임 되감기 동기화 + 콜라주 시각 처리 + Hybrid 데이터 포맷
+- [[Non-Boss Bot Validation Suites]] — **NEW** 비-보스 봇 스위트 4종 (movement / mob wave / weapon / cross-system) + 무기 매트릭스 자동 생성
 
 ## Entities
 
