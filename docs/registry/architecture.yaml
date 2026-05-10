@@ -30,7 +30,7 @@
 #   Superseded entries:     Grep pattern="status: superseded"
 
 version: 1
-last_updated: "2026-05-09"  # damage GDD Round 2 review: DEC-5 boss_hit_absorbed 2-arg + DEC-6 hazard_grace_frames + boss_pattern_interrupted signal + start_hazard_grace invocation_api + emit ordering contract
+last_updated: "2026-05-10"  # Player Movement #6 Designed (player-movement.md F.4.1 #6 obligation): 4 new entries — state_ownership.player_movement_state, interfaces.player_movement_snapshot, forbidden_patterns.delta_accumulator_in_movement, api_decisions.facing_direction_encoding. Previous (2026-05-09): damage GDD Round 2 review (DEC-5 boss_hit_absorbed 2-arg + DEC-6 hazard_grace_frames + boss_pattern_interrupted signal + start_hazard_grace invocation_api + emit ordering contract).
 
 # ─── STATE OWNERSHIP ─────────────────────────────────────────────────────────
 # Who is the authoritative owner of each piece of shared game state.
@@ -81,6 +81,31 @@ state_ownership:
     added: 2026-05-09
     revised: ""
     notes: "Discrete phase thresholds (DEC-2). NO HP bar (Anti-Pillar Reveal Through Action). HUD subscribes to boss_phase_advanced only. Multi-hit same-frame transition is single-step bounded (D.2.3 — phase_index += 1 max even if remaining' goes negative). phase_hp_table values are owned per-boss by Boss Pattern GDD #11; Damage GDD owns the format contract (Array[int], length = final_phase_index + 1)."
+
+  - state: player_movement_state
+    status: active
+    owner_system: player-movement  # PlayerMovement (CharacterBody2D, ECHO root, process_physics_priority=0)
+    adr: design/gdd/player-movement.md
+    interface: |
+      Read (per-tick, 7 fields — PlayerSnapshot capture set; player-movement.md C.1.3):
+        PlayerMovement.global_position: Vector2
+        PlayerMovement.velocity: Vector2
+        PlayerMovement.facing_direction: int           # 0..7 enum (api_decisions.facing_direction_encoding)
+        PlayerMovement.current_animation_name: StringName
+        PlayerMovement.current_animation_time: float
+        PlayerMovement.current_weapon_id: int
+        PlayerMovement.is_grounded: bool
+      Write: PlayerMovement.restore_from_snapshot(snap: PlayerSnapshot) -> void
+        — single legitimate restoration path during rewind (forbidden_patterns.direct_player_state_write_during_rewind enforces this).
+    write_access: player-movement-only-or-snapshot-restore  # external systems read-only; only TRC may invoke restore_from_snapshot during a rewind operation
+    referenced_by:
+      - design/gdd/player-movement.md
+      - design/gdd/time-rewind.md      # F.1 #6 — TRC reads 7 fields per tick + invokes restore_from_snapshot
+      - design/gdd/state-machine.md    # F.2 row #6 — PlayerMovementSM hosted as sibling of EchoLifecycleSM under PlayerMovement
+      - design/gdd/damage.md           # F.1 row #6 — ECHO HurtBox/HitBox/Damage hosted as PlayerMovement children
+    added: 2026-05-10
+    revised: ""
+    notes: "PlayerMovement IS the ECHO root node itself (CharacterBody2D), not a child of an outer ECHO node — see player-movement.md A.Overview Decision A. PlayerMovementSM (extends StateMachine, 6 Tier 1 states: idle/run/jump/fall/aim_lock/dead per DEC-PM-1) is a sibling SM next to EchoLifecycleSM under PlayerMovement (Tier 1 flat composition, NOT parallel ownership — PlayerMovementSM's dead state is reactive to EchoLifecycleSM state_changed via T13). _is_restoring: bool guard (player-movement.md C.4.4 single source) blocks anim method-track callbacks (footstep SFX, dust VFX, bullet spawn) during restore. process_physics_priority=0 (ADR-0003 ladder). 7-field schema is the verbatim interface locked across player-movement.md C.1.3 + time-rewind.md F.1 #6 — any change requires both GDD updates + ADR-0002 Amendment."
 
 # Example:
 #
@@ -188,6 +213,33 @@ interfaces:
     added: 2026-05-09
     revised: 2026-05-09  # Round 2 review: DEC-5 + DEC-6 + boss_pattern_interrupted + start_hazard_grace + emit ordering contract
     notes: "All cause-bearing signals use 1-arg cause: StringName (DEC-1, locked). cause taxonomy single-sourced in damage.md D.3 with hazard_ prefix invariant (DEC-6). 2-stage separation (lethal_hit_detected → grace → death_committed) is owned by Damage but timing controlled by SM DyingState (DEC-4 — Damage does NOT poll SM state). i-frame toggle is HurtBox.monitorable (NOT monitoring) per Godot 4.6 Area2D semantics. Boss phase advance is monotonic +1 (D.2.3 — perfect parry skip explicitly NOT supported, queued ADR boss-phase-advance-monotonicity)."
+
+  - contract: player_movement_snapshot
+    status: active
+    pattern: shared_resource  # PlayerSnapshot Resource passed via method call (TRC ↔ PlayerMovement)
+    producer: time-rewind-controller  # TRC reads PlayerMovement state per tick, writes to ring-buffered PlayerSnapshot Resources, then invokes restore_from_snapshot back into PlayerMovement during rewind
+    consumers:
+      - player-movement  # invoked back via restore_from_snapshot(snap) during rewind — single legitimate write path
+    adr: design/gdd/player-movement.md
+    method_signature: |
+      PlayerMovement.restore_from_snapshot(snap: PlayerSnapshot) -> void
+    snapshot_schema: |
+      class_name PlayerSnapshot extends Resource:
+        captured_at_physics_frame: int     # ADR-0002 schema field — set by TRC at capture
+        global_position: Vector2
+        velocity: Vector2
+        facing_direction: int              # 0..7 enum (api_decisions.facing_direction_encoding)
+        current_animation_name: StringName
+        current_animation_time: float
+        current_weapon_id: int
+        is_grounded: bool
+    referenced_by:
+      - design/gdd/player-movement.md
+      - design/gdd/time-rewind.md
+      - docs/architecture/adr-0002-time-rewind-storage-format.md
+    added: 2026-05-10
+    revised: ""
+    notes: "Single legitimate write path during rewind. restore_from_snapshot must (1) set _is_restoring = true before field assignments, (2) assign 6 numeric/StringName fields, (3) AnimationPlayer.play(snap.current_animation_name) + seek(snap.current_animation_time, true) — the second arg true is mandatory in Godot 4.6 (forces immediate evaluation, time-rewind.md I4), (4) clear _is_restoring at end. Anim method-track callbacks (footstep SFX, dust VFX, bullet spawn) MUST short-circuit on _is_restoring (player-movement.md C.4.4) to prevent spurious side effects during restore. forbidden_patterns.direct_player_state_write_during_rewind ban is enforced at PlayerMovement (single enforce site)."
 
 # Example:
 #
@@ -327,6 +379,32 @@ api_decisions:
     added: 2026-05-09
     revised: ""
 
+  - purpose: facing_direction_encoding
+    status: active
+    api: |
+      facing_direction: int (0..7 enum, 8-way rose, CCW from East — verbatim from
+      player-movement.md D.4 line 670):
+        0 = E   (East)
+        1 = NE  (Northeast)
+        2 = N   (North)
+        3 = NW  (Northwest)
+        4 = W   (West)
+        5 = SW  (Southwest)
+        6 = S   (South)
+        7 = SE  (Southeast)
+      Internal -1 sentinel ("preserve previous") used only inside PM private helpers
+      _encode_facing(v: Vector2i) / _decode_facing(f: int) (D.4 Formula 1) — never
+      serialized to PlayerSnapshot. The null-input preservation rule (D.4 Formula 4)
+      guarantees facing_direction ∈ {0..7} at every snapshot capture point.
+    not: "Vector2 unit (would expand snapshot from 7 fields to 8 + serialization cost). float angle radians (rejected — float comparison fragility breaks animation branch determinism + requires conversion at every read site). enum/StringName (rejected — wider memory than int with no clarity advantage)."
+    adr: design/gdd/player-movement.md
+    reason: "int 0..7 encodes 8-way aim rose with zero schema growth — PlayerSnapshot stays at 7 fields (ADR-0002 unchanged, Decision B 2026-05-10). Bit-exact comparable across runs (Pillar 2 determinism). Animation lookup is a 1:8 dispatch (Sprite2D flip_h vs 8-anim branch — visual specifics deferred to player-movement.md C.6 + art-director consult, character movement category). _encode_facing/_decode_facing are PM private (D.4 Formula 1) — no external caller decodes the int directly except for animation/sprite branch and forbidden-pattern static analysis."
+    referenced_by:
+      - design/gdd/player-movement.md  # D.4 single source for encoding
+      - docs/architecture/adr-0002-time-rewind-storage-format.md  # 7-field snapshot schema unchanged
+    added: 2026-05-10
+    revised: ""
+
 # Example:
 #
 # api_decisions:
@@ -406,6 +484,15 @@ forbidden_patterns:
     referenced_by:
       - design/gdd/damage.md
     added: 2026-05-09
+
+  - pattern: delta_accumulator_in_movement
+    status: active
+    description: "PlayerMovement physics MUST NOT accumulate frame deltas into long-lived state that survives across _physics_process ticks without being reset (e.g., total_dt: float, run_time_elapsed: float, gravity_velocity_acc: float). All movement integration uses per-tick velocity/position math derived from frame-bounded inputs: run accel/decel windowed by input edges (player-movement.md D.1), jump impulse one-shot (D.2), gravity applied per-tick to velocity directly (D.2). Coyote-time and jump-buffer windows count physics frames via Engine.get_physics_frames() with INT_MIN sentinel reset (D.3), NOT accumulated dt. The only PM long-lived state surviving across ticks is the 7-field PlayerSnapshot schema + a small set of frame-counter sentinels (_last_grounded_frame, _jump_buffered_at_frame) which are explicit int frames, not float accumulators."
+    why: "Accumulators violate snapshot determinism — PlayerSnapshot only captures 7 fields, so any accumulated float state is invisible to the rewind contract and would silently desync after restore_from_snapshot. Accumulated float state also creates drift across long sessions, breaking 1000-cycle determinism (Pillar 2). Phase 4 unbounded-accumulation bug fix (player-movement.md C.3.1 post-write fix) drove this rule to architecture-registry-level so future PM changes are checked against this stance at authoring time, not discovered at the next cross-GDD review."
+    adr: design/gdd/player-movement.md
+    referenced_by:
+      - design/gdd/player-movement.md
+    added: 2026-05-10
 
 # Example:
 #

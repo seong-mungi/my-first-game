@@ -797,7 +797,7 @@ is_invulnerable(echo_hurtbox: HurtBox) := !echo_hurtbox.monitorable
 
 | # | 시스템 | 호스트하는 컴포넌트 | 책임 |
 |---|---|---|---|
-| **#6** | Player Movement | ECHO HurtBox (L1) | ECHO scene tree 자식으로 인스턴스. `entity_id = &"echo"` 설정. **monitorable 토글 권한은 SM에 위임 (DEC-4)**. SM의 RewindingState.enter()/exit() + DEC-6 `start_hazard_grace()` invocation. |
+| **#6** | [Player Movement](player-movement.md) | ECHO HurtBox (L1) + HitBox + Damage 노드 (PlayerMovement 자식 호스트) | **PM #6 Designed 락인 (2026-05-10)**: ECHO scene tree (= PlayerMovement CharacterBody2D root, player-movement.md A.Overview Decision A) 자식으로 인스턴스. ECHO HurtBox + HitBox + Damage 노드는 *PlayerMovement(CharacterBody2D)의 자식 노드*로 PM이 노드 *ownership*을 보유하며, lifecycle (특히 `monitorable` 토글)은 SM이 제어한다. `entity_id = &"echo"` 설정. **monitorable 토글 권한은 SM에 위임 (DEC-4) — 노드는 PM이 호스팅, lifecycle은 SM이 제어**. SM의 RewindingState.enter()/exit() + DEC-6 `start_hazard_grace()` invocation. |
 | **#7** | Player Shooting | ECHO Projectile HitBox (L2) | 발사체 .tscn 자식으로 인스턴스. `cause` 미설정 (ECHO 발사체는 cause 라벨 무관 — 적/보스 destroy 측이 cause 미사용). |
 | **#10** | Enemy AI | Enemy HurtBox (L3) + Enemy Projectile HitBox (L4) | 적 본체에 HurtBox, 적 발사체에 HitBox. HitBox.cause = `&"projectile_enemy"` (D.3 자동 분기). |
 | **#11** | Boss Pattern | Boss HurtBox (L6) + Boss Projectile HitBox (L4) | `phase_hits_remaining` / `phase_index` / `phase_hp_table` 멤버 보유 의무 (E.11 검증 의무). HitBox.cause = `&"projectile_boss"` (D.3 자동 분기). |
