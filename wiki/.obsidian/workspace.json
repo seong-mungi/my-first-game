@@ -195,6 +195,7 @@
   },
   "active": "069d84cd14959ebb",
   "lastOpenFiles": [
+    "concepts/Bot Human Validation Reconciliation.md",
     "concepts/RL Reward Shaping For Deterministic Boss.md",
     "concepts/GDD Bot Acceptance Criteria Template.md",
     "concepts/Heuristic Bot Reaction Lag Simulation.md",
@@ -220,7 +221,6 @@
     "concepts/Solo Contra 2026 Concept.md",
     "questions/Research Contra Best Story Series.md",
     "questions/Research Run and Gun Genre.md",
-    "concepts/Echo Story Spine.md",
     "wiki/questions/zhc-cosmetics-execution-plan-presentation.html",
     "wiki/questions/zhc-cosmetics-proposal-2026-04-28.html",
     "bin/setup-vault.sh",
