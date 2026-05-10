@@ -9,15 +9,21 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Active Research Topic
 
-**결정론 게임 AI 봇 검증 풀스택** (2026-05-10). PlayerMovement GDD 해석 → 학습/결정론 통합 → 보스 디자인 → AI 활용 패턴 → 봇 검증 방법론 → B+C+D 파이프라인 → E+F+G 구체 구현. 6 페이지 카탈로그 완성 (1 synthesis + 5 concepts).
+**결정론 게임 AI 봇 검증 풀스택 + Tier 1 갭 커버리지** (2026-05-10). PlayerMovement GDD → 학습/결정론 → 보스 디자인 → AI 4 zone → 봇 검증 방법론 → B+C+D 파이프라인 → E+F+G 구현 → Tier 1 갭 (인간/결정론/히트맵). **9 페이지 카탈로그 closure 도달** (3 synthesis + 6 concepts). 모두 한글화 (제목 영문, 바디 한글).
 
-→ **Synthesis**: [[Bot Validation Pipeline Architecture]] — **NEW** B+C+D 통합 (Godot↔Python 브릿지 + Dashboard CI + GDD 피드백)
-→ **Synthesis**: [[AI Playtest Bot For Boss Validation]] — 4 봇 아키타입 + 메트릭 + 검증 시나리오
-→ **Concept**: [[Deterministic Game AI Patterns]] — AI 활용 4 zone (런타임/메타/오프라인/플레이어보조)
-→ **Concept**: [[Heuristic Bot Reaction Lag Simulation]] — **NEW** 9프레임 perception+action 지연 + per-modality lag
-→ **Concept**: [[GDD Bot Acceptance Criteria Template]] — **NEW** GDD 8.2 봇 검증 섹션 YAML 표준 (4 시스템 템플릿)
-→ **Concept**: [[RL Reward Shaping For Deterministic Boss]] — **NEW** Echo PPO 보상 함수 + 커리큘럼 + reward hacking watchlist
-→ **이전 활성 토픽**: 런앤건 시스템 카탈로그 3축 ([[Research Contra Series Per-Entry Differentiation]] · [[Research Run and Gun Innovative Systems]] · [[Research Cross-Genre Systems For Run and Gun]])
+### Bot Validation Full Stack (9 pages)
+→ **Synthesis 1**: [[Bot Validation Pipeline Architecture]] — B+C+D 통합 (Godot↔Python 브릿지 + Dashboard CI + GDD 피드백)
+→ **Synthesis 2**: [[AI Playtest Bot For Boss Validation]] — 4 봇 아키타입 + 메트릭 + 검증 시나리오
+→ **Concept (WHY)**: [[Deterministic Game AI Patterns]] — AI 활용 4 zone (런타임/메타/오프라인/플레이어보조)
+→ **Concept (HOW heuristic)**: [[Heuristic Bot Reaction Lag Simulation]] — 9프레임 perception+action 지연
+→ **Concept (HOW template)**: [[GDD Bot Acceptance Criteria Template]] — GDD 8.2 봇 검증 YAML 표준
+→ **Concept (HOW RL)**: [[RL Reward Shaping For Deterministic Boss]] — PPO 보상 함수 + 커리큘럼
+→ **Concept (NEW Tier 1)**: [[Bot Human Validation Reconciliation]] — 봇/인간 4사분면 매트릭스 + 표준 설문 + override 룰
+→ **Concept (NEW Tier 1)**: [[Determinism Verification Replay Diff]] — Replay diff CI 게이트 + Godot 4.6 footgun + 시간 되감기 torture
+→ **Concept (NEW Tier 1)**: [[Death Heatmap Analytics]] — 공간/시간/패턴 3 뷰 + DBSCAN + 안전지대 검출
+
+### 이전 토픽 (변경 없음)
+→ **이전**: 런앤건 시스템 카탈로그 3축 ([[Research Contra Series Per-Entry Differentiation]] · [[Research Run and Gun Innovative Systems]] · [[Research Cross-Genre Systems For Run and Gun]])
 → **스토리 락인**: [[Echo Story Spine]] — ECHO vs VEIL(AI) 5스테이지 (2026-05-08)
 → **베이스라인**: [[Solo Contra 2026 Concept]] — 시간 되감기 + 콜라주 + 가까운 미래 SF (v0)
 
