@@ -121,11 +121,11 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Cross-Reference Density
 
-- Concepts: **37** (+1: Deterministic Game AI Patterns)
+- Concepts: **40** (+3: Heuristic Bot Reaction Lag Simulation, GDD Bot Acceptance Criteria Template, RL Reward Shaping For Deterministic Boss)
 - Reference games: 23
 - Characters / fictional entities: 1
 - Sources catalogued: 21
-- Synthesis pages: **14** (+1: AI Playtest Bot For Boss Validation)
+- Synthesis pages: **15** (+1: Bot Validation Pipeline Architecture)
 - Design baselines: 1 (Solo Contra 2026 Concept v0)
 - Story spines: 1 (Echo Story Spine)
-- Total wiki files: **103** (.md, +2 this session)
+- Total wiki files: **107** (.md, +6 this session — bot validation full stack)
