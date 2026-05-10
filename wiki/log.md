@@ -7,6 +7,21 @@ updated: 2026-05-10
 
 Reverse chronological log of wiki operations. Newest at top.
 
+## [2026-05-10] save | Bot Validation Catalog Summary (14 페이지 단일 진입점)
+
+- **Mode:** main agent · /save · 1 synthesis 페이지 (메타 인덱스)
+- **Pages created (1):**
+  - Synthesis: [[Bot Validation Catalog Summary]] — 14 페이지 카탈로그 통합 진입점. Tier 0-3 구조 (WHY/WHAT/HOW/GAP/SIGNATURE/FRONTIER), 5 황금률, 솔로 개발자 로드맵 (Week 1 / Month 1 / Month 2-3 / Tier 3), Echo 비협상 결정 8종, 진입점 가이드 (처음 / 구현 / 디자인 / 출시).
+- **Key insights captured:**
+  - **카탈로그 핵심 명제**: Echo의 결정론은 봇 검증을 자동화 가능하게 만드는 자산. 봇은 게이트(약속), 인간은 등급(재미). 14 페이지가 이 한 명제의 펼침.
+  - **5 황금률**: ① 결정론 절대 ② AI는 도구/거울 (변형 X) ③ 봇=게이트, 인간=등급 ④ 잡몹 ≠ 보스 ⑤ 9프레임 비협상.
+  - **카탈로그 도출 비협상 결정 8종**: 회피 윈도우 ≥ 9f, 보스 RNG 0, 잡몹 되감기 없이 클리어, 시그니처 보스 디자이너 직접, Easy 토큰 무한 + 텔레그래프 1.5×, RL ghost 출시 동봉, 결정론 CI blocking, GDD 8.2 YAML 의무.
+  - **진입점 분기**: 처음 (WHY → WHAT → HOW 통합) / 구현 (template → pipeline → determinism) / 디자인 결정 (reconciliation → lag → reward) / 출시 (accessibility → speedrun → ghost).
+  - **카탈로그 외부 의존**: Solo Contra 2026 Concept, Time Manipulation Run and Gun, Modern Difficulty Accessibility, Boss Two Phase Design, Contra Per Entry Mechanic Matrix — 5 외부 페이지가 카탈로그의 디자인 근거.
+- **Pages updated (meta):** [[index.md]] (Tooling/Framework +1 — total +15 누적), [[log.md]] (이 블록), [[hot.md]] (skip — 카탈로그 인덱스라 별도 active topic 갱신 X)
+- **Source conversation**: Tier 3 페이지 작성 후 사용자가 "query: Tier 0~3 정리" 요청 → 카탈로그 횡단 요약 답변 생성 → 사용자가 그 답변을 wiki에 저장 요청.
+- **Cumulative**: 이번 세션 총 15 페이지 (Tier 1 9 + Tier 2 2 + Tier 3 3 + Catalog Summary 1). **봇 검증 카탈로그 단일 진입점 closure 완성**.
+
 ## [2026-05-10] save | Tier 3 Pages (AI 패턴 생성 + 접근성 모드 + Speedrun 발견)
 
 - **Mode:** main agent · /save (3 신규 페이지) · 한글 바디 + 영문 제목 (프로젝트 관습)
