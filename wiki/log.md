@@ -1,11 +1,31 @@
 ---
 title: Wiki Log
-updated: 2026-05-08
+updated: 2026-05-10
 ---
 
 # Wiki Log
 
 Reverse chronological log of wiki operations. Newest at top.
+
+## [2026-05-10] autoresearch | 콘트라 엔트리별 차별화 + 런앤건 혁신 시스템 + cross-장르 이식
+
+- **Mode:** main agent · 3-topic combined research · 2 rounds · 10 web searches · 15 pages
+- **Targets (3 topics):**
+  1. Contra 시리즈 엔트리별 차별화 게임시스템 분석
+  2. 런앤건에서 검증·기발·혁신 게임시스템 조사
+  3. 런앤건에 적용 가능한 cross-장르 게임시스템 조사
+- **Pages created (15):**
+  - Synthesis (3): [[Research Contra Series Per-Entry Differentiation]], [[Research Run and Gun Innovative Systems]], [[Research Cross-Genre Systems For Run and Gun]]
+  - Entities — Contra 엔트리 6신규 (1992-2019): [[Contra III The Alien Wars]], [[Contra Hard Corps]], [[Contra Shattered Soldier]], [[Neo Contra]], [[Hard Corps Uprising]], [[Contra Rogue Corps]]
+  - Concepts (6): [[Contra Per Entry Mechanic Matrix]], [[Hit Rate Grading System]], [[Pink Parry System]], [[Time Manipulation Run and Gun]], [[Roguelite Metaprogression For Run and Gun]], [[Stealth Information Visualization]]
+- **Key findings:**
+  - **Topic 1 — 콘트라 생존 규칙**: (a) 2D 측면 고수 = 생존, 3D/관점 변경 = 실패 (1996/1998/2019 모두). (b) 한 번에 한 메카닉 축만 추가 = 성공, 4축 동시 추가(Rogue Corps) = 실패. (c) 두 후속 엔트리에서 재사용된 시스템(슬라이딩, 듀얼 무기, 캐릭터 셀렉트)만 검증 자산.
+  - **Topic 2 — 7대 검증 혁신**: 무기 융합(Gunstar 4×pair=14), 분기+캐릭터(Hard Corps), Hit Rate(Shattered Soldier), 핑크 패리(Cuphead), 파괴 지형(Broforce), 2-overload 스왑(Galuga 2024), 무한 1차+제한 2차(Huntdown).
+  - **Topic 3 — 5대 cross-장르 이식**: 시간 조작(PoP/Braid/Katana Zero), 로그라이트 메타(Dead Cells/Hades/Uprising/Galuga), 반응형 내러티브(Hades), 불릿타임(Max Payne — 2D 이식 희소), 스텔스 가시화(Mark of the Ninja).
+- **Echo 적용 권고 (Tier 1)**: 시간 되감기(잠금) + **Mark of the Ninja 가시화 원칙**(예측 탄도, 토큰 카운트, 되감기 윈도우 명시 표시) — cost low / synergy high. 무기 융합·핑크 패리·메타프로그레션은 Tier 2/3 평가로 이연.
+- **Pages updated (meta):** [[index.md]] (Synthesis +3, Concepts Run-and-Gun +3, Cross-Genre 신규 섹션 +3, Entities Games +6, By Tag #cross-genre·#mechanic-comparison 신규), [[log.md]] (이 블록), [[hot.md]] (활성 토픽 전환 + Top 페이지 갱신 + Cross-Reference Density)
+- **Constraints**: villains.fandom·contra.fandom 일부 페이지 403 → Wikipedia/StrategyWiki/contrapedia/PCGamer/GameDeveloper으로 대체. fandom.com Hit Rate / Parry Slap 페이지는 접근 가능. Confidence high (다중 출처 일치).
+- **Open questions filed:** Mode 7이 후속에서 사라진 이유 / Hit Rate 외부 채택 부재 이유 / 파괴지형 후속 부재 이유 / 2D 불릿타임 부재 이유 / Echo Tier 2 두 번째 axis 선택.
 
 ## [2026-05-08] autoresearch | Contra 시나리오 + MI Final Reckoning 병합 → Echo Story Spine
 
