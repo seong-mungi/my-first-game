@@ -7,6 +7,29 @@ updated: 2026-05-10
 
 Reverse chronological log of wiki operations. Newest at top.
 
+## [2026-05-10] save | Tier 1 Gap Coverage (인간 통합 + 결정론 검증 + 데스 히트맵) + 9페이지 한글화
+
+- **Mode:** main agent · /save (3 신규 페이지) + 9 페이지 한글 변환 (제목 영문 유지, 바디 한글)
+- **Pages created (3):**
+  - Concept: [[Bot Human Validation Reconciliation]] — 봇 verdict ↔ 인간 플레이테스트 화해. 4사분면 매트릭스 (✅ Ship / ⚠️ Hidden Defect / 🔧 Bot Weak / ❌ Design Failure), Echo 표준 설문지 10문항, override 룰 양방향, 화해 리포트 템플릿.
+  - Concept: [[Determinism Verification Replay Diff]] — 결정론 자동 검증. Replay 파일 포맷 + canonical state hashing + Godot 4.6 footgun 카탈로그 10종 + bisect 도구 + 시간 되감기 torture (Echo 시그니처) + cross-platform/cross-version 테스트 스위트.
+  - Concept: [[Death Heatmap Analytics]] — 사망 분석 시각화. 3 뷰 (spatial / temporal / pattern attribution) + DBSCAN 클러스터 자동 검출 + 안전지대 검출 (역문제) + 빌드 비교 회귀 검출기 + 봇/인간 텔레메트리 공유 스키마.
+- **Pages translated (9, 영문 → 한글, 제목 유지):**
+  - [[Deterministic Game AI Patterns]] · [[AI Playtest Bot For Boss Validation]] · [[Bot Validation Pipeline Architecture]]
+  - [[Heuristic Bot Reaction Lag Simulation]] · [[GDD Bot Acceptance Criteria Template]] · [[RL Reward Shaping For Deterministic Boss]]
+  - [[Bot Human Validation Reconciliation]] · [[Determinism Verification Replay Diff]] · [[Death Heatmap Analytics]]
+- **Key insights captured:**
+  - **Reconciliation 핵심**: 봇 PASS / 인간 FAIL = 봇이 못 보는 것 (시각 명료성, 인지 부하, 오디오, 좌절). 봇 FAIL / 인간 PASS = 봇 모델이 인간보다 약함 (lag 너무 큼). 화해 리포트가 모든 criterion을 4사분면에 배치하고 액션 매핑.
+  - **Override 룰 양방향**: 봇 PASS여도 clear satisfaction < 3.5 / "unfair" 3+ / 텔레그래프 < 4 시 출시 X. 인간 PASS여도 Random > 1% / Scripted < 100% / Pattern-w/o-rewind P3 > 0 시 출시 X.
+  - **결정론 검증 핵심**: 같은 입력 시퀀스 2번 실행 → 프레임별 state hash diff. 첫 발산 프레임 = 버그 위치. CI에서 100 seed × 2 run. Float은 1ms 양자화 후 해싱 (1-bit 드리프트 false positive 방지). Time-rewind torture는 라이브 타임라인과 스냅샷/복원 path를 분리 검증.
+  - **Godot 4.6 footgun 10종**: 시드 안 박은 RNG, `OS.get_ticks_msec`, `_process` 게임 로직, Dictionary 순회, 시그널 순서, Node init 순서, 물리 적분기, system time, threaded state mutation, shader pixel readback.
+  - **히트맵 3 뷰 직교**: spatial = "어디서", temporal = "언제", attribution = "어느 패턴". DBSCAN으로 자동 클러스터, 안전지대 검출은 presence > 0 ∩ death == 0 영역 flood fill. 빌드 diff (RdBu colormap)으로 회귀 검출.
+  - **봇/인간 통합 히트맵**: 같은 schema → 같은 파이프라인. 인간 클러스터 있는데 봇 없음 = 봇 모델 누락. 봇 클러스터 있는데 인간 없음 = 봇이 인간보다 약함. 양쪽 클러스터 = 진짜 결함.
+  - **한글화 정책**: 제목 영문 (PascalCase 프로젝트 관습 유지), 바디 한글 (프로즈), 코드/YAML/표 영문 키워드 유지, wikilink 영문, section header 영문 (## Architecture, ## Open Questions 등 프로젝트 관습).
+- **Pages updated (meta):** [[index.md]] (Tooling/Framework +3 — total +6 over both saves), [[log.md]] (이 블록), [[hot.md]] (Active Topic + Top Pages + Recent Decisions 갱신)
+- **Source conversation**: Tier 1 갭 식별 (인간 통합 / 결정론 검증 / 히트맵) → 3 페이지 작성 → 사용자 한글화 요청 → 9 페이지 일괄 변환.
+- **Cumulative**: 이번 세션 총 9 페이지 (이전 6 + 이번 3). 봇 검증 풀스택 카탈로그 closure 도달.
+
 ## [2026-05-10] save | Bot Validation Pipeline (B+C+D) + 3 supporting concepts (E/F/G)
 
 - **Mode:** main agent · /save (4 pages from same conversation thread) · 4 pages
