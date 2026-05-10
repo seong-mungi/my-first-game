@@ -135,11 +135,11 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Cross-Reference Density
 
-- Concepts: **45** (+2: Ghost Replay System For Time Rewind, Non-Boss Bot Validation Suites)
+- Concepts: **48** (+3: AI Assisted Boss Pattern Generation, Accessibility Mode Bot Validation, Speedrun Discovery Via RL Bot)
 - Reference games: 23
 - Characters / fictional entities: 1
 - Sources catalogued: 21
 - Synthesis pages: 15
 - Design baselines: 1 (Solo Contra 2026 Concept v0)
 - Story spines: 1 (Echo Story Spine)
-- Total wiki files: **112** (.md, +11 this session — 봇 검증 풀스택 + Tier 2 시그니처 강화)
+- Total wiki files: **115** (.md, +14 this session — 봇 검증 + Echo 시그니처 + 솔로 인디 long-tail 카탈로그 closure)
