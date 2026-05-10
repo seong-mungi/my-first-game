@@ -19,6 +19,9 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[Research Run and Gun Success Patterns]] — 5작품 메타 분석: 불변 코어 7가지 + my-game 체크리스트 (2026-05-08)
 - [[Followup Modern Acceptance And Indie RnG Threshold]] — Q4/Q5 통합 답변: 1히트 현대 수용성 + 자가퍼블리싱 천장(10-20만) (2026-05-08)
 - [[Research Contra Best Story Series]] — 콘트라 시나리오 톱 작품 식별: Shattered Soldier(2002) 선정 + 차용 근거 (2026-05-08)
+- [[Research Contra Series Per-Entry Differentiation]] — **NEW** 콘트라 9-10개 엔트리별 차별화 시스템 매트릭스 + 생존 규칙 (2026-05-10)
+- [[Research Run and Gun Innovative Systems]] — **NEW** 런앤건 검증된 7대 혁신 시스템 카탈로그 (2026-05-10)
+- [[Research Cross-Genre Systems For Run and Gun]] — **NEW** 5대 cross-장르 시스템 이식 후보 + Echo 적용 권고 (2026-05-10)
 
 ## Concepts
 
