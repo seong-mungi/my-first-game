@@ -63,6 +63,7 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Recent Decisions
 
+- **[2026-05-10]** 🤖 **결정론 게임 AI 활용 정책 정립** — AI는 패턴을 만들거나 측정하거나 미러링할 수 있지만, 런타임에 학습 대상 패턴을 변형해서는 안 된다. Echo Tier 1 권고 = Cuphead FSM 보스 + Trackmania-style 고스트 리플레이 + 사망 히트맵 분석. RL 봇은 Tier 3 이연. (참고: [[Deterministic Game AI Patterns]] · [[AI Playtest Bot For Boss Validation]])
 - **[2026-05-10]** 🎯 **Echo Tier 1 두 번째 axis = Mark of the Ninja 가시화 원칙** — 시간 되감기 메카닉의 보이지 않는 상태(토큰·예측 탄도·되감기 윈도우)를 모두 명시 가시화. cost low / synergy 매우 높음. weapon fusion·핑크 패리·메타프로그레션은 Tier 2/3 이연. (참고: [[Stealth Information Visualization]] · [[Research Cross-Genre Systems For Run and Gun]])
 - **[2026-05-10]** 📊 **콘트라 9 엔트리 차별화 매트릭스 완성** — 1987-2024 시스템별 생존/실패 verdict. 2D-측면-고수 / 한-axis-한-번 규칙으로 Echo 설계 비협상 원칙 도출. (참고: [[Contra Per Entry Mechanic Matrix]] · [[Research Contra Series Per-Entry Differentiation]])
 - **[2026-05-10]** 📚 **런앤건 7대 혁신 + 5대 cross-장르 카탈로그** — 재사용 메뉴 정립. Echo가 시간 되감기 외 어떤 axis를 추가할지 평가 자료 완비. (참고: [[Research Run and Gun Innovative Systems]] · [[Research Cross-Genre Systems For Run and Gun]])
