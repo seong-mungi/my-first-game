@@ -52,6 +52,14 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[Run and Gun Success Pattern Matrix]] — 5작품 시스템 공통점 매트릭스 + my-game 체크리스트
 - [[Modern Difficulty Accessibility]] — 2018-2026 접근성 표준 + 1히트 즉사의 현대적 조건
 - [[Indie Self Publishing Run and Gun]] — 자가퍼블리싱 정의·경계 + 매출 임계값 매트릭스(10-20만 천장)
+- [[Contra Per Entry Mechanic Matrix]] — **NEW** 1987-2024 엔트리별 차별화 시스템 비교표 + 생존 규칙
+- [[Hit Rate Grading System]] — **NEW** Shattered Soldier 0-100% 그레이딩 + S랭크 트루엔딩 게이트
+- [[Pink Parry System]] — **NEW** Cuphead 핑크 객체 패리 + 슈퍼미터 충전 색채 어포던스
+
+### Cross-Genre Mechanic Transplants (런앤건 외부 메카닉 이식)
+- [[Time Manipulation Run and Gun]] — **NEW** PoP/Braid/Katana Zero 3 시간 모델 + Echo 선택 가이드
+- [[Roguelite Metaprogression For Run and Gun]] — **NEW** Dead Cells/Hades/Hard Corps Uprising/Galuga slider-vs-gate 규칙
+- [[Stealth Information Visualization]] — **NEW** Mark of the Ninja 명시적 가시화 원칙 + Echo 시간 되감기 적용
 
 ### My Game Design Baselines
 - [[Solo Contra 2026 Concept]] — 디자인 베이스라인 v0: 시간 되감기 + 콜라주 + 가까운 미래 SF (status: design-baseline-v0)
