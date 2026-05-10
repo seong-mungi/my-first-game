@@ -7,6 +7,25 @@ updated: 2026-05-10
 
 Reverse chronological log of wiki operations. Newest at top.
 
+## [2026-05-10] save | Bot Validation Pipeline (B+C+D) + 3 supporting concepts (E/F/G)
+
+- **Mode:** main agent · /save (4 pages from same conversation thread) · 4 pages
+- **Pages created (4):**
+  - Synthesis: [[Bot Validation Pipeline Architecture]] — B (Godot↔Python RL 브릿지) + C (Dashboard + CI 게이트) + D (GDD 피드백 루프) 통합 아키텍처. msgpack/TCP 락스텝, GitHub Actions YAML, 메트릭 위반 → 결정 매트릭스, 솔로 개발자 우선순위 Tier 1-3.
+  - Concept: [[Heuristic Bot Reaction Lag Simulation]] — 휴리스틱 봇에 perception(6f)+action(3f)=9f 인간 반응 지연 주입. Per-modality lag (visual 11f / audio 9f / proprioceptive 3f), GDScript 레퍼런스 구현, 캘리브레이션 sweep 프로토콜.
+  - Concept: [[GDD Bot Acceptance Criteria Template]] — GDD 8.2 봇 검증 섹션 표준 YAML 템플릿. 보스/잡몹/무브먼트/무기 4종 템플릿 + tier discipline (ci/nightly/release) + 안티패턴 6종.
+  - Concept: [[RL Reward Shaping For Deterministic Boss]] — Echo PPO 보상 함수 디자인. damage*10, death-100, clear+500, phase+50, rewind+5/-2. 커리큘럼 4단계, reward hacking watchlist 5종, lethal_threat_imminent 디자이너-인증 시그널.
+- **Key insights captured:**
+  - **B 핵심**: TCP+msgpack 락스텝 8 envs 병렬 = 결정론 보존 + ~8× 학습 가속. `Engine.physics_ticks_per_second=60`, `max_physics_steps_per_frame=1`, RNG 시드 reset, no `_process` 의존, no `OS.get_ticks_msec()`.
+  - **C 핵심**: 5단계 verdict 계산 (Random>1%, Scripted<100%, Heuristic 30-70%, Pattern-w/o-rewind P3=0%, TTFC ±20%) → CI 패스 5-10분 / 나이트리 2시간 / 릴리즈 6-12시간.
+  - **D 핵심**: GDD AC 8.2 봇 검증 행 → 봇 결과 → 메트릭 위반 매트릭스 → GDD 또는 코드 수정 → 재검증 자동 루프. 디자이너 일일 워크플로 정립.
+  - **E 핵심**: 인간 반응 시간 (visual 250ms / audio 160ms / 트레인드 게이머 150-200ms = 9-12 frames) = Echo 9프레임 rewind 윈도우와 정확히 일치. 봇 lag = 인간 lag 일 때만 휴리스틱 win-rate가 인간 공정성의 프록시 역할.
+  - **F 핵심**: 모든 측정 가능한 디자인 의도는 (메트릭 ID + bot + runs + target band + tier)로 표현 가능. 표현 불가능하면 → 인간 검증 컬럼 또는 의도 sharpening 필요.
+  - **G 핵심**: 프레임 생존 보상 = 0 (스톨 익스플로잇 차단). dense+sparse 혼합 (damage delta + 죽음/클리어/페이즈 milestone). lethal_threat_imminent는 디자이너가 큐레이트해야 RL이 rewind를 올바르게 학습.
+- **Pages updated (meta):** [[index.md]] (Synthesis +1, Tooling/Framework +3 — total +4), [[log.md]] (이 블록), [[hot.md]] (활성 토픽 + Top Pages 갱신)
+- **Source conversation**: 봇 검증 방법론 → 사용자 옵션 (B/C/D) 선택 → 통합 파이프라인 답변 → 사용자 옵션 (E/F/G) 선택 → 4 페이지 일괄 저장
+- **Cumulative**: 이번 세션 6 페이지 (이전 2 + 이번 4). 봇 검증 카탈로그 완성: WHY → WHAT → HOW → INTEGRATION.
+
 ## [2026-05-10] save | Deterministic Game AI Patterns + AI Playtest Bot For Boss Validation
 
 - **Mode:** main agent · /save (conversation distillation) · 2 pages
