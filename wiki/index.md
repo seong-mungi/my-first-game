@@ -95,6 +95,12 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[Pizza Tower]] — Tour De Pizza 2023; 자가퍼블리싱 액션 플랫포머, 1-2M 추정 (런앤건은 아니나 인접 사례)
 - [[Katana Zero]] — Askiisoft 2019; 시간 되감기 + 1히트 즉사 50만 장 (Devolver, 솔로 모범 사례)
 - [[Hotline Miami]] — Dennaton 2012; 1히트 즉사 + 즉시 재시작 정점 (Devolver, 500만 장+)
+- [[Contra Hard Corps]] — **NEW** Konami 1994; 분기 4경로 5엔딩 + 캐릭터 셀렉트 + Motoroid 호버바이크
+- [[Contra III The Alien Wars]] — **NEW** Konami 1992; 양손 듀얼 무기 + Mode 7 톱다운 회전 스테이지
+- [[Contra Shattered Soldier]] — **NEW** Konami 2002; Hit Rate 0-100% 그레이딩 + S랭크 트루엔딩 게이트
+- [[Neo Contra]] — **NEW** Konami 2004; 아이소메트릭/OTS + 3슬롯 무기셋(std/power/lock)
+- [[Hard Corps Uprising]] — **NEW** Arc System Works 2011; Rising Mode RPG 메타 + Arcade Mode 분리
+- [[Contra Rogue Corps]] — **NEW** Konami 2019; 트윈스틱 톱다운 + 4 캐릭터 클래스 + 무기 과열 (3D 실패 사례)
 
 ### Characters / Fictional Entities
 - [[The Entity AI Villain]] — MI Final Reckoning(2025) AI 빌런 — Echo의 VEIL로 변환 매핑
