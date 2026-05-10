@@ -89,6 +89,7 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[AI Assisted Boss Pattern Generation]] — **NEW** Tier 3 AI 패턴 후보 생성 워크플로 (LLM + procedural + RL) + hard/soft constraints + 디자이너 큐레이션
 - [[Accessibility Mode Bot Validation]] — **NEW** Easy/Hard/Color-blind/Auto-Jump 모드 봇 검증 + Modes Comparison Matrix 자동 생성 + 회귀 검출
 - [[Speedrun Discovery Via RL Bot]] — **NEW** RL 봇 시간 보상 + 글리치 결정 매트릭스 + 인간 도달성 검증 + Echo speedrun 인프라 (replay/leaderboard/ghost)
+- [[Bot Validation Catalog Summary]] — **NEW** Echo 봇 검증 카탈로그 14 페이지 단일 진입점 + 5 황금률 + 솔로 개발자 로드맵 + 비협상 결정 8종 인덱스
 
 ## Entities
 

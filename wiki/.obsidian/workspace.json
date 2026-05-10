@@ -195,6 +195,7 @@
   },
   "active": "069d84cd14959ebb",
   "lastOpenFiles": [
+    "questions/Bot Validation Catalog Summary.md",
     "concepts/Speedrun Discovery Via RL Bot.md",
     "concepts/Accessibility Mode Bot Validation.md",
     "concepts/AI Assisted Boss Pattern Generation.md",
@@ -220,7 +221,6 @@
     "entities/Neo Contra.md",
     "entities/Contra Shattered Soldier.md",
     "entities/Contra III The Alien Wars.md",
-    "entities/Contra Hard Corps.md",
     "wiki/questions/zhc-cosmetics-execution-plan-presentation.html",
     "wiki/questions/zhc-cosmetics-proposal-2026-04-28.html",
     "bin/setup-vault.sh",
