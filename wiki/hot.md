@@ -11,16 +11,18 @@ Most-relevant pages for current project context. Read this first when picking up
 
 **결정론 게임 AI 봇 검증 풀스택 + Tier 1 갭 커버리지** (2026-05-10). PlayerMovement GDD → 학습/결정론 → 보스 디자인 → AI 4 zone → 봇 검증 방법론 → B+C+D 파이프라인 → E+F+G 구현 → Tier 1 갭 (인간/결정론/히트맵). **9 페이지 카탈로그 closure 도달** (3 synthesis + 6 concepts). 모두 한글화 (제목 영문, 바디 한글).
 
-### Bot Validation Full Stack (9 pages)
+### Bot Validation Full Stack (11 pages)
 → **Synthesis 1**: [[Bot Validation Pipeline Architecture]] — B+C+D 통합 (Godot↔Python 브릿지 + Dashboard CI + GDD 피드백)
 → **Synthesis 2**: [[AI Playtest Bot For Boss Validation]] — 4 봇 아키타입 + 메트릭 + 검증 시나리오
 → **Concept (WHY)**: [[Deterministic Game AI Patterns]] — AI 활용 4 zone (런타임/메타/오프라인/플레이어보조)
 → **Concept (HOW heuristic)**: [[Heuristic Bot Reaction Lag Simulation]] — 9프레임 perception+action 지연
 → **Concept (HOW template)**: [[GDD Bot Acceptance Criteria Template]] — GDD 8.2 봇 검증 YAML 표준
 → **Concept (HOW RL)**: [[RL Reward Shaping For Deterministic Boss]] — PPO 보상 함수 + 커리큘럼
-→ **Concept (NEW Tier 1)**: [[Bot Human Validation Reconciliation]] — 봇/인간 4사분면 매트릭스 + 표준 설문 + override 룰
-→ **Concept (NEW Tier 1)**: [[Determinism Verification Replay Diff]] — Replay diff CI 게이트 + Godot 4.6 footgun + 시간 되감기 torture
-→ **Concept (NEW Tier 1)**: [[Death Heatmap Analytics]] — 공간/시간/패턴 3 뷰 + DBSCAN + 안전지대 검출
+→ **Concept (Tier 1 gap)**: [[Bot Human Validation Reconciliation]] — 봇/인간 4사분면 매트릭스 + 표준 설문 + override 룰
+→ **Concept (Tier 1 gap)**: [[Determinism Verification Replay Diff]] — Replay diff CI 게이트 + Godot 4.6 footgun + 시간 되감기 torture
+→ **Concept (Tier 1 gap)**: [[Death Heatmap Analytics]] — 공간/시간/패턴 3 뷰 + DBSCAN + 안전지대 검출
+→ **Concept (NEW Tier 2)**: [[Ghost Replay System For Time Rewind]] — Echo 시그니처: PB + Dev Gold 고스트 + 9프레임 되감기 동기화
+→ **Concept (NEW Tier 2)**: [[Non-Boss Bot Validation Suites]] — 4 비-보스 스위트 (movement / mob / weapon / cross) + 무기 매트릭스 자동 생성
 
 ### 이전 토픽 (변경 없음)
 → **이전**: 런앤건 시스템 카탈로그 3축 ([[Research Contra Series Per-Entry Differentiation]] · [[Research Run and Gun Innovative Systems]] · [[Research Cross-Genre Systems For Run and Gun]])
