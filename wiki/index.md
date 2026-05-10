@@ -24,6 +24,7 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[Research Contra Series Per-Entry Differentiation]] — **NEW** 콘트라 9-10개 엔트리별 차별화 시스템 매트릭스 + 생존 규칙 (2026-05-10)
 - [[Research Run and Gun Innovative Systems]] — **NEW** 런앤건 검증된 7대 혁신 시스템 카탈로그 (2026-05-10)
 - [[Research Cross-Genre Systems For Run and Gun]] — **NEW** 5대 cross-장르 시스템 이식 후보 + Echo 적용 권고 (2026-05-10)
+- [[AI Playtest Bot For Boss Validation]] — **NEW** 결정론 게임에서 봇으로 보스 난이도 검증 (4 봇 아키타입 + 메트릭 + Echo Tier 1-3 전략) (2026-05-10)
 
 ## Concepts
 
