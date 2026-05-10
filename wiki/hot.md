@@ -29,12 +29,15 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Top Pages To Read First
 
-1. [[Bot Validation Pipeline Architecture]] — **NEW**. B+C+D 풀스택 (RL 브릿지 + 대시보드 CI + GDD 루프) — 솔로 개발자 Tier 1-3 권고
-2. [[Heuristic Bot Reaction Lag Simulation]] — **NEW**. 9프레임 인간 반응 지연 = Echo rewind 윈도우 = 봇 fairness proxy
-3. [[GDD Bot Acceptance Criteria Template]] — **NEW**. GDD 8.2 봇 검증 YAML 표준 (boss/mob/movement/weapon)
-4. [[RL Reward Shaping For Deterministic Boss]] — **NEW**. Echo PPO 보상 함수 + 커리큘럼 + reward hacking 5 watchlist
-5. [[Deterministic Game AI Patterns]] — 결정론 게임 AI 활용 4 zone + Echo Tier 1-3 권고
-6. [[AI Playtest Bot For Boss Validation]] — 4 봇 아키타입 + 메트릭 + 시간메커닉 검증 시나리오 4종
+1. [[Bot Validation Pipeline Architecture]] — B+C+D 풀스택 (RL 브릿지 + 대시보드 CI + GDD 루프) — 솔로 개발자 Tier 1-3 권고
+2. [[Bot Human Validation Reconciliation]] — **NEW**. 봇 verdict ↔ 인간 플레이테스트 4사분면 매트릭스 + override 룰
+3. [[Determinism Verification Replay Diff]] — **NEW**. CI 결정론 게이트 + Godot 4.6 footgun 10종 + 시간 되감기 torture
+4. [[Death Heatmap Analytics]] — **NEW**. 공간/시간/패턴 3 뷰 + DBSCAN 클러스터 + 안전지대 자동 검출
+5. [[Heuristic Bot Reaction Lag Simulation]] — 9프레임 인간 반응 지연 = Echo rewind 윈도우 = 봇 fairness proxy
+6. [[GDD Bot Acceptance Criteria Template]] — GDD 8.2 봇 검증 YAML 표준 (boss/mob/movement/weapon)
+7. [[RL Reward Shaping For Deterministic Boss]] — Echo PPO 보상 함수 + 커리큘럼 + reward hacking 5 watchlist
+8. [[Deterministic Game AI Patterns]] — 결정론 게임 AI 활용 4 zone + Echo Tier 1-3 권고
+9. [[AI Playtest Bot For Boss Validation]] — 4 봇 아키타입 + 메트릭 + 시간메커닉 검증 시나리오 4종
 7. [[Research Contra Series Per-Entry Differentiation]] — 콘트라 9 엔트리 차별화 + 생존 규칙
 8. [[Research Run and Gun Innovative Systems]] — 7대 검증 혁신 카탈로그
 9. [[Research Cross-Genre Systems For Run and Gun]] — 5대 이식 후보 + Echo 권고
