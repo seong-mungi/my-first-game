@@ -9,12 +9,15 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Active Research Topic
 
-**결정론 게임에서 AI 활용 + 봇 검증** (2026-05-10). PlayerMovement GDD B 섹션 해석에서 출발 → 학습/결정론 통합 → 보스 디자인 적용 → 결정론 게임 AI 활용 패턴 → AI 봇 보스 검증 방법론. 2개 신규 페이지 (concept + synthesis).
+**결정론 게임 AI 봇 검증 풀스택** (2026-05-10). PlayerMovement GDD 해석 → 학습/결정론 통합 → 보스 디자인 → AI 활용 패턴 → 봇 검증 방법론 → B+C+D 파이프라인 → E+F+G 구체 구현. 6 페이지 카탈로그 완성 (1 synthesis + 5 concepts).
 
-→ **Concept 신규**: [[Deterministic Game AI Patterns]] — AI 활용 4 zone (런타임 BT/FSM, 메타 디렉터, 오프라인 분석, 플레이어 보조 고스트) + Echo Tier 1-3 권고
-→ **Synthesis 신규**: [[AI Playtest Bot For Boss Validation]] — 4 봇 아키타입 + 메트릭 + Godot 4.6 구현 경로 + 4 검증 시나리오
+→ **Synthesis**: [[Bot Validation Pipeline Architecture]] — **NEW** B+C+D 통합 (Godot↔Python 브릿지 + Dashboard CI + GDD 피드백)
+→ **Synthesis**: [[AI Playtest Bot For Boss Validation]] — 4 봇 아키타입 + 메트릭 + 검증 시나리오
+→ **Concept**: [[Deterministic Game AI Patterns]] — AI 활용 4 zone (런타임/메타/오프라인/플레이어보조)
+→ **Concept**: [[Heuristic Bot Reaction Lag Simulation]] — **NEW** 9프레임 perception+action 지연 + per-modality lag
+→ **Concept**: [[GDD Bot Acceptance Criteria Template]] — **NEW** GDD 8.2 봇 검증 섹션 YAML 표준 (4 시스템 템플릿)
+→ **Concept**: [[RL Reward Shaping For Deterministic Boss]] — **NEW** Echo PPO 보상 함수 + 커리큘럼 + reward hacking watchlist
 → **이전 활성 토픽**: 런앤건 시스템 카탈로그 3축 ([[Research Contra Series Per-Entry Differentiation]] · [[Research Run and Gun Innovative Systems]] · [[Research Cross-Genre Systems For Run and Gun]])
-→ **메인 매트릭스**: [[Contra Per Entry Mechanic Matrix]] — 1987-2024 시스템별 생존 verdict
 → **스토리 락인**: [[Echo Story Spine]] — ECHO vs VEIL(AI) 5스테이지 (2026-05-08)
 → **베이스라인**: [[Solo Contra 2026 Concept]] — 시간 되감기 + 콜라주 + 가까운 미래 SF (v0)
 
