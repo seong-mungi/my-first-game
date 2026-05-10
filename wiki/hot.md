@@ -23,8 +23,12 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Top Pages To Read First
 
-1. [[Deterministic Game AI Patterns]] — **NEW**. 결정론 게임 AI 활용 4 zone + Echo Tier 1-3 권고 (Cuphead FSM + Trackmania ghost + 사망 히트맵)
-2. [[AI Playtest Bot For Boss Validation]] — **NEW**. 4 봇 아키타입 + 메트릭 + 시간메커닉 검증 시나리오 4종
+1. [[Bot Validation Pipeline Architecture]] — **NEW**. B+C+D 풀스택 (RL 브릿지 + 대시보드 CI + GDD 루프) — 솔로 개발자 Tier 1-3 권고
+2. [[Heuristic Bot Reaction Lag Simulation]] — **NEW**. 9프레임 인간 반응 지연 = Echo rewind 윈도우 = 봇 fairness proxy
+3. [[GDD Bot Acceptance Criteria Template]] — **NEW**. GDD 8.2 봇 검증 YAML 표준 (boss/mob/movement/weapon)
+4. [[RL Reward Shaping For Deterministic Boss]] — **NEW**. Echo PPO 보상 함수 + 커리큘럼 + reward hacking 5 watchlist
+5. [[Deterministic Game AI Patterns]] — 결정론 게임 AI 활용 4 zone + Echo Tier 1-3 권고
+6. [[AI Playtest Bot For Boss Validation]] — 4 봇 아키타입 + 메트릭 + 시간메커닉 검증 시나리오 4종
 3. [[Research Contra Series Per-Entry Differentiation]] — 콘트라 9 엔트리 차별화 + 생존 규칙
 4. [[Research Run and Gun Innovative Systems]] — 7대 검증 혁신 카탈로그
 5. [[Research Cross-Genre Systems For Run and Gun]] — 5대 이식 후보 + Echo 권고
