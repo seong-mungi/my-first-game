@@ -7,6 +7,24 @@ updated: 2026-05-10
 
 Reverse chronological log of wiki operations. Newest at top.
 
+## [2026-05-10] save | Tier 2 Pages (고스트 리플레이 + 비-보스 봇 스위트)
+
+- **Mode:** main agent · /save (2 신규 페이지) · 한글 바디 + 영문 제목 (프로젝트 관습)
+- **Pages created (2):**
+  - Concept: [[Ghost Replay System For Time Rewind]] — Echo 시그니처 확장. 3 고스트 소스 (Personal Best / Dev Gold / Asynchronous Phantom), 시간 되감기 상호작용 3 옵션 (synced / independent / toggle), 콜라주 시각 처리 (시안 톤, alpha 0.45, motion trail), Hybrid 데이터 포맷 (input log + 5초 keyframe), Tier 1-3 매핑.
+  - Concept: [[Non-Boss Bot Validation Suites]] — 4 봇 스위트 (movement_v1 / mob_wave_v1 / weapon_v1 / cross_system_v1). Movement = 점프 그리드 + rewind torture, Mob Wave = 잡몹은 되감기 없이 클리어 가능 룰, Weapon = DPS 매트릭스 자동 생성 + 무기-vs-적 매트릭스, Cross-System = 점프 중 사격 + 페이즈 transition.
+- **Key insights captured:**
+  - **Ghost Replay 핵심**: Echo의 결정론 + 상태 스냅샷 + 9프레임 되감기 인프라가 고스트 시스템을 사실상 무비용으로 뒷받침. "내 몸이 기억한다" 시그니처를 학습 도구에서 몰입 도구로 한 단계 더 밀어붙임.
+  - **Time-Rewind 동기화 결정**: 옵션 1 (synced) 디폴트 + 옵션 2 (independent) 토글. synced가 신체 기억 시그니처 정합, independent는 speedrun 벤치마크용.
+  - **시각 처리 룰**: 고스트는 항상 플레이어 본체 *아래* 레이어, 보스/탄막은 항상 *위*. 컬러 분리 (고스트 = 시안, 본체 = 마젠타 가능) → 가시성 절대 보존.
+  - **Non-Boss ROI**: 무기/무브먼트는 보스보다 변경 빈도 5-10×. 비-보스 봇 스위트 1주 ROI = 보스 봇 1개월 ROI에 견줌.
+  - **잡몹 비협상 룰**: 잡몹은 되감기 없이 클리어 가능해야 함 (`heuristic_no_rewind_clear_rate ≥ 50%` 봇 메트릭으로 자동 강제). 되감기는 보스 시그니처 — 잡몹 강제 시 토큰 인플레이션 + 메카닉 마모.
+  - **무기 매트릭스 자동 생성**: 휴리스틱 봇이 각 무기로 같은 보스 클리어 시도 → 무기-vs-적 매트릭스. dominant strategy / dominated weapon 자동 발견 → 디자이너 결정 매핑.
+  - **RL은 비-보스에 과잉**: scripted + heuristic으로 충분. RL은 Tier 3 only.
+- **Pages updated (meta):** [[index.md]] (Tooling/Framework +2 — total +11 누적), [[log.md]] (이 블록), [[hot.md]] (Top Pages + Cross-Ref Density 갱신)
+- **Source conversation**: Tier 2 갭 (4) Ghost Replay + (5) Non-Boss Bot Suites → 2 페이지 일괄 작성.
+- **Cumulative**: 이번 세션 총 11 페이지 (Tier 1 9 + Tier 2 2). 봇 검증 + Echo 시그니처 확장 카탈로그 closure.
+
 ## [2026-05-10] save | Tier 1 Gap Coverage (인간 통합 + 결정론 검증 + 데스 히트맵) + 9페이지 한글화
 
 - **Mode:** main agent · /save (3 신규 페이지) + 9 페이지 한글 변환 (제목 영문 유지, 바디 한글)
