@@ -34,17 +34,20 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Top Pages To Read First
 
-1. [[Ghost Replay System For Time Rewind]] — **NEW**. Echo 시그니처 확장 — PB + Dev Gold 고스트 + 9프레임 되감기 동기화
-2. [[Non-Boss Bot Validation Suites]] — **NEW**. 4 비-보스 스위트 + 무기-vs-적 매트릭스 자동 생성
-3. [[Bot Validation Pipeline Architecture]] — B+C+D 풀스택 (RL 브릿지 + 대시보드 CI + GDD 루프)
-4. [[Bot Human Validation Reconciliation]] — 봇 verdict ↔ 인간 플레이테스트 4사분면 매트릭스 + override 룰
-5. [[Determinism Verification Replay Diff]] — CI 결정론 게이트 + Godot 4.6 footgun 10종 + 시간 되감기 torture
-6. [[Death Heatmap Analytics]] — 공간/시간/패턴 3 뷰 + DBSCAN 클러스터 + 안전지대 자동 검출
-7. [[Heuristic Bot Reaction Lag Simulation]] — 9프레임 인간 반응 지연 = Echo rewind 윈도우 = 봇 fairness proxy
-8. [[GDD Bot Acceptance Criteria Template]] — GDD 8.2 봇 검증 YAML 표준 (boss/mob/movement/weapon)
-9. [[RL Reward Shaping For Deterministic Boss]] — Echo PPO 보상 함수 + 커리큘럼 + reward hacking 5 watchlist
-10. [[Deterministic Game AI Patterns]] — 결정론 게임 AI 활용 4 zone + Echo Tier 1-3 권고
-11. [[AI Playtest Bot For Boss Validation]] — 4 봇 아키타입 + 메트릭 + 시간메커닉 검증 시나리오 4종
+1. [[AI Assisted Boss Pattern Generation]] — **NEW Tier 3**. AI 보조 패턴 생성 (LLM + 절차 + RL) + hard constraint + 디자이너 큐레이션
+2. [[Accessibility Mode Bot Validation]] — **NEW Tier 3**. Easy/Hard/Color-blind 모드 매트릭스 자동 + 회귀 검출
+3. [[Speedrun Discovery Via RL Bot]] — **NEW Tier 3**. RL 시간 보상 + 글리치 매트릭스 + Trackmania 모델 + Echo 인프라
+4. [[Ghost Replay System For Time Rewind]] — Echo 시그니처 확장 — PB + Dev Gold 고스트 + 9프레임 되감기 동기화
+5. [[Non-Boss Bot Validation Suites]] — 4 비-보스 스위트 + 무기-vs-적 매트릭스 자동 생성
+6. [[Bot Validation Pipeline Architecture]] — B+C+D 풀스택 (RL 브릿지 + 대시보드 CI + GDD 루프)
+7. [[Bot Human Validation Reconciliation]] — 봇 verdict ↔ 인간 플레이테스트 4사분면 매트릭스
+8. [[Determinism Verification Replay Diff]] — CI 결정론 게이트 + Godot 4.6 footgun 10종
+9. [[Death Heatmap Analytics]] — 공간/시간/패턴 3 뷰 + DBSCAN + 안전지대 검출
+10. [[Heuristic Bot Reaction Lag Simulation]] — 9프레임 인간 반응 지연 = Echo rewind 윈도우 = 봇 fairness proxy
+11. [[GDD Bot Acceptance Criteria Template]] — GDD 8.2 봇 검증 YAML 표준
+12. [[RL Reward Shaping For Deterministic Boss]] — Echo PPO 보상 함수 + 커리큘럼 + reward hacking 5종
+13. [[Deterministic Game AI Patterns]] — 결정론 게임 AI 활용 4 zone + Echo Tier 1-3 권고
+14. [[AI Playtest Bot For Boss Validation]] — 4 봇 아키타입 + 메트릭 + 시간메커닉 검증 시나리오 4종
 12. [[Time Manipulation Run and Gun]] — PoP/Braid/Katana Zero 3 모델 + Echo 선택 가이드 (고스트 시스템 베이스라인)
 13. [[Echo Story Spine]] — Echo 메인 시나리오 (2026-05-08)
 14. [[Solo Contra 2026 Concept]] — 디자인 베이스라인 v0
