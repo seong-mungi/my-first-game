@@ -81,6 +81,9 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[Heuristic Bot Reaction Lag Simulation]] — **NEW** 휴리스틱 봇에 9프레임 인간 반응 지연 주입 (perception+action 이중 버퍼, per-modality lag, 캘리브레이션 sweep)
 - [[GDD Bot Acceptance Criteria Template]] — **NEW** GDD 8.2 봇 검증 섹션 YAML 템플릿 (boss/mob/movement/weapon 4종 + tier discipline)
 - [[RL Reward Shaping For Deterministic Boss]] — **NEW** Echo PPO 보상 함수 (damage/death/clear/phase/rewind 가중치 + 커리큘럼 4단계 + reward hacking watchlist)
+- [[Bot Human Validation Reconciliation]] — **NEW** 봇 verdict ↔ 인간 플레이테스트 4사분면 매트릭스 + Echo 표준 설문지 + override 룰
+- [[Determinism Verification Replay Diff]] — **NEW** Replay diff CI 게이트 + Godot 4.6 footgun 카탈로그 + bisect 자동화 + 시간 되감기 torture
+- [[Death Heatmap Analytics]] — **NEW** 공간/시간/패턴 3 뷰 + DBSCAN 클러스터 + 안전지대 검출 + 빌드 diff 회귀 검출
 
 ## Entities
 
