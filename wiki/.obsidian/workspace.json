@@ -195,6 +195,7 @@
   },
   "active": "069d84cd14959ebb",
   "lastOpenFiles": [
+    "concepts/AI Assisted Boss Pattern Generation.md",
     "concepts/Non-Boss Bot Validation Suites.md",
     "concepts/Ghost Replay System For Time Rewind.md",
     "concepts/Death Heatmap Analytics.md",
@@ -220,7 +221,6 @@
     "entities/Contra Hard Corps.md",
     "questions/Research Cross-Genre Systems For Run and Gun.md",
     "questions/Research Run and Gun Innovative Systems.md",
-    "questions/Research Contra Series Per-Entry Differentiation.md",
     "wiki/questions/zhc-cosmetics-execution-plan-presentation.html",
     "wiki/questions/zhc-cosmetics-proposal-2026-04-28.html",
     "bin/setup-vault.sh",
