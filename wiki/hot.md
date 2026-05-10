@@ -1,6 +1,6 @@
 ---
 title: Hot Cache
-updated: 2026-05-08
+updated: 2026-05-10
 ---
 
 # Hot Cache
@@ -9,131 +9,120 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Active Research Topic
 
-**Echo Story Spine 락인** (2026-05-08). Contra: Shattered Soldier 시나리오 + MI Final Reckoning 모티프 병합 → ECHO vs VEIL(AI) 디스토피아 SF.
+**런앤건 시스템 카탈로그 3축 완성** (2026-05-10). 콘트라 엔트리별 차별화 + 런앤건 검증 혁신 + cross-장르 이식 합쳐 15페이지 작성. Echo Tier 1 두 번째 axis 권고 = **Mark of the Ninja 가시화 원칙**(저비용·고시너지).
 
-→ **Echo 스토리 골격**: [[Echo Story Spine]] — 로그라인 "AI가 미래를 계산할 때, ECHO는 과거를 되돌린다" + 5 스테이지 아크 + Tier별 자산 budget + 인트로 5줄
-→ Step 1 출처: [[Research Contra Best Story Series]] — Shattered Soldier 선정 + 차용 근거
-→ Step 2 출처: [[MI Final Reckoning Plot]] · [[The Entity AI Villain]] — 디지털/아날로그 dichotomy + AI 빌런 변환
-→ **현재 디자인 베이스라인**: [[Solo Contra 2026 Concept]] — 7코어 적용 매트릭스 + 16개월 작업량 + 다음 3단계 의사결정 트리
-→ Q4/Q5 결론: [[Followup Modern Acceptance And Indie RnG Threshold]] — 1히트 현대 수용성 + 인디 매출 천장
-→ 최신 합성 (런앤건 메타): [[Research Run and Gun Success Patterns]] — 5작품 불변 코어 7가지
-→ 최신 합성 (콘트라): [[Research Contra System Analysis]]
-→ 핵심 매트릭스: [[Run and Gun Success Pattern Matrix]]
-→ 이전 결정 출처: [[Brownfield Project Onboarding]] · [[CCGS Adopt SKILL Definition]] · [[Opinion MetalSlugClone Base Plus Metal Slug Reference]]
-→ 이전 합성: [[Research CCGS Brownfield Onboarding]] · [[Research CCGS Framework And Local Drift]] · [[Research Run and Gun Genre]] · [[Research Battle Cats Subgenre]] · [[Research Lane Defense Game Systems]]
+→ **Topic 1 결과**: [[Research Contra Series Per-Entry Differentiation]] — 1992-2024 9 엔트리 매트릭스 + **2D 측면 고수 + 한 번에 한 axis** 생존 규칙
+→ **Topic 2 결과**: [[Research Run and Gun Innovative Systems]] — 7대 검증 혁신 카탈로그(weapon fusion / Hit Rate / pink parry / 파괴지형 / 2-overload swap / 등)
+→ **Topic 3 결과**: [[Research Cross-Genre Systems For Run and Gun]] — 5대 이식 후보(시간/메타프로그/반응형/불릿타임/스텔스 가시화) + Echo Tier 적용 권고
+→ **메인 매트릭스**: [[Contra Per Entry Mechanic Matrix]] — 1987-2024 시스템별 생존 verdict
+→ **이전 활성 토픽**: [[Echo Story Spine]] — ECHO vs VEIL(AI) 5스테이지 (2026-05-08 락인)
+→ **베이스라인**: [[Solo Contra 2026 Concept]] — 시간 되감기 + 콜라주 + 가까운 미래 SF (v0)
+→ Q4/Q5 결론: [[Followup Modern Acceptance And Indie RnG Threshold]]
+→ 5작품 메타: [[Run and Gun Success Pattern Matrix]] (parent)
 
 ## Top Pages To Read First
 
-1. [[Echo Story Spine]] — **NEW**. Echo 메인 시나리오. ECHO vs VEIL(AI) 디스토피아 + 5 스테이지 + Tier별 자산 budget + 인트로 5줄.
-2. [[Solo Contra 2026 Concept]] — 디자인 베이스라인 v0. 7코어 적용 매트릭스 + 시간 되감기 v0 규칙 + 16개월 작업량.
-3. [[Research Contra Best Story Series]] — **NEW**. 콘트라 시나리오 톱: Shattered Soldier(2002) — Triumvirate 음모 + 다중 엔딩.
-4. [[Followup Modern Acceptance And Indie RnG Threshold]] — Q4/Q5 통합 답변. 1히트 현대 수용성 + 자가퍼블리싱 천장(10-20만).
-5. [[Modern Difficulty Accessibility]] — 2018-2026 접근성 표준 + 1히트 즉사의 현대적 조건.
-6. [[Indie Self Publishing Run and Gun]] — 자가퍼블리싱 정의·경계 + 매출 임계값 매트릭스.
-7. [[Katana Zero]] — 시간 메커닉 + 1히트 즉사 50만 장 모범 사례.
-8. [[The Entity AI Villain]] — **NEW**. MI Final Reckoning AI 빌런 → VEIL 변환 매핑.
-9. [[Run and Gun Success Pattern Matrix]] — 5작품 불변 코어 7가지 + 매출 임계값 + 3D 실패 원인.
-10. [[Research Run and Gun Success Patterns]] — 메타 합성 — 인디 부활 공식 + 실패 케이스 분석.
-11. [[Cooperative Run and Gun Design]] — 진정한 동시 협동 vs 양보형 비교.
-12. [[Research Contra System Analysis]] — 콘트라 무기·생명·시리즈 진화·문화적 영향 종합.
-13. [[Contra Weapon System]] — M/F/L/S/R/B 코드 분석 + Metal Slug H/R/F/L/S/I와 차이.
-14. [[Brownfield Project Onboarding]] — `/adopt` 공식 4-Phase + 7-Step + 6 원칙.
-15. [[IP Avoidance For Game Clones]] — 클론 제작 합법 전략 매트릭스 + Echo IP 회피 적용.
+1. [[Research Contra Series Per-Entry Differentiation]] — **NEW**. 콘트라 9 엔트리 차별화 + 생존 규칙
+2. [[Research Run and Gun Innovative Systems]] — **NEW**. 7대 검증 혁신 카탈로그
+3. [[Research Cross-Genre Systems For Run and Gun]] — **NEW**. 5대 이식 후보 + Echo 권고
+4. [[Contra Per Entry Mechanic Matrix]] — **NEW**. 매트릭스 + 생존 규칙
+5. [[Stealth Information Visualization]] — **NEW**. Mark of the Ninja 원칙. **Echo Tier 1 추천 cross-genre 이식** — 시간 되감기 가시화에 직접 적용
+6. [[Time Manipulation Run and Gun]] — **NEW**. PoP/Braid/Katana Zero 3 모델 + Echo 선택 가이드
+7. [[Hit Rate Grading System]] — **NEW**. Shattered Soldier 그레이딩 + Echo Tier 2 후보
+8. [[Pink Parry System]] — **NEW**. Cuphead 색 어포던스
+9. [[Roguelite Metaprogression For Run and Gun]] — **NEW**. slider-vs-gate 규칙 + Galuga 권고
+10. [[Echo Story Spine]] — Echo 메인 시나리오 (2026-05-08)
+11. [[Solo Contra 2026 Concept]] — 디자인 베이스라인 v0
+12. [[Run and Gun Success Pattern Matrix]] — 5작품 불변 코어 7가지
+13. [[Modern Difficulty Accessibility]] — 1히트 즉사 현대 조건
+14. [[Indie Self Publishing Run and Gun]] — 자가퍼블리싱 천장
+15. [[Research Contra System Analysis]] — 콘트라 종합 합성
 
 ## TL;DR For my-game
 
-**핵심 장르 선택 분기 (2026-05-08 기준, 3개 옵션):**
+**Echo Tier 1 두 번째 axis 권고 (2026-05-10):**
 
-### 선택 A: PvZ형 그리드 레인 디펜스
-- 5레인, 9×5 그리드, 셀 배치 (공간 결정)
-- Sun/Coin 2통화, 첫 10웨이브 수작업
-- 덱 5–10슬롯 캡
+### 락인된 차별화 (변경 없음)
+- 시간 되감기 (PoP-style 자원 모델 — 1히트 스테이크 보존, [[Time Manipulation Run and Gun]])
+- 콜라주 비주얼 / 가까운 미래 SF / 솔로 + Easy 토글
 
-### 선택 B: Battle Cats형 단일 레인 터그오브워
-- 단일 레인, 탭 소환, 자동 전진 (시간 결정)
-- 인-배틀 자동 생성 통화 + XP/에너지 메타
-- 안티 특성 시스템으로 전략 깊이 보완
-- PvE 중심 + 가챠 또는 언락형 수집
+### Tier 1 추가 권고: 스텔스 가시화 원칙 (Klei / Mark of the Ninja)
+- **이유**: 시간 되감기는 본질적으로 "보이지 않는 상태"(토큰, 예측 궤적, 되감기 윈도우). Klei의 binary-affordance 원칙으로 모두 명시 가시화하면 학습 곡선·재미 모두 개선
+- **구현 비용**: low (UI 오버레이만, 게임플레이 로직 없음)
+- **시너지**: 시간 되감기 메카닉과 직결. 다른 후보(weapon fusion, 핑크 패리)는 입력·인지 부하 경쟁 우려
+- **결정 항목**: (a) 빨간 예측 탄도 표시, (b) 은빛 잔상으로 되감기 윈도우, (c) HUD 토큰 카운터
 
-### 선택 C: 런앤건 (메탈슬러그형 액션)
-- 5요소 코어: 이동·점프·동시사격·적패턴·피격결과
-- 무기 픽업 시스템(Metal Slug H/R/F/L/S/I 패턴) 또는 무기 조합(Gunstar Heroes)
-- 세 가지 포지셔닝 선택: 순수계승 / 보스러시(Cuphead) / 로그라이트(Huntdown: Overtime)
-- 코어가 재미없으면 어떤 확장도 구제 불가 — 코어 프로토타입 우선
-- **5작품 불변 코어 7가지** ([[Run and Gun Success Pattern Matrix]]): 횡스크롤 2D / 1히트 즉사 / 무기 다변화 / 보스 전투 / 2인+ 협동 / 결정론적 적 / 기본 무기 안전망
-- **차별화 메커닉 1개 집중** — Metal Slug(탈것), Broforce(파괴 환경), Gunstar(무기 조합). 전부 다 X
-- **3D 전환 금지** — 콘트라 시리즈 3차례(1996/1998/2019) 모두 실패. WayForward 2024 [[Contra Operation Galuga]]는 2D 회귀
+### Tier 2/3 이연 후보
+- **Tier 2 평가**: Galuga-style Perk Shop (slider 모델) — 토큰 +1 등 시간 메카닉 결합 perks
+- **Tier 2 평가**: Hit Rate 그레이딩 — "rewinds-conserved" S-rank, 트루 엔딩 게이트는 거부 (현대 접근성)
+- **Tier 3 only**: 반응형 내러티브 (Hades) — VEIL이 매 죽음마다 확률 멘트 갱신 (대사 양 매우 큼)
+- **거부**: 무기 융합(Gunstar) — 인지 부하 경쟁 / 핑크 패리(Cuphead) — 입력 경쟁 / Mode 7·아이소(Neo Contra) — 관점 변경 금지
 
-### 공통 권장 사항
-- PvE vs PvP 조기 결정 (v1에서 둘 다 위험)
-- 모바일 vs PC/콘솔 조기 결정 (런앤건은 모바일 적합도 낮음)
-- 이벤트 캘린더를 출시 전 6개월치 준비 (라이브서비스 노선일 때)
-- 카드 레벨 메타는 v1에서 도입 보류
-- **IP 회피 절차** ([[IP Avoidance For Game Clones]]): 어떤 장르를 가도 메카닉 자유 모방 + 비주얼·이름·음악 100% 오리지널. 상업 출시 전 IP 변호사 1회 검토 마일스톤 추가.
-- **외부 스캐폴드 채택 전 엔진 일치 확인 의무** ([[Opinion MetalSlugClone Base Plus Metal Slug Reference]]): Unity 코드는 Godot에 이식 불가. 패턴 *아이디어*만 차용하고 Godot 4에서 처음부터 작성 — 더 빠르다.
-- **CCGS 활용 시 절차** ([[Research CCGS Brownfield Onboarding]]): 그린필드면 `/start`, 브라운필드면 먼저 `/reverse-document` → 슬롯 채우기 → 에이전트 시드. 테스팅 하네스 구축 전 컨벤션 변경 금지.
-- **에이전트 자동 재작성 금지** — 인간 검토 후 시스템 단위 점진적 리팩터.
+### 콘트라 생존 규칙 (Echo 설계 비협상 원칙)
+1. 2D 측면 고수 — 3D / 톱다운 / 아이소 모두 거부 ([[Contra Rogue Corps]] 2019 사례)
+2. 한 번에 한 axis만 추가 — Rogue Corps의 4축 동시 실패 학습
+3. 두 후속에서 재사용 = 검증 자산. 단일 엔트리 실험은 옵션 (Mode 7, Neo Contra 아이소)
 
 ## Recent Decisions
 
-- **[2026-05-08]** 📖 **Echo Story Spine 락인** — Contra: Shattered Soldier(2002) Triumvirate 음모 + 다중 엔딩 + MI Final Reckoning(2025) 디지털/아날로그 dichotomy + AI 빌런 모티프 병합. 결과: ECHO(요원) vs VEIL(AI of ARCA Corporation) in NEXUS(2038 메가시티). 시간 되감기 = 인간 비합리성 = AI의 유일한 사각지대. 5 스테이지: 귀환→진실→추격→대결→귀결. (참고: [[Echo Story Spine]] · [[Research Contra Best Story Series]] · [[The Entity AI Villain]])
-- **[2026-05-08]** 📋 **Echo (working title) GDD 정식화** — `design/gdd/game-concept.md` 작성. Tier 1 Prototype(4-6주) / Tier 2 MVP(~6개월) / Tier 3 Full(~16개월) 3티어 락인. 5 Pillars + 6 Anti-Pillars + Visual Identity Anchor(콜라주 SF). Engine=Godot 4.6, Platform=PC Steam. (참고: `design/gdd/game-concept.md`)
-- **[2026-05-08]** 🎯 **Solo Contra 2026 컨셉 락인 (v0)** — 차별화 메커닉=시간 되감기, 비주얼=콜라주, 무대=가까운 미래 SF(2030-2040). 협동은 솔로 QA 부담으로 *제외 결정* 명시. 7코어 중 5개 유지, 1개 축소(무기 4-5), 1개 제거(협동). 다음 3단계: 시간 되감기 v0 프로토(1주) → 콜라주 컨셉아트(3-5일) → 스테이지 1 수직슬라이스(4주). (참고: [[Solo Contra 2026 Concept]])
-- **[2026-05-08]** 🔍 Q4/Q5 해소 — 1히트 즉사 현대 수용성: 즉시 재시작+결정론 패턴+Easy 토글 1개 조건부 수용 (Hotline Miami 500만, Katana Zero 50만 장 검증). 인디 런앤건+0퍼블리셔 200만 장: **사례 미존재** — 현실 천장 10-20만, 50만+는 마케팅 파트너 필요. (참고: [[Followup Modern Acceptance And Indie RnG Threshold]])
-- **[2026-05-08]** 🎯 런앤건 5작품 불변 코어 7가지 + my-game 체크리스트 확정 — Contra/Metal Slug/Gunstar Heroes/Cuphead/Broforce 횡단 분석 결과. 선택 C(런앤건) 시 비협상 원칙: "어렵지만 공정" / 2D 고수 / 1개 차별화 메커닉 집중 / 협동 필수. (참고: [[Research Run and Gun Success Patterns]] · [[Run and Gun Success Pattern Matrix]])
-- **[2026-05-08]** 🔍 `/adopt` 엔진 선결 조건 Q&A 해소 — SKILL.md 권위 출처 직접 검토. 결론: 선결 조건 아님. 엔진 미설정은 Phase 2f에서 자동 진단되며, ADR 존재 여부에 따라 HIGH/BLOCKING으로 등급화. 코드·GDD·ADR 전부 부재인 fresh project만 `/adopt`가 거부. (참고: [[CCGS Adopt SKILL Definition]])
-- **[2026-05-08]** 📘 브라운필드 온보딩 캐노니컬 절차 확정 — CCGS `/adopt` 스킬 4-Phase + 7-Step Migration Plan 공식 채택. 초기 추론 절차(medium) → 공식 절차(high)로 격상. (참고: [[Brownfield Project Onboarding]] · [[CCGS Adopt Brownfield Example]])
-- **[2026-05-08]** ❌ giacoballoccu/MetalSlugClone + alfredo1995/metal-slug 통합 전략 거부 — 엔진 불일치(Unity 2D ↔ Godot 4). 두 패턴(추상 기반 클래스, 2페이즈 보스)은 [[Abstract Base Class Pattern]] / [[Boss Two Phase Design]]의 Godot 4 예제로 처음부터 구현. (참고: [[Opinion MetalSlugClone Base Plus Metal Slug Reference]])
-- **[2026-05-08]** ✅ 로컬 my-game은 CCGS v1.0.0-beta 업스트림 현행 — 별도 동기화 불필요. (참고: [[Research CCGS Framework And Local Drift]])
+- **[2026-05-10]** 🎯 **Echo Tier 1 두 번째 axis = Mark of the Ninja 가시화 원칙** — 시간 되감기 메카닉의 보이지 않는 상태(토큰·예측 탄도·되감기 윈도우)를 모두 명시 가시화. cost low / synergy 매우 높음. weapon fusion·핑크 패리·메타프로그레션은 Tier 2/3 이연. (참고: [[Stealth Information Visualization]] · [[Research Cross-Genre Systems For Run and Gun]])
+- **[2026-05-10]** 📊 **콘트라 9 엔트리 차별화 매트릭스 완성** — 1987-2024 시스템별 생존/실패 verdict. 2D-측면-고수 / 한-axis-한-번 규칙으로 Echo 설계 비협상 원칙 도출. (참고: [[Contra Per Entry Mechanic Matrix]] · [[Research Contra Series Per-Entry Differentiation]])
+- **[2026-05-10]** 📚 **런앤건 7대 혁신 + 5대 cross-장르 카탈로그** — 재사용 메뉴 정립. Echo가 시간 되감기 외 어떤 axis를 추가할지 평가 자료 완비. (참고: [[Research Run and Gun Innovative Systems]] · [[Research Cross-Genre Systems For Run and Gun]])
+- **[2026-05-08]** 📖 Echo Story Spine 락인 — ECHO vs VEIL in NEXUS 2038 (참고: [[Echo Story Spine]])
+- **[2026-05-08]** 🎯 Solo Contra 2026 컨셉 락인 v0 — 시간 되감기 + 콜라주 + 가까운 미래 SF (참고: [[Solo Contra 2026 Concept]])
+- **[2026-05-08]** 🔍 Q4/Q5 해소 — 1히트 현대 수용성 / 인디 자가퍼블 천장 (참고: [[Followup Modern Acceptance And Indie RnG Threshold]])
 
 ## Resolved Questions
 
+> [!key-insight] 2026-05-10 해소
+> - **Q (콘트라 시리즈 엔트리별 차별화 시스템은 무엇인가)**: 9 엔트리 모두 매핑 완료 ([[Contra Per Entry Mechanic Matrix]]). 생존 규칙 2개 도출 (2D-고수 / 한-axis).
+> - **Q (런앤건에서 검증된 혁신 시스템은 무엇인가)**: 7대 카탈로그 ([[Research Run and Gun Innovative Systems]]).
+> - **Q (런앤건에 cross-장르 이식 가능한 시스템은 무엇인가)**: 5대 후보 + Echo 적용 권고 ([[Research Cross-Genre Systems For Run and Gun]]).
+
 > [!key-insight] 2026-05-08 해소
-> - **Q4 (1히트 현대 수용성)**: 장르 팬은 *즉시 재시작 + 결정론 패턴 + Easy 토글 1개* 조건에서 수용. Hotline Miami 500만 / Katana Zero 50만 장 검증 ([[Followup Modern Acceptance And Indie RnG Threshold]]).
-> - **Q5 (0퍼블리셔 200만 장 인디 런앤건)**: 사례 미존재. Cuphead=Microsoft, Broforce·Katana Zero·Hotline Miami=Devolver. 자가퍼블리싱 런앤건 현실 천장 10-20만 ([[Indie Self Publishing Run and Gun]]).
+> - **Q4 (1히트 현대 수용성)**: 즉시 재시작 + 결정론 + Easy 토글 1개 조건부 수용
+> - **Q5 (0퍼블리셔 200만 장 인디 런앤건)**: 사례 미존재. 자가퍼블 천장 10-20만
 
 ## Open Questions
 
-### Echo (Tier 1 Prototype 미해결)
-- **[NEW]** ECHO 성별 — 성별 없는 코드명 유지 vs 명시적 설정? (Tier 1 콘셉트아트 후 결정)
-- **[NEW]** Sigma Unit 생존자 서브플롯 — 전 파트너 배반 아크를 Tier 3에 포함할지 (Tier 2 게이트 후 결정)
+### Echo Tier 1 (2026-05-10 추가)
+- **[NEW]** 시간 되감기 가시화 시 빨간 예측 탄도 = 모든 적탄 vs 다음 1초 한정?
+- **[NEW]** 토큰 충전 방식 — 자동 시간경과 vs 적 처치 vs 픽업?
+- **[NEW]** Easy 모드는 토큰 무한 vs Easy = 가시화 자동 ON?
 
-### Solo Contra 2026 (베이스라인 미해결)
-- **[OPEN]** 스토리 톤 — 디스토피아 진지(Blade Runner) vs 풍자 펑크(Bioshock × Monty Python)? ([[Echo Story Spine]]은 디스토피아 진지로 *기본 가정* — 콘셉트아트 후 최종 락인)
-- **[NEW]** 시간 되감기 시 적·탄환 동시 vs 플레이어만? (Braid 모델 vs 체크포인트 모델)
-- **[NEW]** 콜라주 캐릭터 사진 출처 — 스톡 / 직접 촬영 / 생성형 AI? IP·라이선스 비교
-- **[NEW]** Godot 4 시간 되감기 구현 패턴 — 상태 스냅샷 vs 입력 리플레이?
-- **[NEW]** 무기 4-5종 카탈로그 — Contra M/F/L/S/R/B 중 어느 3-4개를 SF 재해석?
-- **[NEW]** Easy/Hard 토큰 슬라이더 — 단일 토글(Cuphead Simple) vs 슬라이더(Hades God Mode)?
+### Echo Tier 2 평가 후보 (2026-05-10 추가)
+- **[NEW]** Perk Shop (Galuga 모델) 도입 여부 — Tier 2 게이트에서 결정
+- **[NEW]** Hit Rate "rewinds-conserved" S-rank 도입 여부 — 게이팅 없이 코스메틱만
+- **[NEW]** 분기 경로(Hard Corps 모델) — Tier 3 16개월 안에 가능한가?
 
-### 콘트라/장르 잔여
-- **[NEW]** Contra 슈도-3D 기지 스테이지(2/4)가 후속 런앤건에서 거의 사라진 이유 — 구현 비용 대비 효과 불명?
-- **[NEW]** 코나미 코드의 판매 효과 — 접근성↑ → 판매↑ vs 클리어율↑ → 재판매↓?
-- **[NEW]** WayForward 외주 의존 패턴 — 코나미 내부 런앤건 역량 공백인지, 라이선싱 전략인지?
-- **[NEW]** CCGS로 출시된 완성 게임이 존재하는가? (이슈 #34 미해결 — 프레임워크 검증 부재)
-- **[NEW]** Godot 4 GDScript 전용 런앤건 오픈소스 스캐폴드 존재 여부 — Unity 레퍼런스 거부 후 대체 필요
-- **[NEW]** `/reverse-document` 스킬이 Godot 4 `.gd` 파일을 정확히 파싱하는가? (브라운필드 온보딩 핵심)
-- **[NEW]** Godot 4.5+ `@abstract` 어노테이션의 정확한 동작 방식 — 4.6 환경에서 공식 문서 교차 확인 필요
-- **[NEW]** OMC와 CCGS 간 스킬 네임스페이스 충돌 가능성
-- 장르 선택: 디펜스(A/B) vs 액션(C)? 팀 역량과 시장 포지션이 결정 변수
-- 런앤건이라면 3가지 포지셔닝 — 순수계승 / 보스러시 / 로그라이트?
-- 모바일 적합도 — A/B는 모바일 친화, C는 PC/콘솔 친화
-- 단일 레인(Battle Cats형) vs 5레인(PvZ형)?
-- 가챠 수익화 여부 — 규제 환경과 팀 역량 고려 필요
+### Echo Tier 1 (2026-05-08 미해결, 유지)
+- **[OPEN]** ECHO 성별 — 코드명 유지 vs 명시 (Tier 1 콘셉트아트 후 결정)
+- **[OPEN]** 스토리 톤 — 디스토피아 진지 vs 풍자 펑크 (디스토피아 *기본 가정*)
+- **[OPEN]** 시간 되감기 시 적·탄환 동시 vs 플레이어만? (Braid vs 체크포인트 모델)
+- **[OPEN]** 콜라주 캐릭터 사진 출처 — 스톡 / 직접 / 생성형 AI?
+- **[OPEN]** Godot 4 시간 되감기 구현 패턴 — 상태 스냅샷 vs 입력 리플레이?
+- **[OPEN]** 무기 4-5종 카탈로그 — Contra M/F/L/S/R/B 중 어느 3-4개를 SF 재해석?
+- **[OPEN]** Easy/Hard 토큰 슬라이더 — 단일 토글 vs 슬라이더?
+
+### 메타 / 장르 잔여 (2026-05-10 추가)
+- **[NEW]** Mode 7 회전 스테이지(Contra III)가 후속에서 사라진 이유 — 하드웨어 의존 + 3D 등장 가설
+- **[NEW]** Hit Rate 그레이딩이 Konami 외부에서 채택되지 않은 이유 — 현대 접근성 갈등 가설
+- **[NEW]** Broforce 이후 파괴 지형 런앤건 후속 부재 이유 — 구현 비용 가설
+- **[NEW]** 순수 2D 불릿타임(Max Payne식) 미존재 이유 — 2D 카메라 spectacle 약화 가설
+
+### 그 외 미해결
+- 장르 선택: 디펜스(A/B) vs 액션(C)?
+- 모바일 적합도 — 런앤건은 PC/콘솔 친화
 - 라이브서비스 목표 기간 — 1년 vs 5년+ vs 13년?
-- Match length target? Determines whether to use unit variety or upgrade paths.
-- Single-player roguelite vs PvP-first?
-- Theme/IP for plants/zombies analogue?
+- CCGS로 출시된 완성 게임이 존재하는가?
 
 ## Cross-Reference Density
 
-- Concepts: **30** (+1: Echo Story Spine)
-- Reference games: 17 (no change)
-- Characters / fictional entities: **1** (+1: The Entity AI Villain — MI Final Reckoning 빌런)
-- Sources catalogued: **21** (+2: Contra Shattered Soldier Story Source, MI Final Reckoning Plot)
-- Developers / orgs / repos: 4 (George Fan, PONOS, SNK, Donchitos CCGS Repo)
-- Synthesis pages: **10** (+1: Research Contra Best Story Series)
-- Design baselines: 1 (Solo Contra 2026 Concept — v0)
-- Story spines: **1** (Echo Story Spine — ECHO vs VEIL, NEXUS 2038)
-- High-confidence pages: Brownfield Project Onboarding, Run-and-Gun Success Pattern Matrix
-- Total wiki files: **86** (.md)
+- Concepts: **36** (+6: Contra Per Entry Mechanic Matrix, Hit Rate Grading System, Pink Parry System, Time Manipulation Run and Gun, Roguelite Metaprogression For Run and Gun, Stealth Information Visualization)
+- Reference games: **23** (+6: Contra Hard Corps, Contra III The Alien Wars, Contra Shattered Soldier, Neo Contra, Hard Corps Uprising, Contra Rogue Corps)
+- Characters / fictional entities: 1
+- Sources catalogued: 21 (no new dedicated source pages this session — URLs cited inline in synthesis pages)
+- Synthesis pages: **13** (+3: Research Contra Series Per-Entry Differentiation, Research Run and Gun Innovative Systems, Research Cross-Genre Systems For Run and Gun)
+- Design baselines: 1 (Solo Contra 2026 Concept v0)
+- Story spines: 1 (Echo Story Spine)
+- Total wiki files: **101** (.md, +15 this session)
