@@ -20,21 +20,21 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Top Pages To Read First
 
-1. [[Research Contra Series Per-Entry Differentiation]] — **NEW**. 콘트라 9 엔트리 차별화 + 생존 규칙
-2. [[Research Run and Gun Innovative Systems]] — **NEW**. 7대 검증 혁신 카탈로그
-3. [[Research Cross-Genre Systems For Run and Gun]] — **NEW**. 5대 이식 후보 + Echo 권고
-4. [[Contra Per Entry Mechanic Matrix]] — **NEW**. 매트릭스 + 생존 규칙
-5. [[Stealth Information Visualization]] — **NEW**. Mark of the Ninja 원칙. **Echo Tier 1 추천 cross-genre 이식** — 시간 되감기 가시화에 직접 적용
-6. [[Time Manipulation Run and Gun]] — **NEW**. PoP/Braid/Katana Zero 3 모델 + Echo 선택 가이드
-7. [[Hit Rate Grading System]] — **NEW**. Shattered Soldier 그레이딩 + Echo Tier 2 후보
-8. [[Pink Parry System]] — **NEW**. Cuphead 색 어포던스
-9. [[Roguelite Metaprogression For Run and Gun]] — **NEW**. slider-vs-gate 규칙 + Galuga 권고
-10. [[Echo Story Spine]] — Echo 메인 시나리오 (2026-05-08)
-11. [[Solo Contra 2026 Concept]] — 디자인 베이스라인 v0
-12. [[Run and Gun Success Pattern Matrix]] — 5작품 불변 코어 7가지
-13. [[Modern Difficulty Accessibility]] — 1히트 즉사 현대 조건
-14. [[Indie Self Publishing Run and Gun]] — 자가퍼블리싱 천장
-15. [[Research Contra System Analysis]] — 콘트라 종합 합성
+1. [[Deterministic Game AI Patterns]] — **NEW**. 결정론 게임 AI 활용 4 zone + Echo Tier 1-3 권고 (Cuphead FSM + Trackmania ghost + 사망 히트맵)
+2. [[AI Playtest Bot For Boss Validation]] — **NEW**. 4 봇 아키타입 + 메트릭 + 시간메커닉 검증 시나리오 4종
+3. [[Research Contra Series Per-Entry Differentiation]] — 콘트라 9 엔트리 차별화 + 생존 규칙
+4. [[Research Run and Gun Innovative Systems]] — 7대 검증 혁신 카탈로그
+5. [[Research Cross-Genre Systems For Run and Gun]] — 5대 이식 후보 + Echo 권고
+6. [[Contra Per Entry Mechanic Matrix]] — 매트릭스 + 생존 규칙
+7. [[Stealth Information Visualization]] — Mark of the Ninja 원칙. **Echo Tier 1 추천** — 시간 되감기 가시화
+8. [[Time Manipulation Run and Gun]] — PoP/Braid/Katana Zero 3 모델 + Echo 선택 가이드
+9. [[Hit Rate Grading System]] — Shattered Soldier 그레이딩 + Echo Tier 2 후보
+10. [[Pink Parry System]] — Cuphead 색 어포던스
+11. [[Roguelite Metaprogression For Run and Gun]] — slider-vs-gate 규칙 + Galuga 권고
+12. [[Echo Story Spine]] — Echo 메인 시나리오 (2026-05-08)
+13. [[Solo Contra 2026 Concept]] — 디자인 베이스라인 v0
+14. [[Run and Gun Success Pattern Matrix]] — 5작품 불변 코어 7가지
+15. [[Boss Two Phase Design]] — HP 임계값 + State Machine 보스 2페이즈
 
 ## TL;DR For my-game
 
