@@ -1,10 +1,22 @@
 # ADR-0001: Time Rewind Scope — Player-Only Checkpoint Model
 
 ## Status
-Accepted
+Accepted (with Amendment 1 — 2026-05-10)
 
 ## Date
 2026-05-09
+
+## Amendments
+
+### Amendment 1 — Memory figure correction (2026-05-10)
+
+**Driver**: Time Rewind GDD design-review Round 1 (creative-director synthesis 2026-05-10) + ADR-0002 Amendment 1 cosmetic correction propagation.
+
+**Issue**: Original Performance Implications quoted "PlayerSnapshot ≈ 32 bytes ... 90 프레임 ring buffer = 2.88KB resident" and Validation Criteria #1 + Verification Required #3 set "≤ 5 KB" memory ceiling. The 32-byte figure omitted Godot 4 Resource overhead (~128–192 B per instance for refcount, script ref, RID, signal connection map). Re-measured against Godot 4.6: actual is ~192 B per slot, ring buffer ≈ 17–21 KB. **Worst case with full subscriber connections may reach 36 KB** (per performance-analyst Round 1 review). The "≤ 5 KB" validation criterion would auto-fail at Tier 1 first run despite correct implementation.
+
+**Resolution**: Update Verification Required #3 + Validation Criteria #1 + Performance Implications.Memory line to "≤ 25 KB resident (typical 17–21 KB; worst case 36 KB with full Resource overhead)". Behavior unchanged — still ≤ 0.002% of 1.5 GB ceiling. This is a measurement correction, not an architectural change.
+
+**Backwards compatibility**: All public signal contracts and snapshot fields unchanged. Amendment scope: documentation only.
 
 ## Engine Compatibility
 
@@ -15,7 +27,7 @@ Accepted
 | **Knowledge Risk** | HIGH — 4.6 is post-LLM-cutoff |
 | **References Consulted** | `docs/engine-reference/godot/VERSION.md`, `docs/engine-reference/godot/breaking-changes.md`, `docs/engine-reference/godot/current-best-practices.md` (Physics 4.6 section), Godot 4.6 release notes, `github.com/ImTani/godot-time-rewind-2d` (community plugin reference for 2D pattern), GDC 2010 Jonathan Blow Braid implementation talk |
 | **Post-Cutoff APIs Used** | None — `CharacterBody2D`, `AnimationPlayer.seek()`, `Node.get_tree().physics_frame` are all pre-4.4 stable APIs. Jolt 4.6 default applies to 3D only and is not used by Echo (2D run-and-gun). |
-| **Verification Required** | (1) Tier 1 Week 1 prototype confirms 60fps maintained with 90-frame ring buffer. (2) Determinism test: 1000 rewind cycles produce bit-identical state. (3) Memory profiler confirms ring buffer ≤ 5KB resident. |
+| **Verification Required** | (1) Tier 1 Week 1 prototype confirms 60fps maintained with 90-frame ring buffer. (2) Determinism test: 1000 rewind cycles produce bit-identical state (same machine, same build — see ADR-0003 R5). (3) Memory profiler confirms ring buffer **≤ 25 KB resident** (Amendment 1 정정: typical 17–21 KB, worst case 36 KB with full Resource overhead). |
 
 ## ADR Dependencies
 
@@ -216,7 +228,7 @@ class_name PlayerSnapshot extends Resource
 
 | GDD System | Requirement | How This ADR Addresses It |
 |---|---|---|
-| game-concept.md | "1.0-1.5초 회수 시점 (시작 토큰 3, 보스 처치 시 +1)" (라인 75) | 90 프레임 ring buffer @ 60fps = 1.5초 윈도우. 토큰 카운터 시그널로 HUD 동기화. |
+| game-concept.md | "1.5초 lookback window + 사망 직전 안전 위치 즉시 복원 (시작 토큰 3, max_tokens=5)" (Round 1 정정 후 copy) | 90 프레임 ring buffer @ 60fps = 1.5초 lookback. RESTORE_OFFSET_FRAMES=9 (0.15s pre-death). 토큰 카운터 시그널로 HUD 동기화. |
 | game-concept.md | Pillar 1 "처벌이 아닌 학습 도구" (라인 132) | Player-only 모델은 적/탄환을 그대로 두므로 *학습된 패턴*에 *다르게 대응* 카타르시스가 정의 그대로 작동 |
 | game-concept.md | Pillar 2 "결정론 패턴, 운은 적이다" (라인 138) | 적 행동이 되감기 영향을 받지 않음 → 결정론 보존 |
 | game-concept.md | "Easy 토글: 토큰 무한, Hard: 토큰 0" (라인 64) | 토큰 시스템이 단일 카운터 변수이므로 Difficulty Toggle System(시스템 #20)에서 trivially 조작 가능 |
@@ -226,7 +238,7 @@ class_name PlayerSnapshot extends Resource
 ## Performance Implications
 
 - **CPU**: 매 physics tick마다 1 PlayerSnapshot 생성 → 7 필드 복사 ≈ 50ns/tick. 60fps × 50ns = 0.3μs/sec → 0.0018% CPU. 무시 가능.
-- **Memory**: PlayerSnapshot ≈ 32 bytes (Vector2×2 + int×3 + float×2 + bool×1 + StringName×1 (interned)). 90 프레임 ring buffer = 2.88KB resident. 1.5GB ceiling의 0.0002%. 무시 가능.
+- **Memory**: PlayerSnapshot raw fields = 48 B (Vector2×2 + int×3 + float×2 + bool×1 + StringName×1 (interned) + captured_at_physics_frame). **Amendment 1 정정 figure**: Godot 4 Resource overhead ≈ 128–192 B per instance. 90 프레임 ring buffer ≈ **17–21 KB typical, 36 KB worst case** (subscriber connections 포함). 1.5GB ceiling의 0.002%. 무시 가능. 원래 표기 "2.88 KB / ≤5 KB" 는 Resource overhead 미반영 — 실제 측정값은 4× 차이.
 - **Load Time**: 시스템 초기화 시 ring buffer pre-allocate (90개 PlayerSnapshot Resource 인스턴스). ~0.1ms 1회 비용. 무시 가능.
 - **Network**: N/A — Echo는 single-player.
 
@@ -238,7 +250,7 @@ class_name PlayerSnapshot extends Resource
 
 이 ADR이 옳았다는 증거:
 
-1. **Tier 1 Week 1 prototype**: 90-frame ring buffer로 ECHO 단독 되감기 동작. 60fps 유지. Memory profiler 5KB 미만 확인.
+1. **Tier 1 Week 1 prototype**: 90-frame ring buffer로 ECHO 단독 되감기 동작. 60fps 유지. Memory profiler **≤ 25 KB 확인** (Amendment 1 정정 — typical 17–21 KB; ≤ 5 KB 원본은 Resource overhead 미반영으로 자동 fail).
 2. **결정성 테스트**: 같은 입력 시퀀스 1000회 반복 실행 시 매 회 동일 시각 동일 위치에서 동일 적·탄환 상태 발생. PASS = 결정성 100%.
 3. **Pillar 1 검증 (플레이테스트)**: 첫 사용자 5명 중 4명 이상이 "사망 후 다시 시도할 때 *적 패턴이 같으니 내가 다르게 행동해야겠다*"라고 자발적으로 표현. 실패 시 튜토리얼 디자인 보강.
 4. **Pillar 2 검증 (개발자 테스트)**: 같은 적이 같은 시간에 같은 패턴으로 행동 — 이 사실이 되감기 발동 후에도 일관됨 확인.

@@ -195,12 +195,16 @@ Godot 4.6의 `Area2D.collision_layer` / `collision_mask`는 32비트. 본 시스
 ECHO HurtBox.area_entered(HitBox)
   ↓ hurtbox_hit(cause) emit
   ↓ ECHO Damage 컴포넌트가 핸들
+  0. if _pending_cause != &"": return       # ← Round 5 first-hit lock (cross-doc S1 fix 2026-05-10)
+                                            #   E.1 / time-rewind.md Rule 17 invariants 단일 출처 enforcement
   1. _pending_cause = cause                 # stage 2 인스턴스 저장 — emit *이전*
   2. emit lethal_hit_detected(cause)        # TRC 캐시 (frame N)
   3. emit player_hit_lethal(cause)          # SM DYING 전이
 ```
 
 > **Ordering invariant** (godot-gdscript-specialist 권고): `_pending_cause` 할당이 emit *이전*에 실행되어야 한다. 동기 시그널 핸들러가 `commit_death()`를 같은 호출 스택에서 호출하는 future edge case 방어. AC-9의 `_pending_cause = cause₀` 검증은 emit 후 시점에서 cause₀가 set 되어 있음을 가정.
+
+> **First-hit lock invariant** (Round 5 cross-doc S1 fix 2026-05-10 — `gdd-cross-review-2026-05-10.md`): step 0 가드는 두 invariant의 *유일한 enforcement site*다 — (a) `damage.md` E.1 "_pending_cause는 첫 hit의 cause로 고정" 그리고 (b) `time-rewind.md` Rule 17 "같은 틱 다중 치명타가 `_lethal_hit_head`를 재캐시하는 것을 차단". SM `_lethal_hit_latched`는 step 3 이후의 *secondary* 가드일 뿐이며, lethal_hit_detected (step 2) 와 player_hit_lethal (step 3) 가 별도 시그널이기 때문에 SM 측 latch만으로는 TRC의 `_lethal_hit_head` 재캐시를 차단할 수 없다. `_pending_cause`는 `commit_death()` 또는 `cancel_pending_death()`에서 `&""`로 클리어되므로 다음 lethal 사건의 첫 hit는 정상 통과한다. AC-36 검증.
 
 #### C.3.3 stage 2 — `death_committed` 발화 (frame N+k, k=12 default)
 
@@ -258,7 +262,7 @@ Boss HurtBox.area_entered(HitBox)
        emit boss_hit_absorbed(self.entity_id, phase_index)
        # → VFX/SFX 피드백 트리거. UI 변화 없음. hits_remaining 비전파 (DEC-5).
   3. elif phase_index < final_phase_index:
-       emit boss_pattern_interrupted(self.entity_id, phase_index)   # Boss Pattern SM cleanup 트리거
+       emit boss_pattern_interrupted(self.entity_id, phase_index)   # Boss Pattern SM cleanup 트리거 — emit value `phase_index`는 pre-increment 값 (= F.3 declared param `prev_phase_index`)
        phase_index += 1
        phase_hits_remaining = phase_hp_table[phase_index]
        _phase_advanced_this_frame = true                              # lock set
@@ -637,11 +641,10 @@ is_invulnerable(echo_hurtbox: HurtBox) := !echo_hurtbox.monitorable
 **상황**: 관통 적 탄환 + 직접 충돌하는 다른 적이 같은 물리 틱에 ECHO HurtBox에 area_entered emit.
 
 **결과**:
-- 첫 area_entered → ECHO Damage가 `lethal_hit_detected(cause₀)` + `player_hit_lethal(cause₀)` emit. SM이 ALIVE → DYING 전이 + `_lethal_hit_latched = true` set.
-- 두 번째 area_entered → ECHO Damage가 `hurtbox_hit` 재emit하지만, SM의 dispatch 가드(state-machine AC-11)가 latch=true를 보고 무시.
-- TRC의 `_lethal_hit_head`는 첫 emit에서 캐시 (같은 frame N의 캐시 1회).
-- `_pending_cause`는 첫 hit의 cause로 고정. 잔여 hit cause는 폐기.
-- **검증**: state-machine.md AC-12 (단일 DYING 전이 + 단일 history entry).
+- 첫 area_entered → ECHO Damage가 step 0 first-hit lock 가드(`_pending_cause == &""` → 통과) → step 1 `_pending_cause = cause₀` → step 2 `lethal_hit_detected(cause₀)` emit (TRC `_lethal_hit_head` 캐시) → step 3 `player_hit_lethal(cause₀)` emit. SM이 ALIVE → DYING 전이 + `_lethal_hit_latched = true` set.
+- 두 번째 area_entered (같은 frame N 또는 DYING grace 중 N+k) → ECHO Damage `_on_hurtbox_hit(cause₁)` 재진입 → **step 0 first-hit lock**: `_pending_cause = cause₀ != &""` → 즉시 return. step 1/2/3 어느 것도 실행되지 않으며, `_pending_cause` 덮어쓰기 X · `lethal_hit_detected` 재emit X (TRC `_lethal_hit_head` 재캐시 X) · `player_hit_lethal` 재emit X. SM의 `_lethal_hit_latched` 가드는 step 3 이후의 secondary defence (Damage step 0이 이미 차단했으므로 도달 안 함).
+- 결과: `_pending_cause = cause₀` 보존 → 12프레임 후 `commit_death(cause₀)` emit. TRC `_lethal_hit_head`도 첫 emit 시점에 캐시된 값 보존.
+- **검증**: AC-36 (first-hit lock — Round 5 cross-doc S1 fix). 보조: state-machine.md AC-12 (단일 DYING 전이 + 단일 history entry). 단일 출처: `damage.md` C.3.2 step 0.
 
 ### E.2 REWINDING 중 적 탄환 명중 시도
 
@@ -836,7 +839,7 @@ is_invulnerable(echo_hurtbox: HurtBox) := !echo_hurtbox.monitorable
 |---|---|---|---|
 | `Damage.commit_death() -> void` | #5 SM (DyingState.exit()) | grace 만료 시 | `_pending_cause`로 `death_committed` emit. `_pending_cause = &""` 초기화. **Idempotent**: `_pending_cause == &""`이면 즉시 return. |
 | `Damage.cancel_pending_death() -> void` | #5 SM (RewindingState.enter()) | rewind 소비 시 | `_pending_cause = &""` 초기화. emit 없음. **Idempotent**: 이미 클리어 시 silent no-op. |
-| `Damage.start_hazard_grace() -> void` | #5 SM (RewindingState.exit()) | 신규 (DEC-6) — i-frame 종료 직후 | `_hazard_grace_remaining = hazard_grace_frames` set. `_physics_process`에서 카운트다운. |
+| `Damage.start_hazard_grace() -> void` | #5 SM (RewindingState.exit()) | 신규 (DEC-6) — i-frame 종료 직후 | `_hazard_grace_remaining = hazard_grace_frames + 1` set (Round 4 B-R4-1: `+ 1`은 동프레임 priority-2 decrement 보상; 효과적 12 flush 차단 윈도우). `_physics_process`에서 카운트다운. 단일 출처: C.6.5 / G.1. |
 
 > **단방향성 보장**: 호출 방향은 *항상 외부 → Damage*. Damage는 외부 method를 호출하지 *않는다* — 시그널만 발행. 이로써 forbidden_pattern `cross_entity_sm_transition_call` + `damage_polls_sm_state` 우회 + 의존 그래프 순환 방지.
 
@@ -1066,7 +1069,7 @@ if hb.cause == &"" and not _resolved_cause:
 | AC | 검증 내용 | Test Method | Type |
 |---|---|---|---|
 | **AC-8** | ECHO HurtBox area_entered 시 같은 frame 안에 `_pending_cause = cause` set 후 `lethal_hit_detected(cause)` + `player_hit_lethal(cause)` 정확히 1회씩 emit (Ordering invariant). 두 시그널 모두 동일 cause 인자. **추가 (Round 3)**: `HurtBox.hurtbox_hit` 시그널은 정확히 1회 emit (HitBox 측에서 — C.1.2 step 2). Damage `_on_hurtbox_hit` 핸들러는 `hurtbox_hit`를 재emit하지 *않음* | GUT: spy emit 카운트 (lethal_hit_detected=1, player_hit_lethal=1, hurtbox_hit=1, **재emit 0회**) + cause 비교 + emit 시점 `_pending_cause` 검증 | Logic |
-| **AC-9** | E.1 동프레임 다중 hit: 첫 emit이 `_pending_cause = cause₀` set. 두 번째 hit는 SM latch 가드(state-machine AC-11)에 의해 새 emit 폐기. `_pending_cause`는 cause₀ 유지 | Integration: Damage 컴포넌트 + SM stub (`_lethal_hit_latched=true` 강제 set) + 두 번째 area_entered → `_pending_cause` 검증 | **Integration** |
+| **AC-9** | E.1 동프레임 다중 hit: 첫 emit이 `_pending_cause = cause₀` set. **Round 5 갱신 (2026-05-10)**: 둘째 hit는 *primary*로는 Damage step 0 first-hit lock(C.3.2)에 의해 즉시 return → `lethal_hit_detected`/`player_hit_lethal` 둘 다 emit 0회. SM `_lethal_hit_latched`는 secondary defence (Damage step 0 우회 시에만 활성). `_pending_cause`는 cause₀ 유지 — 검증 시점은 동일. | Integration: Damage 컴포넌트 + SM stub + 두 번째 area_entered → emit-count 0회 + `_pending_cause == cause₀` 강비교 (AC-36 first-hit lock detail GUT scenario 참조) | **Integration** |
 | **AC-10** | SM이 `damage.commit_death()` 호출 시 `death_committed(_pending_cause)` emit + 호출 후 `_pending_cause == &""` | GUT: pre-set `_pending_cause` + commit_death 호출 + spy | Logic |
 | **AC-11** | SM이 `damage.cancel_pending_death()` 호출 시 `death_committed` emit 0회 + 호출 후 `_pending_cause == &""` | GUT: cancel_pending_death + emit 카운트 | Logic |
 | **AC-12** | REWINDING 시뮬레이션 (echo_hurtbox.monitorable = false) + 적 HitBox area 발사 → `HitBox.area_entered` 발화 0회 → `lethal_hit_detected` emit 0회 | Integration: SM RewindingState.enter() + HitBox 스폰 + 두 시그널 모두 spy 카운트 | Integration |
@@ -1114,7 +1117,7 @@ if hb.cause == &"" and not _resolved_cause:
 
 > **AC-26/AC-27 정책 변경**: 본 두 AC는 *문서 상태 검사*이므로 BLOCKING 자동 테스트 게이트로 부적합 (qa-lead 권고). PR Review checklist의 ADVISORY 항목으로 격하. CI 자동화는 OQ-DMG-5 (`tools/ci/gdd_consistency_check.gd`) 작성 시 BLOCKING으로 환원.
 
-### H.9 신규 ACs (AC-28 ~ AC-33 — 커버리지 갭 + DEC-5/6/F.4.1)
+### H.9 신규 ACs (AC-28 ~ AC-36 — 커버리지 갭 + DEC-5/6/F.4.1 + Round 5 first-hit lock)
 
 | AC | 검증 내용 | Test Method | Type |
 |---|---|---|---|
@@ -1126,6 +1129,7 @@ if hb.cause == &"" and not _resolved_cause:
 | **AC-33** | DEC-6 hazard grace 진단 술어: `should_skip_hazard(cause)` 4 case 검증 — (a) `_hazard_grace_remaining=0 + cause=hazard_spike` → false (b) `=12 + hazard_spike` → true (c) `=12 + projectile_enemy` → false (d) `=12 + cause=&""` → false | GUT: 4 case 직접 호출 | Logic |
 | **AC-34** | `enemy_killed` 시그널 전체 경로: ECHO Projectile HitBox(L2) → Enemy HurtBox(L3) area_entered → `enemy_killed(entity_id, cause)` emit 1회 + cause는 ECHO Projectile의 `host` 분기로 결정 (D.3.1) | GUT: ECHO Projectile + Enemy HurtBox 시뮬레이션 + spy | Logic |
 | **AC-35** | Layer 완전성: 6개 호스트(`echo`, `echo_proj`, `enemy`, `enemy_proj`, `hazard`, `boss`) 각각 인스턴스화 시 collision_layer 정확히 단일 비트 set + collision_mask가 C.2.2 매트릭스 정확 일치 | GUT: 6 호스트 .tscn 로드 + 12 값 (layer×6 + mask×6) 모두 강비교 | Logic |
+| **AC-36** | C.3.2 step 0 first-hit lock (Round 5 cross-doc S1 fix 2026-05-10): ECHO Damage `_on_hurtbox_hit`에 `cause₀`로 진입 → `_pending_cause = cause₀`, `lethal_hit_detected` emit 1회, `player_hit_lethal` emit 1회. *같은 frame N* 또는 *DYING 윈도우 N+1..N+11 중* `cause₁`로 재진입 → step 0 가드가 `_pending_cause != &""` 감지 → 즉시 return → `_pending_cause` 변경 X (`cause₀` 보존) + `lethal_hit_detected` emit 0회 (TRC `_lethal_hit_head` 재캐시 차단) + `player_hit_lethal` emit 0회. `commit_death()` 호출 후 `_pending_cause = &""` 클리어 → 다음 lethal 사건은 정상 통과. | GUT: ECHO Damage 인스턴스 + 첫 `hurtbox_hit(cause₀)` + 즉시 두 번째 `hurtbox_hit(cause₁)` + `lethal_hit_detected`/`player_hit_lethal` emit-count spy + `_pending_cause` member 강비교. 추가 시나리오: `commit_death()` 호출 후 클리어 검증 + 새 `hurtbox_hit(cause₂)` → 정상 1회 emit. | Logic |
 
 ### H.10 Test File Layout (갱신)
 

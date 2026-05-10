@@ -31,7 +31,7 @@
 
 ## Core Fantasy
 
-> "당신은 시간의 1초를 회수할 수 있는 작전 요원이다. 죽음은 끝이 아니라 *학습*이다 — 적의 한 패턴을 깨뜨릴 때마다 그 1초가 당신을 조금 더 빠르게, 조금 더 영리하게 만든다."
+> "당신은 시간의 한 순간을 *철회*할 수 있는 작전 요원이다. 1.5초 lookback window에서 사망 직전 안전 위치로 즉시 복원되는 '철회' 토큰을 보유한다. 죽음은 끝이 아니라 *학습*이다 — 적의 한 패턴을 깨뜨릴 때마다 그 *철회*가 당신을 조금 더 빠르게, 조금 더 영리하게 만든다."
 
 플레이어가 다른 게임에서 못 얻는 것: 1히트 즉사의 즉각적 좌절이 1초 회수의 *즉각적 회복*으로 전환된다. 처벌 → 학습 도구로 메커닉 정체성이 바뀐다. (Solo Contra 2026 Concept Q4 결론 적용)
 
@@ -39,13 +39,14 @@
 
 ## Unique Hook
 
-> "Like Contra/Katana Zero, AND ALSO 죽음 직후 1.0-1.5초를 *사후* 회수하는 토큰을 보유하고, 보스를 깨면 토큰이 충전된다."
+> "Like Contra/Katana Zero, AND ALSO 1.5초 lookback window로 사전 안전 위치를 즉시 복원하는 '철회' 토큰을 보유하고, 보스를 깨면 토큰이 충전된다."
 
 Hook 검증:
 - ✅ 한 문장 — pass
-- ✅ Genuinely novel — Katana Zero는 *사전* 시간 조작(Will), Echo는 *사후* 시간 회수 (다른 메커닉 정체성)
+- ✅ Genuinely novel — Katana Zero는 *사전* 시간 조작(Will), Echo는 *사후* 한 순간 *철회* (다른 메커닉 정체성)
 - ✅ Core fantasy 직결 — 처벌→학습 전환의 메커니즘
 - ✅ 게임플레이 영향 — 토큰 자원 관리가 전략적 결정 만들어냄 (단순 시각 효과 X)
+- ✅ 메커닉 정확도 — *복원 오프셋* 9프레임 (0.15s pre-death) 락인. "1.5초 lookback"은 *capture window*; *restore depth*는 0.15s. ADR-0002 RESTORE_OFFSET_FRAMES const 단일 출처 (Round 1 design-review 정정 — "1초 회수" 원본 copy는 0.15s 메커닉과 모순으로 재작성).
 
 ---
 
@@ -71,7 +72,7 @@ Hook 검증:
 
 ### Core Mechanics
 1. **횡스크롤 사격** — 8방향 조준, 점프 + 사격 동시 가능
-2. **시간 되감기 토큰** — 1.0-1.5초 회수 (시작 토큰 3, 보스 처치 시 충전)
+2. **시간 되감기 토큰** — 1.5초 lookback window에서 사망 직전 안전 위치 (0.15s pre-death) 즉시 복원 (시작 토큰 3, 보스 처치 시 충전, max_tokens=5 cap)
 3. **무기 픽업** — 베이스 라이플 + 픽업 무기 1-3종 (Tier 1은 1종만)
 
 ---

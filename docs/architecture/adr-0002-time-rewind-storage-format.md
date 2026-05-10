@@ -140,21 +140,29 @@ func _capture_to_ring() -> void:
 func try_consume_rewind() -> bool:
     if _tokens <= 0:
         return false
+    if not _is_buffer_primed:  # GDD Rule 13-bis (warmup gate)
+        return false
+    if _is_rewinding:           # GDD Rule 13 (re-entry guard)
+        return false
     _tokens -= 1
     token_consumed.emit(_tokens)
-    # ⚠️ See Amendment 1 (2026-05-09): use _lethal_hit_head, not _write_head.
-    # The line below is the ORIGINAL algorithm, retained as historical reference only.
-    var restore_idx: int = (_write_head - RESTORE_OFFSET_FRAMES + REWIND_WINDOW_FRAMES) % REWIND_WINDOW_FRAMES
+    # Amendment 1 정본: use _lethal_hit_head (cached on lethal_hit_detected),
+    # not the live _write_head — DYING grace 동안 진행한 캡처가 silent post-death restore 유발 차단.
+    assert(RESTORE_OFFSET_FRAMES < REWIND_WINDOW_FRAMES, "guard against negative mod (Round 1 정정)")
+    var restore_idx: int = (_lethal_hit_head - RESTORE_OFFSET_FRAMES + REWIND_WINDOW_FRAMES) % REWIND_WINDOW_FRAMES
     var snap: PlayerSnapshot = _ring[restore_idx]
     rewind_started.emit(_tokens)
     _player.restore_from_snapshot(snap)
     rewind_completed.emit(_player, snap.captured_at_physics_frame)
     return true
 
-func grant_token() -> void:  # called on boss kill
-    _tokens += 1
+func grant_token() -> void:  # called on boss_defeated subscriber path
+    # Round 1 정정: max_tokens cap을 formula 단계에서 명시 (D2 정정과 동기화).
+    _tokens = min(_tokens + 1, _rewind_policy.max_tokens)
     token_replenished.emit(_tokens)
 ```
+
+> **Superseded Algorithm (Historical — DO NOT IMPLEMENT)**: 위 정본 try_consume_rewind() 이전 원본은 `var restore_idx: int = (_write_head - RESTORE_OFFSET_FRAMES + REWIND_WINDOW_FRAMES) % REWIND_WINDOW_FRAMES`를 사용했다. Amendment 1 (2026-05-09) 발견: DYING grace +k 프레임 동안 캡처가 `_write_head`를 진행시켜 `restore_idx`가 사망 *후* 시점을 가리키는 silent 오작동. 정본은 `_lethal_hit_head` 동결값 사용. Historical reference만으로 보존.
 
 ### Architecture Diagram
 
@@ -291,7 +299,7 @@ func restore_from_snapshot(snap: PlayerSnapshot) -> void:
 
 | GDD System | Requirement | How This ADR Addresses It |
 |---|---|---|
-| game-concept.md | "1.0-1.5초 회수 시점" (라인 75) | 90 frames @ 60fps = 1.5s exact. 복원 오프셋 9 frames(0.15s)로 사용자 reaction window 보장 |
+| game-concept.md | "1.5초 lookback + 0.15s pre-death 즉시 복원" (Round 1 정정 후 copy) | 90 frames @ 60fps = 1.5s lookback. RESTORE_OFFSET_FRAMES=9 (0.15s) — "철회" fantasy 일치 |
 | game-concept.md | Pillar 2 "결정론적 패턴" (라인 138) | 외부 의존 0 데이터 복원 → 결정성 100% 보장 + 1000회 자동 테스트로 검증 가능 |
 | systems-index.md | System #9 Time Rewind System | TimeRewindController 노드 + PlayerSnapshot Resource 두 entity로 구조 명시 |
 | systems-index.md | System #14 HUD System | HUD는 `token_consumed` / `token_replenished` 시그널 구독 — direct state polling 금지 (registry forbidden pattern 후보) |
