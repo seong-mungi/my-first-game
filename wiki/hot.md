@@ -38,15 +38,12 @@ Most-relevant pages for current project context. Read this first when picking up
 7. [[RL Reward Shaping For Deterministic Boss]] — Echo PPO 보상 함수 + 커리큘럼 + reward hacking 5 watchlist
 8. [[Deterministic Game AI Patterns]] — 결정론 게임 AI 활용 4 zone + Echo Tier 1-3 권고
 9. [[AI Playtest Bot For Boss Validation]] — 4 봇 아키타입 + 메트릭 + 시간메커닉 검증 시나리오 4종
-7. [[Research Contra Series Per-Entry Differentiation]] — 콘트라 9 엔트리 차별화 + 생존 규칙
-8. [[Research Run and Gun Innovative Systems]] — 7대 검증 혁신 카탈로그
-9. [[Research Cross-Genre Systems For Run and Gun]] — 5대 이식 후보 + Echo 권고
-10. [[Stealth Information Visualization]] — Mark of the Ninja 원칙 — Echo Tier 1 cross-genre
+10. [[Research Contra Series Per-Entry Differentiation]] — 콘트라 9 엔트리 차별화 + 생존 규칙
 11. [[Time Manipulation Run and Gun]] — PoP/Braid/Katana Zero 3 모델 + Echo 선택 가이드
-12. [[Echo Story Spine]] — Echo 메인 시나리오 (2026-05-08)
-13. [[Solo Contra 2026 Concept]] — 디자인 베이스라인 v0
-14. [[Boss Two Phase Design]] — HP 임계값 + State Machine 보스 2페이즈
-15. [[Run and Gun Success Pattern Matrix]] — 5작품 불변 코어 7가지
+12. [[Stealth Information Visualization]] — Mark of the Ninja 원칙 — Echo Tier 1 cross-genre
+13. [[Echo Story Spine]] — Echo 메인 시나리오 (2026-05-08)
+14. [[Solo Contra 2026 Concept]] — 디자인 베이스라인 v0
+15. [[Boss Two Phase Design]] — HP 임계값 + State Machine 보스 2페이즈
 
 ## TL;DR For my-game
 
