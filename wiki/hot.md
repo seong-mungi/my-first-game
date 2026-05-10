@@ -140,7 +140,7 @@ Most-relevant pages for current project context. Read this first when picking up
 - Reference games: 23
 - Characters / fictional entities: 1
 - Sources catalogued: 21
-- Synthesis pages: 15
+- Synthesis pages: **16** (+1: Bot Validation Catalog Summary)
 - Design baselines: 1 (Solo Contra 2026 Concept v0)
 - Story spines: 1 (Echo Story Spine)
-- Total wiki files: **115** (.md, +14 this session — 봇 검증 + Echo 시그니처 + 솔로 인디 long-tail 카탈로그 closure)
+- Total wiki files: **116** (.md, +15 this session — 봇 검증 14 페이지 + Catalog Summary 단일 진입점)
