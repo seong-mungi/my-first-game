@@ -117,11 +117,11 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Cross-Reference Density
 
-- Concepts: **36** (+6: Contra Per Entry Mechanic Matrix, Hit Rate Grading System, Pink Parry System, Time Manipulation Run and Gun, Roguelite Metaprogression For Run and Gun, Stealth Information Visualization)
-- Reference games: **23** (+6: Contra Hard Corps, Contra III The Alien Wars, Contra Shattered Soldier, Neo Contra, Hard Corps Uprising, Contra Rogue Corps)
+- Concepts: **37** (+1: Deterministic Game AI Patterns)
+- Reference games: 23
 - Characters / fictional entities: 1
-- Sources catalogued: 21 (no new dedicated source pages this session — URLs cited inline in synthesis pages)
-- Synthesis pages: **13** (+3: Research Contra Series Per-Entry Differentiation, Research Run and Gun Innovative Systems, Research Cross-Genre Systems For Run and Gun)
+- Sources catalogued: 21
+- Synthesis pages: **14** (+1: AI Playtest Bot For Boss Validation)
 - Design baselines: 1 (Solo Contra 2026 Concept v0)
 - Story spines: 1 (Echo Story Spine)
-- Total wiki files: **101** (.md, +15 this session)
+- Total wiki files: **103** (.md, +2 this session)
