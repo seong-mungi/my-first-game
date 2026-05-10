@@ -77,6 +77,7 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Recent Decisions
 
+- **[2026-05-10]** 🚀 **Tier 3: AI 패턴 생성 + 접근성 검증 + Speedrun 발견 — 카탈로그 closure** — AI 보조 패턴은 잡몹 + 부 보스 + Hard Mode 변종에만 (시그니처 보스 제외). Easy 모드 봇은 lag 15f (Normal 9f), Color-blind는 자연 검증. Speedrun = RL 봇 시간 페널티 + 글리치 4분류 + Trackmania 모델 (출시 시 RL ghost 동봉). Echo 솔로 인디 long-tail 동력. (참고: [[AI Assisted Boss Pattern Generation]] · [[Accessibility Mode Bot Validation]] · [[Speedrun Discovery Via RL Bot]])
 - **[2026-05-10]** 👥 **Tier 2: Echo 시그니처 강화 + 비-보스 커버리지** — 고스트 리플레이 시스템(시간 되감기 동기화 디폴트, 콜라주 시안 톤)과 비-보스 봇 스위트 4종(movement / mob / weapon / cross-system) 디자인 락. 잡몹 비협상 룰 = 되감기 없이 클리어 가능. 무기 매트릭스 자동 생성으로 dominant strategy 검출. (참고: [[Ghost Replay System For Time Rewind]] · [[Non-Boss Bot Validation Suites]])
 - **[2026-05-10]** 🌐 **9페이지 봇 검증 카탈로그 한글화 + 갭 클로저** — Tier 1 갭 3개 (인간 통합 / 결정론 검증 / 데스 히트맵) 추가하여 카탈로그 closure 도달. 9 페이지 모두 한글 변환 (제목 영문, 바디 한글, 코드/YAML/wikilink 영문 — 프로젝트 관습). (참고: [[Bot Human Validation Reconciliation]] · [[Determinism Verification Replay Diff]] · [[Death Heatmap Analytics]])
 - **[2026-05-10]** 🛠️ **봇 검증 풀스택 카탈로그 완성** — B+C+D 통합 파이프라인 + E (heuristic 9f lag) + F (GDD 8.2 YAML 템플릿) + G (RL 보상 함수). 솔로 개발자 Tier 1 (random+scripted+CI) 1주, Tier 2 (heuristic+lag+dashboard) 1개월, Tier 3 (RL+nightly) post-MVP. (참고: [[Bot Validation Pipeline Architecture]] · [[Heuristic Bot Reaction Lag Simulation]] · [[GDD Bot Acceptance Criteria Template]] · [[RL Reward Shaping For Deterministic Boss]])
