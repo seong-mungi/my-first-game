@@ -77,6 +77,7 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[Brownfield Project Onboarding]] — 기존 코드베이스에 에이전트 프레임워크 도입하는 일반 절차
 - [[Abstract Base Class Pattern]] — GDScript/C# Godot 4 추상 기반 클래스 구현 가이드
 - [[Boss Two Phase Design]] — HP 임계값 분기 + State Machine 기반 보스 2페이즈 전투 설계
+- [[Deterministic Game AI Patterns]] — **NEW** 결정론 게임에서 검증된 AI 활용 4 zone (런타임 BT/FSM, 메타 디렉터, 오프라인 분석, 플레이어 보조 고스트)
 
 ## Entities
 
