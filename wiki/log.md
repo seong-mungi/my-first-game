@@ -7,6 +7,25 @@ updated: 2026-05-10
 
 Reverse chronological log of wiki operations. Newest at top.
 
+## [2026-05-10] save | Tier 3 Pages (AI 패턴 생성 + 접근성 모드 + Speedrun 발견)
+
+- **Mode:** main agent · /save (3 신규 페이지) · 한글 바디 + 영문 제목 (프로젝트 관습)
+- **Pages created (3):**
+  - Concept: [[AI Assisted Boss Pattern Generation]] — Tier 3 콘텐츠 양 폭발 도구. 3 생성 메소드 (LLM / 절차 룰 / RL-discovered) + hard constraints 6종 (9f 회피 윈도우, 결정론, 2D, 누적 페이즈, 텔레그래프, 되감기 강제) + soft constraints + LLM 프롬프트 템플릿 + 자동 필터 → 봇 검증 → 디자이너 큐레이션 워크플로.
+  - Concept: [[Accessibility Mode Bot Validation]] — Easy/Hard/Color-blind/Auto-Jump/Slow-Motion 모드별 봇 검증. 모드별 lag 매핑 (Easy=15f, Normal=9f, Hard=6f), Modes Comparison Matrix 자동 생성, 회귀 검출. Color-blind 자연 검증 (봇이 색상 무시 = 색맹 플레이어 가능 동치).
+  - Concept: [[Speedrun Discovery Via RL Bot]] — RL 봇 시간 페널티 보상 (-0.05/frame + 빠른 클리어 보너스) + 발견 분류 (Optimal Strategy / Edge Case / Unintended Glitch) + 글리치 결정 매트릭스 + 인간 도달성 검증 + Echo speedrun 인프라 (replay sharing, leaderboard, glitch documentation, ghost sharing) + Trackmania 모델 적용.
+- **Key insights captured:**
+  - **AI 패턴 생성 — 적용 영역**: 시그니처 보스(첫/최종)는 디자이너 직접 작성 유지. AI 보조는 잡몹 + 부 보스 + Hard Mode 변종에만. 디자인 정체성 보존이 ROI보다 우선.
+  - **AI 패턴 생성 워크플로**: GDD 작성 → AI 50-100 후보 → hard constraint 자동 필터 (50% drop) → random+scripted 봇 패스 → heuristic 시뮬 → 디자이너 top 10-15 수동 리뷰 → 채택/거부.
+  - **접근성 봇 핵심 통찰**: Easy 모드 봇은 *더 큰 lag* (15f) 사용. "Easy가 정말 쉬운지" 검증하려면 *덜 능숙한 플레이어* 시뮬 필수. Color-blind는 자연 검증 — 봇이 색상 의미 안 갖고 동작하므로 봇 패스 = 색맹 플레이어 가능.
+  - **Modes Comparison Matrix**: 6 모드 × 4 보스 자동 매트릭스. Easy 컬럼 ≥ 80%, Hard < 30%, Color-blind는 Normal과 ±5pp 안. 회귀 자동 검출.
+  - **Speedrun 결정 룰**: RL 발견 트릭을 4 분류로 — (인간 도달 O + Speedrun valid) 받아들임 + 카테고리 분리; (인간 도달 X + Game-breaking) 수정; (인간 도달 O + 트리비얼화) 수정; (인간 도달 X + 트리비얼화) 수정.
+  - **Trackmania 모델 적용**: 출시 시 RL 봇 ghost 동봉 ("AI 21초 — 너는?"). 30일 후 인간 WR가 RL 시간 갱신. 이게 의도된 long-tail 진행. 솔로 인디 출시에 무료 long-tail 마케팅 동력.
+  - **Echo Speedrun 인프라 4단**: `.replay` 업로드/다운로드 (결정론 검증 인프라 재사용), Steam Leaderboards (카테고리: Any%/Glitchless/No-Rewind/Boss-Rush), 글리치 카탈로그 (커뮤니티 자율 분화), WR Ghost 다운로드 (Trackmania 모델).
+- **Pages updated (meta):** [[index.md]] (Tooling/Framework +3 — total +14 누적), [[log.md]] (이 블록), [[hot.md]] (Active Topic 갱신 + Top Pages 14 페이지 + Recent Decisions + Cross-Ref Density)
+- **Source conversation**: Tier 3 갭 (6) AI 패턴 생성 + (7) 접근성 봇 + (8) Speedrun 발견 → 3 페이지 일괄 작성.
+- **Cumulative**: 이번 세션 총 14 페이지 (Tier 1 9 + Tier 2 2 + Tier 3 3). **봇 검증 + Echo 시그니처 강화 + 솔로 인디 long-tail 카탈로그 closure 완성**.
+
 ## [2026-05-10] save | Tier 2 Pages (고스트 리플레이 + 비-보스 봇 스위트)
 
 - **Mode:** main agent · /save (2 신규 페이지) · 한글 바디 + 영문 제목 (프로젝트 관습)
