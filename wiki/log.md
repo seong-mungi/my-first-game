@@ -7,6 +7,22 @@ updated: 2026-05-10
 
 Reverse chronological log of wiki operations. Newest at top.
 
+## [2026-05-10] save | Deterministic Game AI Patterns + AI Playtest Bot For Boss Validation
+
+- **Mode:** main agent · /save (conversation distillation) · 2 pages
+- **Pages created (2):**
+  - Concept: [[Deterministic Game AI Patterns]] — 결정론 게임에서 AI 활용 가능한 4 zone (런타임 game AI, 메타 레이어, 오프라인 디자인, 플레이어 보조) + 검증 게임 매트릭스 + Echo Tier 1-3 권고
+  - Synthesis: [[AI Playtest Bot For Boss Validation]] — 4 봇 아키타입 (Random/Scripted/Heuristic/RL) + clear/death/learning/time-mechanic 메트릭 + Echo Godot 4.6 구현 경로 + 4 검증 시나리오
+- **Key insights captured:**
+  - **The Core Rule**: AI는 패턴을 만들거나 측정하거나 미러링할 수 있지만, 플레이어가 학습 중인 패턴을 런타임에 변형해서는 안 된다.
+  - **4 Zone 분류**: ① Runtime game AI (BT/FSM/GOAP — 결정론 보존 가능), ② Meta layer (디렉터/넴시스 — 부분 양보), ③ Offline tools (분석·튜닝·생성 — 결정론 무관), ④ Player aid (고스트·힌트 — 결정론 보존).
+  - **Echo Tier 1 권고**: Cuphead-style FSM 보스 + Trackmania-style 고스트 리플레이 + 사망 히트맵 분석. RL 봇은 Tier 3로 이연.
+  - **봇 아키타입 검증 매핑**: Random=floor / Scripted=ceiling+결정론 검증 / Heuristic=학습 곡선 시뮬 / RL=인간 학습 곡선.
+  - **Echo 시간메커닉 봇 메트릭**: Rewind Usage Rate / Rewind Save Rate / Pattern-Without-Rewind Clear Rate — 9프레임 윈도우 공정성 + 사형선고 패턴의 되감기 강제 검증.
+  - **금지 영역**: 런타임 적응형 난이도 / 랜덤 보스 패턴 / 온라인 학습 적 행동 / Nemesis-style 보스 개인화 — Echo의 결정론 학습 정체성과 충돌.
+- **Pages updated (meta):** [[index.md]] (Synthesis +1, Tooling/Framework +1), [[log.md]] (이 블록), [[hot.md]] (활성 토픽 + Top 페이지 갱신)
+- **Source conversation**: GDD player-movement.md B 섹션 해석 → 학습/결정론 통합 설계 → 보스 디자인 적용 → 결정론 게임의 AI 활용 → AI 봇 검증 방법론 (5턴 연쇄)
+
 ## [2026-05-10] autoresearch | 콘트라 엔트리별 차별화 + 런앤건 혁신 시스템 + cross-장르 이식
 
 - **Mode:** main agent · 3-topic combined research · 2 rounds · 10 web searches · 15 pages
