@@ -195,6 +195,7 @@
   },
   "active": "069d84cd14959ebb",
   "lastOpenFiles": [
+    "concepts/GDD Bot Acceptance Criteria Template.md",
     "concepts/Heuristic Bot Reaction Lag Simulation.md",
     "questions/Bot Validation Pipeline Architecture.md",
     "questions/AI Playtest Bot For Boss Validation.md",
@@ -220,7 +221,6 @@
     "questions/Research Run and Gun Genre.md",
     "concepts/Echo Story Spine.md",
     "entities/The Entity AI Villain.md",
-    "sources/MI Final Reckoning Plot.md",
     "wiki/questions/zhc-cosmetics-execution-plan-presentation.html",
     "wiki/questions/zhc-cosmetics-proposal-2026-04-28.html",
     "bin/setup-vault.sh",
