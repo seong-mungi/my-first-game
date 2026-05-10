@@ -78,6 +78,9 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[Abstract Base Class Pattern]] — GDScript/C# Godot 4 추상 기반 클래스 구현 가이드
 - [[Boss Two Phase Design]] — HP 임계값 분기 + State Machine 기반 보스 2페이즈 전투 설계
 - [[Deterministic Game AI Patterns]] — **NEW** 결정론 게임에서 검증된 AI 활용 4 zone (런타임 BT/FSM, 메타 디렉터, 오프라인 분석, 플레이어 보조 고스트)
+- [[Heuristic Bot Reaction Lag Simulation]] — **NEW** 휴리스틱 봇에 9프레임 인간 반응 지연 주입 (perception+action 이중 버퍼, per-modality lag, 캘리브레이션 sweep)
+- [[GDD Bot Acceptance Criteria Template]] — **NEW** GDD 8.2 봇 검증 섹션 YAML 템플릿 (boss/mob/movement/weapon 4종 + tier discipline)
+- [[RL Reward Shaping For Deterministic Boss]] — **NEW** Echo PPO 보상 함수 (damage/death/clear/phase/rewind 가중치 + 커리큘럼 4단계 + reward hacking watchlist)
 
 ## Entities
 
