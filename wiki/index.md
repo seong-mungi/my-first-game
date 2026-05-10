@@ -143,7 +143,9 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - **#tower-defense**: All concepts above + Bloons TD, Upgrade Path System
 - **#side-scrolling-defense**: Side Scrolling Tug Of War Defense, Auto Deploy Unit System, Battle Cats, Cartoon Wars, Grow Castle
 - **#tug-of-war-defense**: Side Scrolling Tug Of War Defense, Battle Cats, Cartoon Wars
-- **#run-and-gun**: Run and Gun Genre, Run and Gun Base Systems, Run and Gun Extension Systems, Weapon Letter Pickup System, Metal Slug, Contra, Gunstar Heroes, Cuphead, Broforce, Contra Weapon System, Cooperative Run and Gun Design, Run and Gun Success Pattern Matrix, Contra Operation Galuga
+- **#run-and-gun**: Run and Gun Genre, Run and Gun Base Systems, Run and Gun Extension Systems, Weapon Letter Pickup System, Metal Slug, Contra, Gunstar Heroes, Cuphead, Broforce, Contra Weapon System, Cooperative Run and Gun Design, Run and Gun Success Pattern Matrix, Contra Operation Galuga, Contra Hard Corps, Contra III The Alien Wars, Contra Shattered Soldier, Neo Contra, Hard Corps Uprising, Contra Rogue Corps, Contra Per Entry Mechanic Matrix, Hit Rate Grading System, Pink Parry System, Time Manipulation Run and Gun, Roguelite Metaprogression For Run and Gun, Stealth Information Visualization
+- **#cross-genre / #mechanic-transplant**: Time Manipulation Run and Gun, Roguelite Metaprogression For Run and Gun, Stealth Information Visualization, Research Cross-Genre Systems For Run and Gun
+- **#mechanic-comparison**: Contra Per Entry Mechanic Matrix, Research Contra Series Per-Entry Differentiation
 - **#ip / #legal**: IP Avoidance For Game Clones, Metal Slug IP Avoidance Guide, Broforce
 - **#arcade**: Metal Slug, Contra, Gunstar Heroes, Arcade Difficulty Design, SNK
 - **#neo-geo**: Metal Slug, SNK
