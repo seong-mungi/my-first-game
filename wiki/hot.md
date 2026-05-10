@@ -48,10 +48,7 @@ Most-relevant pages for current project context. Read this first when picking up
 12. [[RL Reward Shaping For Deterministic Boss]] — Echo PPO 보상 함수 + 커리큘럼 + reward hacking 5종
 13. [[Deterministic Game AI Patterns]] — 결정론 게임 AI 활용 4 zone + Echo Tier 1-3 권고
 14. [[AI Playtest Bot For Boss Validation]] — 4 봇 아키타입 + 메트릭 + 시간메커닉 검증 시나리오 4종
-12. [[Time Manipulation Run and Gun]] — PoP/Braid/Katana Zero 3 모델 + Echo 선택 가이드 (고스트 시스템 베이스라인)
-13. [[Echo Story Spine]] — Echo 메인 시나리오 (2026-05-08)
-14. [[Solo Contra 2026 Concept]] — 디자인 베이스라인 v0
-15. [[Boss Two Phase Design]] — HP 임계값 + State Machine 보스 2페이즈
+15. [[Time Manipulation Run and Gun]] — PoP/Braid/Katana Zero 3 모델 + Echo 선택 가이드 (고스트 + speedrun 베이스라인)
 
 ## TL;DR For my-game
 
