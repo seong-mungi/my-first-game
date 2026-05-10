@@ -9,16 +9,14 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Active Research Topic
 
-**런앤건 시스템 카탈로그 3축 완성** (2026-05-10). 콘트라 엔트리별 차별화 + 런앤건 검증 혁신 + cross-장르 이식 합쳐 15페이지 작성. Echo Tier 1 두 번째 axis 권고 = **Mark of the Ninja 가시화 원칙**(저비용·고시너지).
+**결정론 게임에서 AI 활용 + 봇 검증** (2026-05-10). PlayerMovement GDD B 섹션 해석에서 출발 → 학습/결정론 통합 → 보스 디자인 적용 → 결정론 게임 AI 활용 패턴 → AI 봇 보스 검증 방법론. 2개 신규 페이지 (concept + synthesis).
 
-→ **Topic 1 결과**: [[Research Contra Series Per-Entry Differentiation]] — 1992-2024 9 엔트리 매트릭스 + **2D 측면 고수 + 한 번에 한 axis** 생존 규칙
-→ **Topic 2 결과**: [[Research Run and Gun Innovative Systems]] — 7대 검증 혁신 카탈로그(weapon fusion / Hit Rate / pink parry / 파괴지형 / 2-overload swap / 등)
-→ **Topic 3 결과**: [[Research Cross-Genre Systems For Run and Gun]] — 5대 이식 후보(시간/메타프로그/반응형/불릿타임/스텔스 가시화) + Echo Tier 적용 권고
+→ **Concept 신규**: [[Deterministic Game AI Patterns]] — AI 활용 4 zone (런타임 BT/FSM, 메타 디렉터, 오프라인 분석, 플레이어 보조 고스트) + Echo Tier 1-3 권고
+→ **Synthesis 신규**: [[AI Playtest Bot For Boss Validation]] — 4 봇 아키타입 + 메트릭 + Godot 4.6 구현 경로 + 4 검증 시나리오
+→ **이전 활성 토픽**: 런앤건 시스템 카탈로그 3축 ([[Research Contra Series Per-Entry Differentiation]] · [[Research Run and Gun Innovative Systems]] · [[Research Cross-Genre Systems For Run and Gun]])
 → **메인 매트릭스**: [[Contra Per Entry Mechanic Matrix]] — 1987-2024 시스템별 생존 verdict
-→ **이전 활성 토픽**: [[Echo Story Spine]] — ECHO vs VEIL(AI) 5스테이지 (2026-05-08 락인)
+→ **스토리 락인**: [[Echo Story Spine]] — ECHO vs VEIL(AI) 5스테이지 (2026-05-08)
 → **베이스라인**: [[Solo Contra 2026 Concept]] — 시간 되감기 + 콜라주 + 가까운 미래 SF (v0)
-→ Q4/Q5 결론: [[Followup Modern Acceptance And Indie RnG Threshold]]
-→ 5작품 메타: [[Run and Gun Success Pattern Matrix]] (parent)
 
 ## Top Pages To Read First
 
