@@ -89,6 +89,9 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[AI Assisted Boss Pattern Generation]] — **NEW** Tier 3 AI 패턴 후보 생성 워크플로 (LLM + procedural + RL) + hard/soft constraints + 디자이너 큐레이션
 - [[Accessibility Mode Bot Validation]] — **NEW** Easy/Hard/Color-blind/Auto-Jump 모드 봇 검증 + Modes Comparison Matrix 자동 생성 + 회귀 검출
 - [[Speedrun Discovery Via RL Bot]] — **NEW** RL 봇 시간 보상 + 글리치 결정 매트릭스 + 인간 도달성 검증 + Echo speedrun 인프라 (replay/leaderboard/ghost)
+- [[Aim Lock Modifier Pattern]] — **NEW** 8방향 조준 Lock-then-aim 모던 컨벤션 (Cuphead RB / Galuga ZR / Echo F+RB) + 발견성 + 안티 패턴
+- [[Analog Stick To 8-Way Quantization]] — **NEW** 아날로그→이산 양자화 4단계 파이프라인 (radial deadzone + Schmitt + sector + hysteresis) + Steam Deck floor + Echo 디폴트
+- [[Aim Assist Accessibility Tiers]] — **NEW** Returnal 4-tier (Off/Low/Med/High) + XAG 107 의무 + 어시스트 ↔ 난이도 직교 + 시간 메커닉 상호작용
 - [[Bot Validation Catalog Summary]] — **NEW** Echo 봇 검증 카탈로그 14 페이지 단일 진입점 + 5 황금률 + 솔로 개발자 로드맵 + 비협상 결정 8종 인덱스
 - [[Research 8-Way Aim Usability For Run-and-Gun]] — **NEW** 런앤건 8방향 조준 사용성 (gamepad + KB+M + 접근성) — Echo 입력 시스템 검증/조정 권고 (FACING_THRESHOLD 0.10→0.15, 각도 hysteresis ±4°, aim_lock 컨벤션 정합)
 
