@@ -97,6 +97,13 @@ ECHO 작전 요원은 *달리면서 쏘고, 점프하면서 조준하고, 슬라
 
 별도 Area2D 분리 이유: root는 지형, HitBox는 적/보스 — layer 의미 충돌 방지 (damage.md C.2.4 표).
 
+> **Notation contract (project shorthand — single-source clarification)**: 본 GDD (그리고 damage.md C.2.4) 전반에서 `collision_layer = 2`, `collision_mask = 3 | 6` 표기는 **Godot 인스펙터의 1-indexed layer 번호** shorthand다 (literal GDScript integer 표현이 아님). 런타임 정수 값은 다음과 같이 산출된다:
+>
+> - `collision_layer = 2` → 런타임 정수 `(1 << (2-1)) = 2` (Godot layer 2 = bit 1)
+> - `collision_mask = 3 | 6` → 런타임 정수 `(1 << (3-1)) | (1 << (6-1)) = 4 | 32 = 36` (0b00100100; Godot layer 3 + layer 6 = bits 2 + 5)
+>
+> 구현 시점 코드는 위 정수 값을 직접 사용한다 (`_hitbox.collision_mask = 36`). AC PS-H1-08은 런타임 정수 36을 assert. 본 표기 규약은 damage.md C.2.4 layer schema 단일 출처와 일치하며, 본 GDD Rule 9 / F.1 row #8 / G.2 표 모두 동일 shorthand를 사용한다.
+
 **규칙 9 (Self-fire 차단 — Godot 4.6 collision filter)** — ECHO Projectile HitBox `collision_layer = 2`, `collision_mask = 3 | 6`. ECHO HurtBox `collision_layer = 1`. layer 2 mask가 layer 1을 포함하지 않으므로 Godot 4.6 충돌 엔진이 `area_entered` emit 자체를 사전 차단. 코드 가드 불필요 (damage.md C.2.4 verbatim 일치). Same-frame ECHO 자해 차단 완전.
 
 **규칙 10 (Knockback / hit-stop 부재 — PM C.1.3 movement 비준)** — `_try_fire()` 성공이 `_player.velocity`를 mutation하지 않음. PM C.1.3 movement vector는 PM 단일 출처. Camera micro-shake / 화면 흔들림 등 juice는 Camera #3 / VFX #14가 `shot_fired(direction: int)` 시그널 구독으로 처리 — 본 GDD는 시그널 *발화*만 명세, juice 디자인은 다운스트림 own. Section B fantasy "uninterrupted motion"의 메커닉 보호 (movement 흔들림 = 흐름 단절).
@@ -174,7 +181,12 @@ func _ready() -> void:
     ammo_count = MAGAZINE_SIZE_DEFAULT  # 규칙 4 initial
     _active_id = 0                       # 규칙 12 Tier 1 base rifle
     lifecycle_sm.state_changed.connect(_on_lifecycle_state_changed)
-    weapon_equipped.emit(_active_id)     # 규칙 12 PM subscriber notify
+    # OQ-PS-2 closure (Tension T2 — boot signal ordering): emit via call_deferred
+    # so PM `_on_weapon_equipped` subscriber is guaranteed to be connected before
+    # delivery (mirrors PM C.6 EchoLifecycleSM precedent). Tree-order alone does
+    # NOT guarantee subscriber wiring during _ready() if PM connects in its own
+    # _ready() at a later tree position; deferred delivery defers to idle frame.
+    weapon_equipped.emit.call_deferred(_active_id)  # 규칙 12 PM subscriber notify (deferred)
 
 func _on_lifecycle_state_changed(_from: StringName, to: StringName) -> void:
     match to:
@@ -608,7 +620,7 @@ restore_idx = (_lethal_hit_head - RESTORE_OFFSET_FRAMES + REWIND_WINDOW_FRAMES) 
 |---|---|---|---|
 | `player-movement.md` F.1 row #7 *(provisional)* | "PM이 WeaponSlot 자식 노드 호스팅 + `weapon_equipped(weapon_id)` signal 구독 → `_current_weapon_id` cache" | `*(provisional)*` | 본 GDD가 `weapon_equipped` signature 정의; PM F.4.2 의무 close |
 | `player-movement.md` F.4.2 → #7 obligation | (a) signal 정의, (b) anim guard, (c) reload + ammo restoration DEC-PM-3 v2 비준 | 3 의무 모두 close | C.3.2 + 규칙 4 + C.2.6 |
-| `time-rewind.md` F.1 row #7 *(provisional)* | "`WeaponSlot.set_active(invalid_id)` silent fallback to id=0; ammo 정책" | OQ-1 closed Session 17; OQ-3 본 GDD close | 규칙 11 |
+| `time-rewind.md` F.1 row #7 *(provisional)* | "`WeaponSlot.set_active(invalid_id)` invalid id handling — early return vs fallback-to-0 vs silent signal emit; ammo 정책" | OQ-1 closed Session 17; OQ-3 본 GDD close (resolution = early return + `weapon_fallback_activated` emit, NOT fallback-to-0) | 규칙 11 |
 | `time-rewind.md` C.3 Rule 9 pseudocode | TRC restore sequence (1) PM (2) emit | step (2) Weapon restore 추가 필요 | F.4.1 #2 |
 | `time-rewind.md` AC-A1 + AC-A4 | TRC 3-tier read; post-rewind PM 7 + Weapon ammo 복원 검증 | AC-A4 WeaponSlot.ammo_count 추가 필요 | F.4.1 #2 |
 | `damage.md` F.1 표 #7 | "ECHO Projectile HitBox (L2) — `cause` 미설정" | Tier 1 contract OK | damage.md edit 의무 없음 |
@@ -657,8 +669,8 @@ restore_idx = (_lethal_hit_head - RESTORE_OFFSET_FRAMES + REWIND_WINDOW_FRAMES) 
 | G.1.2 | `magazine_size` | int | 30 | 10..60 | 사격 burst 길이 (D.5 auto-reload trigger) — 5초 sustained fire @ 6 rps | < 10: reload 빈도 너무 잦아 흐름 단절 (Pillar 4 위반); > 60: ammo가 *추상적 자원*으로 회귀 — Section B fantasy "흐름의 연료" 정서 손실 |
 | G.1.3 | `reload_frames` | int | 0 (Tier 1) | 0..60 (Tier 2+) | Reload 동안 사격 차단 frames | Tier 1: 0 강제 (instant auto-reload — Pillar 4 즉시성). Tier 2+ 무기마다 다른 reload 시간 도입 가능. > 60: > 1초 정지 — Section B "uninterrupted motion" fantasy 직접 위반 |
 | G.1.4 | `projectile_cap` | int | 8 | 4..16 | C.1 규칙 6 silent skip 기준 | < 4: hold-fire 도중 잦은 skip (지각 가능); > 16: 메모리/성능 압박 + Pillar 2 결정성 검증 어려움 (cap-bound determinism 의존) |
-| G.1.5 | `projectile_speed_px_s` | float | 600.0 | 400.0..800.0 | D.3 projectile motion — 시각 인식 가능성 | < 400: magic-bolt aesthetics (rifle 정체성 손실); > 800: hitscan 시각 인식 — Pillar 2 "see your shot" read 손실 |
-| G.1.6 | `projectile_lifetime_frames` | int | 90 | 60..120 | D.4 despawn (= ~900 px @ default speed) | < 60: 화면 안에서 사라짐 (`max_distance_px ≈ 400` < viewport 너비); > 120: 화면 밖 누적 — cap에 도달하여 skip 빈발 |
+| G.1.5 | `projectile_speed_px_s` | float | 600.0 | 400.0..800.0 *(see G.3 invariant 3)* | D.3 projectile motion — 시각 인식 가능성 | < 400: magic-bolt aesthetics (rifle 정체성 손실); > 800: hitscan 시각 인식 — Pillar 2 "see your shot" read 손실. **Cross-knob caveat**: G.3 invariant 3 (viewport clearance) 위반 가능 — 본 knob을 400.0 하한으로 tune 시 `projectile_lifetime_frames` ≥ 193 동시 적용 필요 (`(lifetime * 400) / 60 ≥ 1280` ⇒ `lifetime ≥ 192`) |
+| G.1.6 | `projectile_lifetime_frames` | int | 90 | 60..120 *(see G.3 invariant 3)* | D.4 despawn (= ~900 px @ default speed) | < 60: 화면 안에서 사라짐 (`max_distance_px ≈ 400` < viewport 너비); > 120: 화면 밖 누적 — cap에 도달하여 skip 빈발. **Cross-knob caveat**: G.3 invariant 3 (viewport clearance) 위반 가능 — 본 knob을 60 하한으로 tune 시 `projectile_speed_px_s` ≥ 1280 동시 필요 (`(60 * speed) / 60 ≥ 1280` ⇒ `speed ≥ 1280`, G.1.5 상한 800 초과 → **co-min invalid**: 두 knob을 동시에 하한 적용 금지) |
 | G.1.7 | `muzzle_offsets` | Array[Vector2] (length 8) | art-director defined per-direction | per-axis ±32 px | 사격 시각 anchor (Sprite2D Pillar 3 collage 정합) | art-director 결정. art-bible ABA-2 paper-doll arm overlay 위치와 일치 의무 (E-PS-16 보조 — magnitude는 unit length 아닌 anchor 위치) |
 
 ### G.2 Tuning knob 비-knob 비교 (의도적으로 hardcoded)
@@ -821,11 +833,13 @@ Tier 1에서는 위 surface 모두 *비활성* (Anti-Pillar #6 — Tier 3 deferr
 
 ### H.0 AC 합본 preamble (grep-verifiable enumeration)
 
-- **Total ACs**: 47 enumerated
-- **Logic BLOCKING**: 25 (PS-H1-01..13, PS-H2-01..06, PS-H3-01/04/05, PS-H4-05/11)
-- **Integration BLOCKING**: 7 (PS-H3-06, PS-H4-03/04/14, PS-H6-01/02/03)
+> **Counting convention**: Letter-suffixed sub-IDs (PS-H1-03a/b/c, PS-H1-05a..e, PS-H1-11a/b) count as **one composite AC each** for tally purposes — each composite ID maps to a single GUT test function with multiple parametric branches. Body grep still distinguishes sub-IDs. Categorisation is by the `*(... BLOCKING)*` / `*(... ADVISORY)*` tag at each AC body, not by section heading — three IDs live in H.1/H.2 sections but carry Integration BLOCKING tags (PS-H1-07, PS-H1-09, PS-H2-06).
+
+- **Total ACs (composite)**: 52 enumerated (51 → 52 after 2026-05-11 Round 1 design-review revision added PS-H6-04 for OQ-PS-2 closure)
+- **Logic BLOCKING**: 21 (PS-H1-01/-02/-03/-04/-05/-06/-08/-10/-11/-12/-13, PS-H2-01/-02/-03/-04/-05, PS-H3-01/-04/-05, PS-H4-05/-11)
+- **Integration BLOCKING**: 11 (PS-H1-07/-09, PS-H2-06, PS-H3-06, PS-H4-03/-04/-14, PS-H6-01/-02/-03/-04)
 - **Static (GREP) BLOCKING**: 9 (GREP-PS-0..7, PS-H6-05)
-- **ADVISORY (playtest / manual)**: 7 (H.U1..H.U7) + Integration ADVISORY (PS-H4-07/10/12/15)
+- **ADVISORY**: 11 = 7 untestable (H.U1..H.U7) + 1 Logic ADVISORY (PS-H4-07) + 3 Integration ADVISORY (PS-H4-10/-12/-15)
 - **Total BLOCKING**: 41 / **Total ADVISORY**: 11
 
 Per-classification enumeration line (grep verification): `PS-H1-01..13, PS-H2-01..06, PS-H3-01/04/05/06, PS-H4-03..15 (selective), PS-H6-01..05, GREP-PS-0..7, H.U1..7`.
@@ -900,7 +914,7 @@ Per-classification enumeration line (grep verification): `PS-H1-01..13, PS-H2-01
 **PS-H1-08** *(Logic BLOCKING)* — R8 HitBox 자식 config.
 **GIVEN** Projectile `.tscn` instantiation,
 **WHEN** `_ready()` 직후 검증,
-**THEN** Projectile root는 `HitBox extends Area2D` 자식 1개 보유 AND `HitBox.collision_layer == 2` AND `HitBox.collision_mask == 3 | 6 == 36` (bitmask 0b00100100) AND `HitBox.monitoring == true` AND `HitBox.cause == &""` AND `HitBox.host == Projectile root`. _Rule 8 + damage.md C.1.1 + DEC-4._
+**THEN** Projectile root는 `HitBox extends Area2D` 자식 1개 보유 AND `HitBox.collision_layer == 2` (Godot layer 2 = bit 1; 런타임 int 2) AND `HitBox.collision_mask == 36` (= `(1 << (3-1)) | (1 << (6-1))` = `4 | 32` = bitmask 0b00100100 = Godot layer 3 + layer 6 — Rule 8 Notation contract 적용) AND `HitBox.monitoring == true` AND `HitBox.cause == &""` AND `HitBox.host == Projectile root`. _Rule 8 + damage.md C.1.1 + DEC-4._
 
 **PS-H1-09** *(Integration BLOCKING)* — R9 Self-fire 차단.
 **GIVEN** Projectile HitBox `collision_layer = 2`, `collision_mask = 3 | 6` AND ECHO HurtBox `collision_layer = 1`,
@@ -924,8 +938,8 @@ Per-classification enumeration line (grep verification): `PS-H1-01..13, PS-H2-01
 
 **PS-H1-12** *(Logic BLOCKING)* — R12 + INV-WS-7 + E-PS-16 boot path.
 **GIVEN** WeaponSlot `_ready()` 진입,
-**WHEN** `_ready()` 종료 시점 검증,
-**THEN** `_active_id == 0` AND `ammo_count == MAGAZINE_SIZE_DEFAULT (=30)` AND `weapon_equipped(0)` emit 발생 OK (PM `_on_weapon_equipped` subscriber 호출됨) AND `_DIR_VECTORS.size() == 8` AND `for i in {1, 3, 5, 7}: abs(_DIR_VECTORS[i].length() - 1.0) < 0.001`. _Rule 12 + INV-WS-7 + E-PS-16._
+**WHEN** `_ready()` 종료 시점 검증 (next idle frame 도달 *전*),
+**THEN** `_active_id == 0` AND `ammo_count == MAGAZINE_SIZE_DEFAULT (=30)` AND `weapon_equipped.emit` call_deferred 스케줄 완료 (실제 subscriber 호출은 다음 idle frame; **PS-H6-04이 subscriber-callback delivery 검증 소유**) AND `_DIR_VECTORS.size() == 8` AND `for i in {1, 3, 5, 7}: abs(_DIR_VECTORS[i].length() - 1.0) < 0.001`. _Rule 12 + INV-WS-7 + E-PS-16 + C.2.3 call_deferred lock._
 
 > **Tension T1 (qa-lead H.10)** — WeaponSlot `process_physics_priority` config check: PM tree-child의 priority 0 자체가 G3 (`_player._is_restoring` read) 정확성을 보장하는 invariant. AC PS-H1-12에 `assert weapon_slot.process_physics_priority == 0` 한 줄 검증 추가 권장 — 구현 시 누락 방지.
 
@@ -1053,12 +1067,17 @@ Per-classification enumeration line (grep verification): `PS-H1-01..13, PS-H2-01
 **WHEN** TRC `try_consume_rewind() == true` 실행,
 **THEN** `WeaponSlot.ammo_count == snap.ammo_count` (restoration via TRC direct method call, NOT signal subscription). _C.2.6 + GREP-PS-7._
 
+**PS-H6-04** *(Integration BLOCKING)* — C.2.3 boot signal ordering `call_deferred` wiring (OQ-PS-2 closure).
+**GIVEN** WeaponSlot `_ready()` invokes `weapon_equipped.emit.call_deferred(_active_id)` (C.2.3 locked pattern, mirrors PM C.6 `EchoLifecycleSM` precedent) AND PM `_on_weapon_equipped` subscriber connect site is anywhere in scene boot path (parent / sibling / child order),
+**WHEN** scene boot completes + first idle frame elapses,
+**THEN** PM `_on_weapon_equipped(0)` callback received exactly once AND `_current_weapon_id == 0`. `emit.call_deferred` guarantees delivery regardless of subscriber wiring order vs WeaponSlot `_ready()`. **Negative path**: replace `call_deferred` with bare `emit` in test mock + place PM subscriber connect AFTER WeaponSlot `_ready()` in tree order → PM never receives the call (regression detector). _C.2.3 + OQ-PS-2 closure._
+
 **PS-H6-05** *(Static BLOCKING)* — state-machine F.2 row #7 — no `transition_to`.
 **GIVEN** `src/gameplay/player_shooting/` 디렉터리,
 **WHEN** `grep -rEn "\.transition_to\(" src/gameplay/player_shooting/`,
 **THEN** 0 matches (state-machine.md F.2 row #7 contract: WeaponSlot is read-only state subscriber). _state-machine.md F.2._
 
-> **Tension T2 (qa-lead H.10)** — Boot signal ordering: WeaponSlot `_ready()` emits `weapon_equipped(0)`. PM이 subscriber가 되기 전 발화 위험. Tree order로 보장되지만 implementer가 `call_deferred` 패턴 적용 권장 (PM C.6 `EchoLifecycleSM` 선례 따름). 별도 PS-H6-04 AC 추가는 user choice (Section H Open Questions Z.5 참조).
+> **Tension T2 (qa-lead H.10) — RESOLVED**: Boot signal ordering originally raised as implementer judgement call. **Closed 2026-05-11 design-review revision**: C.2.3 `_ready()` locks `weapon_equipped.emit.call_deferred(_active_id)` (PM C.6 `EchoLifecycleSM` precedent). AC PS-H6-04 verifies the wiring contract. OQ-PS-2 closed in Z.1 (moved from Z.2).
 
 ### H.6 GREP / Static Analysis ACs (BLOCKING — all in `tools/ci/weapon_slot_static_check.sh`)
 
@@ -1129,13 +1148,14 @@ Per-classification enumeration line (grep verification): `PS-H1-01..13, PS-H2-01
 | **input.md C.1.1 row 7 *(provisional)*** | `shoot` action detect mode (edge vs hold) | C.1 규칙 1 + D.1: `is_action_pressed` (hold) lock | Tap-spam은 cooldown counter가 게이트; Contra / HM 패턴 정합. F.4.1 #1 batch edit. |
 | **PM F.4.2 → Player Shooting #7 obligations (a)/(b)/(c)** | PM Decision 의무 | C.3.2 + 규칙 4 + C.2.6: signal 정의 (a) + guard reciprocal (b) + ammo restoration policy (c) 모두 close | F.4.1 #2 (TR Rule 9 step 추가) + #5 (architecture.yaml ammo_count entry) cascade. |
 | **ADR-0002 Amendment 2 Open Sub-Decisions** | (1) Weapon-side capture site, (2) Restoration mechanism | C.2.6 + F.4.1 #4 Amendment 2 Proposed → Accepted ratification gate | 본 GDD Designed 상태 도달 시 `/architecture-review`이 비준. (1) WeaponSlot per-tick `ammo_count` (TRC `_capture_to_ring` reads); (2) TRC sync method call `restore_from_snapshot(snap)`. |
+| **OQ-PS-2** (Tension T2) | Originally Z.2 (Tier 1 implementation review) | C.2.3 `_ready()` + AC PS-H6-04 | Closed 2026-05-11 design-review revision. `weapon_equipped.emit.call_deferred(_active_id)` locks the wiring pattern (PM C.6 `EchoLifecycleSM` precedent); deferred delivery guarantees PM subscriber receives the call regardless of tree-order or _ready() ordering. AC PS-H6-04 (Integration BLOCKING) verifies positive + negative path. |
 
 ### Z.2 본 GDD가 발생시키는 신규 OQ (Tier 2+ deferred)
 
 | OQ ID | Question | Target system | Trigger | Tier |
 |---|---|---|---|---|
 | **OQ-PS-1** | Tier 2+ pickup-post-death `current_weapon_id` 복원 semantics — `_lethal_hit_head - RESTORE_OFFSET_FRAMES` 시점이 픽업 *전*/*후*에 따라 ECHO가 W1/W2 중 어느 무기로 복원되는가? E-PS-17 contract는 "snap 시점 무기"로 lock되지만 *pickup own-state* (예: `_active_id`가 W2 픽업 직후 `ammo_count = MAGAZINE_SIZE_W2`로 reset되었으나 rewind 시 W1으로 돌아가면 `ammo_count` mismatch 위험) | Pickup #19 (Tier 2) | `/design-system pickup` 시 | Tier 2 |
-| **OQ-PS-2** | Boot signal ordering — `WeaponSlot._ready()`의 `weapon_equipped.emit(0)` 시점에 PM subscriber가 connect되어 있는가? Tree order로 일반 보장되지만 `call_deferred` 패턴 (PM C.6 EchoLifecycleSM 선례) 적용 권장 여부 | Tier 1 — implementation review | Tier 1 first integration | Tier 1 |
+| ~~**OQ-PS-2**~~ | ~~Boot signal ordering — `WeaponSlot._ready()`의 `weapon_equipped.emit(0)` 시점에 PM subscriber가 connect되어 있는가?~~ **CLOSED — moved to Z.1**: 2026-05-11 design-review revision locks `call_deferred` pattern in C.2.3; AC PS-H6-04 verifies. See Z.1 row "OQ-PS-2 (Tension T2)". | — | — | — |
 | **OQ-PS-3** | Tier 2+ reload animation — `reload_frames > 0` 도입 시 (1) reload anim spec (frames, sprite asset), (2) reload 도중 사격 차단 (`_reload_active: bool` 추가 member), (3) reload cancel 가능 여부 (weapon swap mid-reload?) | Pickup #19 + Tier 2 무기 디자인 | `/design-system pickup` 또는 Tier 2 무기 디자인 | Tier 2 |
 | **OQ-PS-4** | Tier 2+ multi-weapon ammo 관리 — 픽업 시 새 무기 ammo = `MAGAZINE_SIZE_W2`. 이전 무기 ammo (`ammo_count_W1`) 는 (a) 폐기 / (b) 별도 reserve로 보존? | Pickup #19 + Inventory (Tier 2+) | Tier 2 무기 디자인 결정 | Tier 2 |
 | **OQ-PS-5** | Tier 2+ pierce / multi-hit 무기 — C.1 규칙 3 hit handler `area is HurtBox: queue_free()` 는 Tier 1 single-hit 가정. Pierce 무기 (Tier 2+ spread/rocket 등)는 `queue_free` 대신 hit list 누적? | Tier 2 무기 디자인 | Tier 2 무기 catalog 결정 | Tier 2 |

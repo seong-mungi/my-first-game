@@ -1,7 +1,7 @@
 # ADR-0002: Time Rewind Storage Format — State Snapshot Ring Buffer
 
 ## Status
-Accepted (with Amendment 1 — 2026-05-09; Amendment 2 — Proposed 2026-05-11)
+Accepted (with Amendment 1 — 2026-05-09; Amendment 2 — Accepted 2026-05-11 via Player Shooting #7 GDD ratification)
 
 ## Date
 2026-05-09
@@ -47,9 +47,9 @@ func try_consume_rewind() -> bool:
 
 **Cosmetic correction (informational)**: This ADR's Performance Implications section quotes "PlayerSnapshot ≈ 32 bytes ... ring buffer = 2.88 KB". Re-measured against Godot 4 Resource overhead: actual is ~192 B per slot, ring buffer ≈ 17–21 KB. Still negligible against the 1.5 GB ceiling. The original 5 KB ceiling claim remains correct *as a ceiling*, but the typical figure is 4× higher than originally stated. No behavior change.
 
-### Amendment 2 — Snapshot ammo capture (Proposed 2026-05-11)
+### Amendment 2 — Snapshot ammo capture (Accepted 2026-05-11)
 
-**Status**: Proposed. Awaits ratification at first `/architecture-review` after Player Shooting #7 GDD authoring.
+**Status**: Accepted. Ratified 2026-05-11 via Player Shooting #7 GDD reaching Approved status (Round 2 fresh-session `/design-review` APPROVED, 3 housekeeping items applied inline). Player Shooting #7 §C.2.6 locks OQ-PM-NEW sub-decision: (a) TRC orchestration, NOT (b) signal subscription. `/architecture-review` follow-up will validate full cross-ADR consistency in the next sweep.
 
 **Driver**: `design/gdd/player-movement.md` DEC-PM-3 v2 (B5 Pillar 1 resolution, 2026-05-11) + `design/gdd/time-rewind.md` F6 (b) variant. Fresh-session `/design-review design/gdd/player-movement.md` 2026-05-11 surfaced Pillar 1 contradiction: rewind returning ECHO to a state captured 9 frames before death also returns *current live* `ammo_count` (DEC-PM-3 v1 "resume with live ammo" policy 2026-05-10). If `ammo_count` reached 0 during the DYING window or the 9 frames prior, the rewind delivers ECHO to an unwinnable state — "rewind = punishment, not learning tool" — violating Pillar 1 (learning tool stance).
 
@@ -83,7 +83,7 @@ class_name PlayerSnapshot extends Resource
 | Field | Single-writer | Capture site |
 |-------|---------------|--------------|
 | `global_position`..`is_grounded` (7 fields) | PlayerMovement | PM `_physics_process` Phase 6c |
-| `ammo_count` (Amendment 2) | **WeaponSlot** (Player Shooting #7) | Weapon write-into-snapshot mechanism — sub-decision deferred (OQ-PM-NEW: TRC orchestration vs Weapon `rewind_completed` subscription) |
+| `ammo_count` (Amendment 2) | **WeaponSlot** (Player Shooting #7) | **Capture**: WeaponSlot per-tick via TRC `_capture_to_ring()` Step (b) reading `WeaponSlot.ammo_count` (read-only — TRC never writes). **Restoration**: TRC orchestration — TRC calls `_weapon_slot.restore_from_snapshot(snap)` synchronously inside C.3 Rule 9 atomic sequence (step 2, between PM restore and `rewind_completed.emit`). OQ-PM-NEW (a) **locked** via Player Shooting #7 §C.2.6 — signal-subscription path (b) is dead-on-arrival under W2-locked `rewind_completed(player, restored_to_frame)` signature which does not carry `snap`. |
 | `captured_at_physics_frame` | TRC | `_capture_to_ring()` |
 
 `PM.restore_from_snapshot(snap)` signature unchanged. PM **ignores** `snap.ammo_count` (Weapon owns write authority). Weapon-side restoration mechanism is OQ-PM-NEW — deferred to Player Shooting #7 GDD authoring.

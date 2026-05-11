@@ -146,6 +146,21 @@ state_ownership:
     revised: ""
     notes: "Foundation/Infrastructure state owner. SM is autoload singleton with no `_physics_process` / `_process` override (Rule 2) — phase advancement is signal-reactive, not per-tick polling. Pillar 1 비협상 < 1초 restart and Pillar 4 5분 룰 cold-boot ceiling locked as entities.yaml constants (restart_window_max_frames=60, cold_boot_max_seconds=300). Tier 1 = single stage slice; multi-stage + async load + collage texture memory release deferred to Tier 2 gate (C.1 Rule 3 + Rule 11)."
 
+  - state: ammo_count
+    status: active
+    owner_system: weapon-slot  # WeaponSlot (Player Shooting #7) — sole writer
+    adr: docs/architecture/adr-0002-time-rewind-storage-format.md  # Amendment 2 ratifies Weapon-owned write authority
+    interface: "WeaponSlot.ammo_count (read-only int 0..MAGAZINE_SIZE) — read per-tick by TimeRewindController in _capture_to_ring() Step (b); read by HUD #13 for ammo counter UI. Mutated only via _try_fire() decrement + D.5 auto-reload + WeaponSlot.restore_from_snapshot(snap) (called synchronously by TRC inside Rule 9 atomic sequence)."
+    write_access: weapon-slot-only-or-snapshot-restore  # external systems read-only; TRC writes only via direct method call (NOT direct property write)
+    referenced_by:
+      - docs/architecture/adr-0002-time-rewind-storage-format.md   # Amendment 2 — 8th PM-noted field, Weapon-owned write authority
+      - design/gdd/player-shooting.md                              # C.2.2 member declaration + C.2.6 TRC orchestration + INV-WS-1 + GREP-PS-1
+      - design/gdd/time-rewind.md                                  # AC-A1 3-tier ownership (Weapon read at Step (b)) + C.3 Rule 9 atomic sequence + AC-A4 restore identity
+      - design/gdd/player-movement.md                              # DEC-PM-3 v2 (Pillar 1 resolution; PM ignores snap.ammo_count) + F.4.2 row #7 ammo restoration policy close
+    added: 2026-05-11
+    revised: ""
+    notes: "8th PM-noted PlayerSnapshot field (9th Resource field with Amendment 1's captured_at_physics_frame). Single-writer = WeaponSlot (Player Shooting #7) — keeps PM/Weapon layering clean. Restoration mechanism: TRC orchestration (OQ-PM-NEW (a) locked via Player Shooting #7 §C.2.6) — TRC calls _weapon_slot.restore_from_snapshot(snap) inside Rule 9 atomic sequence, NOT signal subscription (path (b) is dead-on-arrival under W2-locked rewind_completed(player, restored_to_frame) signature which doesn't carry snap). Pillar 1 contract: rewind delivers 9-frames-pre-death ammo, not 0-ammo, preventing 'unwinnable rewind' state."
+
 # Example:
 #
 # state_ownership:
@@ -330,6 +345,29 @@ interfaces:
     added: 2026-05-11
     revised: ""
     notes: "Zero-arg signal emitted by SceneManager autoload exactly once per transition (D.6 cardinality), synchronously emitted in PRE_EMIT phase within the same physics tick T as the subsequent `change_scene_to_packed` call (Rule 4 co-tick). PlayerMovement is explicitly forbidden from direct subscription (Rule 5 single-layer cascade design) — PM ephemeral state (8-var: 4 coyote/buffer + 4 facing Schmitt) is cleared via EchoLifecycleSM O6 cascade calling PM `_clear_ephemeral_state()`. Symmetric cardinality on the swap-call face is also invariant (AC-H27 — exactly one `SceneTree.change_scene_to_packed` per transition). Scene Manager #2 Approved RR7 2026-05-11 — Phase 5d batch entry."
+
+  - contract: weapon_slot_signals
+    status: active
+    pattern: signal
+    producer: weapon-slot  # WeaponSlot (Player Shooting #7) — sole emitter
+    consumers:
+      - player-movement      # _on_weapon_equipped subscriber → _current_weapon_id cache; PM C.4.5 _is_restoring guard
+      - hud-system           # weapon icon swap on weapon_equipped; ammo counter UI; optional fallback indicator
+      - vfx-system           # muzzle flash on shot_fired; optional invalid-weapon glitch on weapon_fallback_activated
+      - audio-system         # shoot SFX on shot_fired; optional fallback cue
+      - camera-system        # micro-shake on shot_fired (intensity/duration owned by Camera GDD)
+    adr: design/gdd/player-shooting.md
+    signal_signature: |
+      weapon_equipped(weapon_id: int)
+      shot_fired(direction: int)             # direction ∈ 0..7 (PM facing_direction enum, CCW from East)
+      weapon_fallback_activated(requested_id: int)  # OQ-3 closure — emitted by set_active(invalid_id) Rule 11 step 1
+    referenced_by:
+      - design/gdd/player-shooting.md       # C.1 Rule 11 + C.2.3 boot emit + C.3.2 cross-system contract + F.1 dependency table
+      - design/gdd/player-movement.md       # F.4.2 row #7 (a) weapon_equipped signature obligation closed by #7
+      - docs/architecture/adr-0002-time-rewind-storage-format.md  # Amendment 2 OQ-PM-NEW closure references #7 signal architecture
+    added: 2026-05-11
+    revised: ""
+    notes: "Three-signal contract emitted exclusively by WeaponSlot (Player Shooting #7). Boot emit uses call_deferred to guarantee subscriber wiring order independence (C.2.3 lock + AC PS-H6-04 positive/negative path). weapon_fallback_activated is semantically distinct from weapon_equipped — fallback identification possible for downstream cues; emitted only on invalid set_active call with NO state mutation (Rule 11 step 1 early return). Tier 1 single-weapon: weapon_fallback_activated is unreachable (no Pickup site); Tier 2+ Pickup #19 becomes first active emit site. Sustained-fire SFX/VFX patterns are downstream consumer decisions (Audio #4 / VFX #14 GDDs), not contracted here."
 
 # Example:
 #
@@ -652,6 +690,18 @@ forbidden_patterns:
     referenced_by:
       - design/gdd/input.md            # D.2 + AC-IN-18
       - docs/architecture/adr-0003-determinism-strategy.md  # determinism_clock single source
+    added: 2026-05-11
+
+  - pattern: direct_ammo_count_write_outside_weapon_slot
+    status: active
+    description: "External systems must NOT directly write to WeaponSlot.ammo_count. The single legitimate restoration path during rewind is WeaponSlot.restore_from_snapshot(snap: PlayerSnapshot), called synchronously by TimeRewindController inside the C.3 Rule 9 atomic sequence (step 2). PlayerMovement.restore_from_snapshot(snap) explicitly IGNORES snap.ammo_count (PM C.1.3 — Weapon owns write authority). Patterns like `_player._weapon_slot.ammo_count = N` from outside src/gameplay/player_shooting/weapon_slot.gd are banned (TRC PlayerSnapshot resource definition file's RHS read is exempt — Tension T3 carve-out)."
+    why: "Snapshot field state_ownership ammo_count designates weapon-slot as sole writer (ADR-0002 Amendment 2 Accepted 2026-05-11 via Player Shooting #7). Multiple writers break the Pillar 1 contract (rewind = learning tool, not punishment) — PM C.1.3 layering decision keeps PM ignorant of ammo while WeaponSlot remains single source of truth. Direct writes also bypass D.5 auto-reload invariant and INV-WS-1 single-writer guarantee. Detection: tools/ci/weapon_slot_static_check.sh GREP-PS-1 grep gate (pattern `ammo_count\\s*=` outside src/gameplay/player_shooting/weapon_slot.gd and player_snapshot.gd → 0 matches enforced)."
+    adr: docs/architecture/adr-0002-time-rewind-storage-format.md  # Amendment 2 locks Weapon write authority
+    referenced_by:
+      - design/gdd/player-shooting.md      # C.1 Rule 4 + C.2.2 member declaration + INV-WS-1 + GREP-PS-1 static check
+      - design/gdd/player-movement.md      # C.1.3 (PM ignores snap.ammo_count) + DEC-PM-3 v2
+      - design/gdd/time-rewind.md          # AC-A1 3-tier ownership (Weapon read at Step (b)) + AC-A4 restore identity
+      - docs/architecture/adr-0002-time-rewind-storage-format.md  # Amendment 2 sub-decision OQ-PM-NEW (a) locked
     added: 2026-05-11
 
   - pattern: deadzone_in_consumer
