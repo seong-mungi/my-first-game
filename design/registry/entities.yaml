@@ -37,7 +37,7 @@
 #   Each entry: name, status, source, referenced_by[], attributes{}, added, revised
 
 version: 1
-last_updated: "2026-05-11 — Session 17 Step 3 backfill: 1 entity (ECHO) + 3 formulas + 26 constants extracted from 5 Approved GDDs (Input #1 / State Machine #5 / Player Movement #6 / Damage #8 / Time Rewind #9) + 3 ADRs (0001 / 0002 with Amendment 1+2 / 0003)"
+last_updated: "2026-05-11 — Session 20 Phase 5b: Player Shooting #7 GDD Designed (pending re-review) adds 5 new constants (FIRE_COOLDOWN_FRAMES=10, MAGAZINE_SIZE=30, PROJECTILE_CAP=8, PROJECTILE_SPEED_PX_S=600.0, PROJECTILE_LIFETIME_FRAMES=90). Previous (2026-05-11): Session 17 Step 3 backfill: 1 entity (ECHO) + 3 formulas + 26 constants extracted from 5 Approved GDDs (Input #1 / State Machine #5 / Player Movement #6 / Damage #8 / Time Rewind #9) + 3 ADRs (0001 / 0002 with Amendment 1+2 / 0003) + Scene Manager #2 Phase 5d batch (restart_window_max_frames=60, cold_boot_max_seconds=300)."
 
 # ─── ENTITIES ────────────────────────────────────────────────────────────────
 # Named game-world objects: enemies, NPCs, characters, factions, bosses.
@@ -566,6 +566,62 @@ constants:
     value: 300.0
     unit: seconds
     notes: "Cold boot (game launch) to first actionable input budget ceiling — `cold_boot_elapsed_s = (t_first_input_ms - t_process_start_ms) / 1000.0 ≤ 300.0`. Pillar 4 5분 룰 — Press-any-key gate 금지 (Anti-Pillar #6 input remapping exclusion enables intro options menu gate removal). `t_process_start_ms` captured at `SceneManager._ready()` entry (engine bootloader gap excluded; advisory escalation to OS stopwatch if Steam Deck 1세대 AC-H2b approaches ceiling). Tier 1 measured estimate ≪ 10 s; 300 s ceiling guards extreme asset-streaming design. Phase 5d batch entry added 2026-05-11 via Scene Manager #2 Approved RR7."
+    added: 2026-05-11
+    revised: ""
+
+  # ─── Player Shooting / Weapon System (Tier 1 base rifle) ──────────────────
+  - name: FIRE_COOLDOWN_FRAMES
+    status: active
+    source: design/gdd/player-shooting.md
+    referenced_by:
+      - design/gdd/player-shooting.md   # C.1 Rule 1 + D.1 + D.2 + G.1.1
+    value: 10
+    unit: frames
+    notes: "Fire cooldown gate — 6 rps @ 60 Hz physics tick. Tier 1 default; tuning range 6..20 (3..10 rps) in assets/data/weapons.tres. Contra III / Hard Corps baseline. G.3 invariant: must be < REWIND_WINDOW_FRAMES (=90) for E-PS-5 natural cooldown elapsed contract."
+    added: 2026-05-11
+    revised: ""
+
+  - name: MAGAZINE_SIZE
+    status: active
+    source: design/gdd/player-shooting.md
+    referenced_by:
+      - design/gdd/player-shooting.md   # C.1 Rule 4 + D.5 + G.1.2 + V/A.5 + UI.1
+    value: 30
+    unit: rounds
+    notes: "Magazine capacity — Tier 1 single base rifle. 5초 sustained fire @ 6 rps before auto-reload (Tier 1 reload_frames = 0 — instant). Tuning range 10..60 in assets/data/weapons.tres. ammo_count bound 0..MAGAZINE_SIZE (D.5 invariant post-fire {1..MAGAZINE_SIZE} via auto-reload)."
+    added: 2026-05-11
+    revised: ""
+
+  - name: PROJECTILE_CAP
+    status: active
+    source: design/gdd/player-shooting.md
+    referenced_by:
+      - design/gdd/player-shooting.md   # C.1 Rule 6 + INV-WS-3 + G.1.4 + G.3 invariant 1
+    value: 8
+    unit: projectiles
+    notes: "Concurrent ECHO projectile cap — silent skip beyond. Tier 1 default; tuning range 4..16. Theoretical max concurrent at default tuning = PROJECTILE_LIFETIME_FRAMES / FIRE_COOLDOWN_FRAMES = 9; cap=8 forces 1 silent skip per ~1.3s sustained fire cycle. INV-WS-3 single-source enforcement."
+    added: 2026-05-11
+    revised: ""
+
+  - name: PROJECTILE_SPEED_PX_S
+    status: active
+    source: design/gdd/player-shooting.md
+    referenced_by:
+      - design/gdd/player-shooting.md   # C.1 Rule 5 + D.3 + G.1.5 + G.3 invariant 3
+    value: 600.0
+    unit: px/s
+    notes: "ECHO projectile speed (Area2D + script transform per ADR-0003). Tier 1 default; tuning range 400..800. At default + FIXED_DELTA = 1/60: 10 px/frame. Cross-knob invariant (G.3 #3): PROJECTILE_LIFETIME_FRAMES × PROJECTILE_SPEED_PX_S / 60 ≥ viewport_width (1280px) — 화면 외 도달 보장."
+    added: 2026-05-11
+    revised: ""
+
+  - name: PROJECTILE_LIFETIME_FRAMES
+    status: active
+    source: design/gdd/player-shooting.md
+    referenced_by:
+      - design/gdd/player-shooting.md   # C.1 Rule 5 + D.4 + G.1.6 + G.3 invariant 1 + 3
+    value: 90
+    unit: frames
+    notes: "Projectile despawn threshold — frame-counter deterministic (NOT VisibleOnScreenNotifier2D, camera-relative violates ADR-0001 + ADR-0003 결정성). Tier 1 default = 1.5 s @ 60 Hz = ~900 px @ default speed. Tuning range 60..120 in assets/data/weapons.tres. Cross-knob invariant cap relationship (G.3 #1)."
     added: 2026-05-11
     revised: ""
 
