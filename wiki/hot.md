@@ -9,6 +9,18 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Active Research Topic
 
+**런앤건 8방향 조준 사용성 (gamepad + KB+M + 접근성)** (2026-05-11). 4 parallel agents · 33 web searches · 6 페이지. Echo 입력 #1 GDD 갱신용 권고 6항 도출 — FACING_THRESHOLD 상향, 각도 hysteresis, aim_lock 컨벤션 정합, XAG 107 준수.
+
+→ **Synthesis**: [[Research 8-Way Aim Usability For Run-and-Gun]] — 마스터 통합 (gamepad + KB+M + 접근성 3축)
+→ **Concept**: [[Aim Lock Modifier Pattern]] — Cuphead/Galuga/Hard Corps Lock 컨벤션 + 발견성
+→ **Concept**: [[Analog Stick To 8-Way Quantization]] — 4단계 파이프라인 + Steam Deck floor
+→ **Concept**: [[Aim Assist Accessibility Tiers]] — Returnal 4-tier + XAG 107
+→ **Source**: [[Game Developer Thumbstick Deadzones]] — Josh Sutphin 2014 canonical
+→ **Source**: [[XAG 107 Aim Assist Guidelines]] — Microsoft 권위
+→ **이전 활성 토픽**: 봇 검증 풀스택 카탈로그 (15 페이지) — [[Bot Validation Catalog Summary]] 단일 진입점
+
+## 이전 활성 (Bot Validation Full Stack — 2026-05-10)
+
 **결정론 게임 AI 봇 검증 풀스택 + Tier 1 갭 커버리지** (2026-05-10). PlayerMovement GDD → 학습/결정론 → 보스 디자인 → AI 4 zone → 봇 검증 방법론 → B+C+D 파이프라인 → E+F+G 구현 → Tier 1 갭 (인간/결정론/히트맵). **9 페이지 카탈로그 closure 도달** (3 synthesis + 6 concepts). 모두 한글화 (제목 영문, 바디 한글).
 
 ### Bot Validation Full Stack (14 pages)
