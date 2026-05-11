@@ -90,6 +90,7 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[Accessibility Mode Bot Validation]] — **NEW** Easy/Hard/Color-blind/Auto-Jump 모드 봇 검증 + Modes Comparison Matrix 자동 생성 + 회귀 검출
 - [[Speedrun Discovery Via RL Bot]] — **NEW** RL 봇 시간 보상 + 글리치 결정 매트릭스 + 인간 도달성 검증 + Echo speedrun 인프라 (replay/leaderboard/ghost)
 - [[Bot Validation Catalog Summary]] — **NEW** Echo 봇 검증 카탈로그 14 페이지 단일 진입점 + 5 황금률 + 솔로 개발자 로드맵 + 비협상 결정 8종 인덱스
+- [[Research 8-Way Aim Usability For Run-and-Gun]] — **NEW** 런앤건 8방향 조준 사용성 (gamepad + KB+M + 접근성) — Echo 입력 시스템 검증/조정 권고 (FACING_THRESHOLD 0.10→0.15, 각도 hysteresis ±4°, aim_lock 컨벤션 정합)
 
 ## Entities
 
