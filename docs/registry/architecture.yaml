@@ -30,7 +30,7 @@
 #   Superseded entries:     Grep pattern="status: superseded"
 
 version: 1
-last_updated: "2026-05-10"  # Player Movement #6 Designed (player-movement.md F.4.1 #6 obligation): 4 new entries — state_ownership.player_movement_state, interfaces.player_movement_snapshot, forbidden_patterns.delta_accumulator_in_movement, api_decisions.facing_direction_encoding. Previous (2026-05-09): damage GDD Round 2 review (DEC-5 boss_hit_absorbed 2-arg + DEC-6 hazard_grace_frames + boss_pattern_interrupted signal + start_hazard_grace invocation_api + emit ordering contract).
+last_updated: "2026-05-11"  # Input System #1 Designed (input.md F.4.1 #13 obligation): 7 new entries — state_ownership.input_actions_catalog, interfaces.input_polling_contract, api_decisions.pause_handler_autoload + active_profile_tracker, forbidden_patterns.gameplay_input_in_callback + wall_clock_in_input_logic + deadzone_in_consumer. Previous (2026-05-10): Player Movement #6 Designed (player-movement.md F.4.1 #6 obligation): 4 new entries — state_ownership.player_movement_state, interfaces.player_movement_snapshot, forbidden_patterns.delta_accumulator_in_movement, api_decisions.facing_direction_encoding. Previous (2026-05-09): damage GDD Round 2 review (DEC-5 boss_hit_absorbed 2-arg + DEC-6 hazard_grace_frames + boss_pattern_interrupted signal + start_hazard_grace invocation_api + emit ordering contract).
 
 # ─── STATE OWNERSHIP ─────────────────────────────────────────────────────────
 # Who is the authoritative owner of each piece of shared game state.
@@ -106,6 +106,30 @@ state_ownership:
     added: 2026-05-10
     revised: ""
     notes: "PlayerMovement IS the ECHO root node itself (CharacterBody2D), not a child of an outer ECHO node — see player-movement.md A.Overview Decision A. PlayerMovementSM (extends StateMachine, 6 Tier 1 states: idle/run/jump/fall/aim_lock/dead per DEC-PM-1) is a sibling SM next to EchoLifecycleSM under PlayerMovement (Tier 1 flat composition, NOT parallel ownership — PlayerMovementSM's dead state is reactive to EchoLifecycleSM state_changed via T13). _is_restoring: bool guard (player-movement.md C.4.4 single source) blocks anim method-track callbacks (footstep SFX, dust VFX, bullet spawn) during restore. process_physics_priority=0 (ADR-0003 ladder). 7-field schema is the verbatim interface locked across player-movement.md C.1.3 + time-rewind.md F.1 #6 — any change requires both GDD updates + ADR-0002 Amendment."
+
+  - state: input_actions_catalog
+    status: active
+    owner_system: input-system
+    adr: design/gdd/input.md
+    interface: |
+      Read (per-tick polling via _physics_process Phase 2 ONLY — never _input/_unhandled_input):
+        Input.is_action_pressed(InputActions.X: StringName) -> bool
+        Input.is_action_just_pressed(InputActions.X: StringName) -> bool
+        Input.is_action_just_released(InputActions.X: StringName) -> bool
+        Input.get_vector(InputActions.MOVE_LEFT, MOVE_RIGHT, MOVE_UP, MOVE_DOWN) -> Vector2  # radial composite deadzone 0.2
+        Input.get_action_strength(InputActions.X: StringName) -> float
+      Write: only via InputMap dynamic mutation in paused tree (SettingsManager.apply_deadzone() / SettingsManager.apply_remap() Tier 3) — Tier 1/2 NO runtime mutation.
+      Action catalog (9 fixed): move_left, move_right, move_up, move_down, jump, aim_lock, shoot, rewind_consume, pause.
+      Action constants: src/input/input_actions.gd (StringName const class — `InputActions.JUMP = &"jump"` etc).
+    write_access: input-system-only-via-settings-manager  # external systems read-only; runtime mutation only via SettingsManager in paused tree (Tier 3)
+    referenced_by:
+      - design/gdd/input.md
+      - design/gdd/player-movement.md      # C.5.1 — PM polls 5 actions in _physics_process Phase 2
+      - design/gdd/state-machine.md        # D.2 — SM polls rewind_consume per-tick at AliveState/DyingState physics_update
+      - design/gdd/time-rewind.md          # C.3 #1 — TRC verifies SM input state
+    added: 2026-05-11
+    revised: ""
+    notes: "9-action catalog locked Tier 1; Tier 2 zero additions (Difficulty Toggle #20 changes RewindPolicy data only, never InputMap); Tier 3 #23 Input Remapping permits player-bound chord (default mapping table unchanged — 'default_only' interpretation, OQ-15 closure). KB+M defaults: A/D/W/S move, Space jump, F aim_lock (NOT Shift — Shift conflict resolved to rewind_consume), LMB shoot, Shift rewind_consume, Escape pause. Gamepad defaults (Xbox labels; Steam Deck inherits verbatim): Left Stick move, A jump, RB aim_lock, RT shoot, LT(threshold 0.5) rewind_consume, Start pause. PauseHandler autoload (api_decisions.pause_handler_autoload) handles pause toggle via _unhandled_input on PROCESS_MODE_ALWAYS path. ActiveProfileTracker autoload (api_decisions.active_profile_tracker) tracks KB+M/GAMEPAD profile for first-death prompt label (D.1 formula, HYSTERESIS_FRAMES=180)."
 
 # Example:
 #
@@ -240,6 +264,35 @@ interfaces:
     added: 2026-05-10
     revised: ""
     notes: "Single legitimate write path during rewind. restore_from_snapshot must (1) set _is_restoring = true before field assignments, (2) assign 6 numeric/StringName fields, (3) AnimationPlayer.play(snap.current_animation_name) + seek(snap.current_animation_time, true) — the second arg true is mandatory in Godot 4.6 (forces immediate evaluation, time-rewind.md I4), (4) clear _is_restoring at end. Anim method-track callbacks (footstep SFX, dust VFX, bullet spawn) MUST short-circuit on _is_restoring (player-movement.md C.4.4) to prevent spurious side effects during restore. forbidden_patterns.direct_player_state_write_during_rewind ban is enforced at PlayerMovement (single enforce site)."
+
+  - contract: input_polling_contract
+    status: active
+    pattern: direct_call  # Input.is_action_* polled directly from consumers' _physics_process
+    producer: input-system  # Godot Input singleton + InputMap
+    consumers:
+      - player-movement       # C.5.1 — 5 actions: 4 move + jump + aim_lock
+      - state-machine         # D.2 — rewind_consume at AliveState/DyingState physics_update
+      - time-rewind-controller # process_physics_priority=1 verify-only same-tick poll
+      - player-shooting       # provisional — shoot action; detect mode (#7 decision)
+      - pause-handler         # _unhandled_input on PROCESS_MODE_ALWAYS autoload — pause action exception
+      - menu-pause-ui         # _input callback exception — UI/Menu actions only (NOT gameplay)
+    adr: design/gdd/input.md
+    polling_contract: |
+      Cascade invariant: in a single _physics_process tick, ALL gameplay consumers MUST read the same InputMap action state. This invariant is the foundation of ADR-0003 determinism and SM 16-frame rewind_consume window (state-machine.md D.2).
+      Rule 1: Input.is_action_*, Input.get_vector, Input.get_action_strength called ONLY in _physics_process.
+      Rule 2: NO gameplay logic in _input / _unhandled_input / _unhandled_key_input. EXCEPTION: UI/Menu (#18) + PauseHandler autoload.
+      Rule 3: Phase 2 (input poll) MUTATION-FREE — read only. State transitions and velocity calculations belong to Phase 3+ (player-movement.md C.3 5-phase pattern single source).
+      Rule 4: GUT test injection: Input.action_press(InputActions.X) XOR Input.parse_input_event(InputEventAction). NEVER mix in same test fixture (E-IN-16). Helper files: tests/helpers/input_action_press_helper.gd OR tests/helpers/input_event_inject_helper.gd.
+      Rule 5: action names use StringName constants from src/input/input_actions.gd (`InputActions.JUMP` NOT `&"jump"` inline).
+    referenced_by:
+      - design/gdd/input.md
+      - design/gdd/player-movement.md
+      - design/gdd/state-machine.md
+      - design/gdd/time-rewind.md
+      - docs/architecture/adr-0003-determinism-strategy.md
+    added: 2026-05-11
+    revised: ""
+    notes: "Foundation/Infrastructure contract — Input doesn't own any gameplay state, but the cascade invariant it provides is load-bearing for every higher invariant (PM jump_buffer / SM rewind window / TRC snapshot capture). Violations are detectable via tools/ci/_input_purity.py (callback purity static check) + tools/ci/input_action_static_check.sh (StringName const usage). Both scripts are AC-IN-04/05 deliverables — meta-runner tools/ci/run_static_checks.sh asserts script existence (PM B2 vaccine)."
 
 # Example:
 #
@@ -405,6 +458,31 @@ api_decisions:
     added: 2026-05-10
     revised: ""
 
+  - purpose: pause_handler_autoload
+    status: active
+    api: "PauseHandler autoload (process_mode = PROCESS_MODE_ALWAYS) using _unhandled_input — single source for `pause` action toggle. Three decision paths: (a) resume — always allowed (no SM veto); (b) initiate — queries SM `can_pause()`, applies pause if true; (c) veto — SM returned false, pause swallowed silently. Calls get_viewport().set_input_as_handled() on **all three paths** (consume-on-decision invariant per AC-IN-20-A)."
+    not: "Single SM polling of `pause` action in _physics_process (would deadlock — SM frame counter freezes when get_tree().paused = true; resume becomes impossible). Multiple uncoordinated _input listeners (introduces dispatch ordering ambiguity). Veto-without-consumption (would let event leak to other _unhandled_input listeners as if pause was never pressed; was earlier-draft pattern fixed by B4 reconciliation 2026-05-11)."
+    adr: design/gdd/input.md
+    reason: "Godot 4.6 canonical pattern for pause-toggle nodes. PROCESS_MODE_ALWAYS keeps the autoload responsive during pause. _unhandled_input (vs _input) lets UI/Menu (#18) consume directional/confirm inputs higher in the dispatch stack without blocking pause. set_input_as_handled() on every decision path (Godot 'consume on decision' pattern) prevents downstream _unhandled_input listeners from reinterpreting an already-resolved pause event. ActiveProfileTracker._input fires *before* _unhandled_input regardless of consumption (E-IN-NEW corrected ordering 2026-05-11) — consumption here doesn't block profile classification. gdscript-specialist Q5 confidence: verified."
+    referenced_by:
+      - design/gdd/input.md            # C.1.4 single source
+      - design/gdd/state-machine.md    # C.2.2 O2 — SM provides can_pause() query interface
+    added: 2026-05-11
+    revised: "2026-05-11 — B4 reconciliation: documented veto-path consumption explicitly (was implicit in earlier draft, contradicted AC-IN-20-A). Reason added for E-IN-NEW dispatch-order correction (Session 13 review B5)."
+
+  - purpose: active_profile_tracker
+    status: active
+    api: "ActiveProfileTracker autoload (process_mode = PROCESS_MODE_ALWAYS) using _input — tracks last input source (KB+M vs GAMEPAD) for first-death prompt button-label disambiguation. Two-part API: (A) event-driven source classification updates `_last_input_source: DeviceProfile` + `_last_input_frame: int` on InputEventKey/MouseButton/MouseMotion → KB_M; InputEventJoypadButton → GAMEPAD; InputEventJoypadMotion → GAMEPAD if abs(axis_value) > GAMEPAD_DETECTION_THRESHOLD (0.3). (B) per-query resolution: `active_profile() -> DeviceProfile` returns GAMEPAD if last source was GAMEPAD within HYSTERESIS_FRAMES (180) else KB_M sticky else fallback (GAMEPAD if joypads_connected > 0 else KB_M). `button_label(profile, action_id) -> String` provides device-specific label."
+    not: "Native Godot `Input.last_input_source` API (does not exist in Godot 4.6 — must implement). Symmetric KB_M/GAMEPAD hysteresis (rejected — KB_M sticky immediate is intentional: a mouse brush should not flip the gamepad-mode label; KB+M users actively press keys, gamepad users sometimes brush mouse)."
+    adr: design/gdd/input.md
+    reason: "First-death prompt (C.1.5) requires per-device label string (`[Shift] Rewind` vs `[LT] Rewind`). Without active profile heuristic, the prompt would have to guess or display both — Pillar 4 5분-룰 violation. HYSTERESIS_FRAMES=180 (3초) balances mouse-jitter false-flip prevention vs device-swap responsiveness; OQ-IN-3 pending Tier 1 physical Steam Deck 1세대 verification of GAMEPAD_DETECTION_THRESHOLD=0.3 against RMA stick drift range 0.05–0.18."
+    referenced_by:
+      - design/gdd/input.md            # D.1 single source + C.1.5
+      - design/gdd/state-machine.md    # first_death_in_session signal owner (new — input.md F.3 O-IN-3 obligation)
+      - design/gdd/time-rewind.md      # T1 DYING grace window aligns with prompt display duration
+    added: 2026-05-11
+    revised: ""
+
 # Example:
 #
 # api_decisions:
@@ -493,6 +571,36 @@ forbidden_patterns:
     referenced_by:
       - design/gdd/player-movement.md
     added: 2026-05-10
+
+  - pattern: gameplay_input_in_callback
+    status: active
+    description: "Gameplay systems (PM #6, SM #5, TRC #9, Player Shooting #7) MUST NOT poll Input.is_action_*, Input.get_vector, or Input.get_action_strength from _input / _unhandled_input / _unhandled_key_input callbacks. All gameplay input polling occurs in _physics_process Phase 2 only. EXCEPTIONS: UI/Menu system (#18) may use _input for directional/confirm actions; PauseHandler autoload (api_decisions.pause_handler_autoload) uses _unhandled_input for `pause` toggle."
+    why: "Callback timing is decoupled from physics tick boundaries — same logical input arriving via _input may be processed in different physics frames than the same input polled in _physics_process. Cascade invariant (interfaces.input_polling_contract): all consumers must read the same action state in the same tick. Callbacks break that invariant. Wall-clock-style latency creep + cross-consumer disagreement = Pillar 2 determinism break. Detection: tools/ci/_input_purity.py runs Python multiline regex against PM/SM/TRC/PS source files; awk-range patterns are forbidden (PM B4 trap — collapses on single-line `func _input(e): pass`)."
+    adr: design/gdd/input.md
+    referenced_by:
+      - design/gdd/input.md            # C.1.2 Rule 2 + AC-IN-05
+      - design/gdd/player-movement.md  # C.6 row 470 cross-ref
+    added: 2026-05-11
+
+  - pattern: wall_clock_in_input_logic
+    status: active
+    description: "Input system code and input-driven gameplay logic MUST NOT call Time.get_ticks_msec(), Time.get_ticks_usec(), OS.get_ticks_msec(), or use InputEvent.timestamp (wall-clock milliseconds). All frame references and timing windows use Engine.get_physics_frames() (monotonic int) as the single clock source. Applies to: PM (jump_buffer / coyote_frames), SM (rewind_consume window), TRC (snapshot capture), Input (ActiveProfileTracker HYSTERESIS_FRAMES)."
+    why: "ADR-0003 api_decisions.determinism_clock locks Engine.get_physics_frames() as the sole game-time source. Wall-clock-derived behavior breaks 1000-cycle determinism by construction (wall-clock drift across runs/machines). InputEvent.timestamp is a wall-clock value emitted by the OS — using it in gameplay logic introduces non-deterministic timing windows. Detection: tools/ci/wall_clock_check.sh grep gate. Banned only in gameplay-critical paths — UI animations / settings menus may use wall-clock for cosmetic timing."
+    adr: design/gdd/input.md
+    referenced_by:
+      - design/gdd/input.md            # D.2 + AC-IN-18
+      - docs/architecture/adr-0003-determinism-strategy.md  # determinism_clock single source
+    added: 2026-05-11
+
+  - pattern: deadzone_in_consumer
+    status: active
+    description: "Consumer gameplay systems (PM #6, SM #5, TRC #9, Player Shooting #7) MUST NOT re-implement deadzone math. Patterns like `if abs(Input.get_joy_axis(...)) > 0.2:` or `if vec.length() > 0.2:` against raw axis values are banned. Single enforcement site: InputMap action deadzone set in project.godot to 0.2 (radial composite, applied automatically by Input.get_vector). Runtime mutation only via SettingsManager.apply_deadzone() in paused tree (Tier 3 accessibility)."
+    why: "Per-consumer deadzone re-implementation creates threshold drift: if one consumer sets 0.2 and another 0.25, the cascade invariant breaks. Also bypasses the radial composite semantics — Input.get_vector applies deadzone to magnitude, not per-axis; consumer-side per-axis checks produce different behavior than Input layer. PM B10 BLOCKING surfaced a related problem: `facing_threshold_outside` was set to the same value as `gamepad_deadzone` (both 0.2) creating no-hysteresis facing flicker on Steam Deck stick drift — that PM-specific issue is resolved by PM-side asymmetric thresholds (enter=0.2, exit=0.15), NOT by changing the Input deadzone. Detection: tools/ci/deadzone_consumer_check.sh grep gate."
+    adr: design/gdd/input.md
+    referenced_by:
+      - design/gdd/input.md            # C.1.2 Rule 5 + C.1.3 + AC-IN-08
+      - design/gdd/player-movement.md  # E-PM-9 + PM B10 cross-ref
+    added: 2026-05-11
 
 # Example:
 #
