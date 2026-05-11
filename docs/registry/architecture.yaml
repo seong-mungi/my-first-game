@@ -30,7 +30,7 @@
 #   Superseded entries:     Grep pattern="status: superseded"
 
 version: 1
-last_updated: "2026-05-11"  # Input System #1 Designed (input.md F.4.1 #13 obligation): 7 new entries — state_ownership.input_actions_catalog, interfaces.input_polling_contract, api_decisions.pause_handler_autoload + active_profile_tracker, forbidden_patterns.gameplay_input_in_callback + wall_clock_in_input_logic + deadzone_in_consumer. Previous (2026-05-10): Player Movement #6 Designed (player-movement.md F.4.1 #6 obligation): 4 new entries — state_ownership.player_movement_state, interfaces.player_movement_snapshot, forbidden_patterns.delta_accumulator_in_movement, api_decisions.facing_direction_encoding. Previous (2026-05-09): damage GDD Round 2 review (DEC-5 boss_hit_absorbed 2-arg + DEC-6 hazard_grace_frames + boss_pattern_interrupted signal + start_hazard_grace invocation_api + emit ordering contract).
+last_updated: "2026-05-11"  # PM #6 B5 resolution: ADR-0002 Amendment 2 (Proposed) — PlayerSnapshot schema 7→8 PM-noted fields (ammo_count Weapon-owned). Updated state_ownership.player_movement_state interface (PM 7 fields capture set unchanged; ammo_count Weapon enforce site noted) + interfaces.player_movement_snapshot snapshot_schema (9-field Resource: 8 PM-noted + 1 TRC-internal). DEC-PM-3 v2 / time-rewind.md F6 (b) variant locked. Previous (2026-05-11): Input System #1 Designed (input.md F.4.1 #13 obligation): 7 new entries — state_ownership.input_actions_catalog, interfaces.input_polling_contract, api_decisions.pause_handler_autoload + active_profile_tracker, forbidden_patterns.gameplay_input_in_callback + wall_clock_in_input_logic + deadzone_in_consumer. Previous (2026-05-10): Player Movement #6 Designed (player-movement.md F.4.1 #6 obligation): 4 new entries — state_ownership.player_movement_state, interfaces.player_movement_snapshot, forbidden_patterns.delta_accumulator_in_movement, api_decisions.facing_direction_encoding. Previous (2026-05-09): damage GDD Round 2 review (DEC-5 boss_hit_absorbed 2-arg + DEC-6 hazard_grace_frames + boss_pattern_interrupted signal + start_hazard_grace invocation_api + emit ordering contract).
 
 # ─── STATE OWNERSHIP ─────────────────────────────────────────────────────────
 # Who is the authoritative owner of each piece of shared game state.
@@ -249,7 +249,7 @@ interfaces:
       PlayerMovement.restore_from_snapshot(snap: PlayerSnapshot) -> void
     snapshot_schema: |
       class_name PlayerSnapshot extends Resource:
-        captured_at_physics_frame: int     # ADR-0002 schema field — set by TRC at capture
+        # 7 PM-owned fields (ADR-0002 base):
         global_position: Vector2
         velocity: Vector2
         facing_direction: int              # 0..7 enum (api_decisions.facing_direction_encoding)
@@ -257,13 +257,17 @@ interfaces:
         current_animation_time: float
         current_weapon_id: int
         is_grounded: bool
+        # 1 Weapon-owned field (ADR-0002 Amendment 2, Proposed 2026-05-11 — DEC-PM-3 v2 / time-rewind.md F6 (b)):
+        ammo_count: int                    # 8th PM-noted field — Weapon (#7) single-writer; PM.restore_from_snapshot ignores; Weapon-side restoration mechanism OQ-PM-NEW deferred to Player Shooting #7 GDD authoring
+        # 1 TRC-internal field (ADR-0002 Amendment 1, 2026-05-09):
+        captured_at_physics_frame: int     # set by TRC at capture; PM does NOT expose
     referenced_by:
       - design/gdd/player-movement.md
       - design/gdd/time-rewind.md
       - docs/architecture/adr-0002-time-rewind-storage-format.md
     added: 2026-05-10
-    revised: ""
-    notes: "Single legitimate write path during rewind. restore_from_snapshot must (1) set _is_restoring = true before field assignments, (2) assign 6 numeric/StringName fields, (3) AnimationPlayer.play(snap.current_animation_name) + seek(snap.current_animation_time, true) — the second arg true is mandatory in Godot 4.6 (forces immediate evaluation, time-rewind.md I4), (4) clear _is_restoring at end. Anim method-track callbacks (footstep SFX, dust VFX, bullet spawn) MUST short-circuit on _is_restoring (player-movement.md C.4.4) to prevent spurious side effects during restore. forbidden_patterns.direct_player_state_write_during_rewind ban is enforced at PlayerMovement (single enforce site)."
+    revised: 2026-05-11  # Amendment 2 Proposed — ammo_count added as 8th PM-noted field
+    notes: "9-field Resource total (8 PM-noted + 1 TRC-internal — Amendment 2 Proposed 2026-05-11). Single legitimate write path during rewind for PM 7 fields. restore_from_snapshot must (1) set _is_restoring = true before field assignments, (2) assign 6 numeric/StringName fields (PM-owned only — snap.ammo_count is ignored), (3) AnimationPlayer.play(snap.current_animation_name) + seek(snap.current_animation_time, true) — the second arg true is mandatory in Godot 4.6 (forces immediate evaluation, time-rewind.md I4), (4) clear _is_restoring at end. Anim method-track callbacks (footstep SFX, dust VFX, bullet spawn) MUST short-circuit on _is_restoring (player-movement.md C.4.4) to prevent spurious side effects during restore. AnimationMixer.callback_mode_method MUST be set to ANIMATION_CALLBACK_MODE_METHOD_IMMEDIATE in PlayerMovement._ready() (Godot 4.6 default is DEFERRED — verified 2026-05-11 — under which the guard silently fails because deferred callbacks run after _is_restoring is cleared; see docs/engine-reference/godot/modules/animation.md). forbidden_patterns.direct_player_state_write_during_rewind ban is enforced at PlayerMovement (single enforce site) for the 7 PM-owned fields; ammo_count is separate enforce site at WeaponSlot per Player Shooting #7."
 
   - contract: input_polling_contract
     status: active

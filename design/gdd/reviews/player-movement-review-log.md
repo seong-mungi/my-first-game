@@ -4,6 +4,65 @@
 
 ---
 
+## Review — 2026-05-11 (lean re-review) — Verdict: APPROVED
+Scope signal: L (unchanged)
+Specialists: none (lean mode — adversarial pass already completed in prior fresh-session review)
+Mode: lean (Phases 1-4 + Phase 5 next-step widget; Phase 3b adversarial specialist spawn skipped)
+Blocking items: 0 (all 10 prior BLOCKING resolved) | Recommended: 4 new minor + ~20 carried over from prior review | Nice-to-have: 0 new
+Prior verdict resolved: **Yes** — 10/10 prior BLOCKING items closed; cross-doc cascade verified clean
+GDD posture at review entry: "In Design" header line 3 with status row still showing NEEDS REVISION; specialists/codepaths/cross-docs in fact already updated to match Designed/Approved level.
+
+### Summary
+All 10 prior BLOCKING items verified resolved with citable spec / code / cross-doc evidence. The B1 active-flag pattern is structurally stronger than the prior 3-specialist-converged suggestion (bool short-circuit removes int math from the predicate path entirely — overflow impossible by construction, not just "fixed magnitude"). B3 sets a good precedent for engine-version-critical fixes (WebFetch verification + engine-reference recording + boot-assert + static grep). B5 cascaded correctly across 5 files (player-movement.md / time-rewind.md / adr-0002 / architecture.yaml / animation.md) without disturbing the Session 9 F.4.1 reciprocals. B6 converts a previously-asserted Pillar 1 claim into a CI-gated reachability proof (AC-H6-06 three-case fixture). Cross-doc consistency intact.
+
+### Blocker resolution evidence
+| # | Site | Verification |
+|---|------|---------------|
+| B1 INT_MIN sentinel | C.4.1 active-flag pattern + D.3 Formula 5 + Scenario C + AC-H5-04 negative-case clause | bool short-circuit gate; overflow impossible by construction |
+| B2 missing pm_static_check.sh | `tools/ci/pm_static_check.sh` present | File exists; AC-H3-04/H7-03/H7-04 reference it as sole CI gate |
+| B3 callback_mode_method | C.4.1 `_ready()` IMMEDIATE override + AC-H1-07 + `animation.md` "Critical Default" section | DEFERRED default confirmed via official docs; IMMEDIATE override mandatory + grep-enforced |
+| B4 awk range collapse | AC-H7-04 rewritten as state-machine awk with `in_block` flag, BSD-awk-compat boundary | Validated by 3-fixture smoke test note |
+| B5 ammo Pillar 1 contradiction | DEC-PM-3 v1 superseded; v2 adds `ammo_count` 8th PM-noted field; AC-H1-05 obsoleted + AC-H1-05-v2; ADR-0002 Amendment 2 Proposed | 5-file cross-doc cascade verified |
+| B6 DYING 12-frame multi-domain | AC-H6-06 reachability fixture (3 cases) + VA.2 30 Hz flicker + VA.4 + time-rewind.md `sfx_dying_pending_01.ogg` 200 ms envelope | Pillar 1 reachability CI-gated |
+| B7 art-bible ABA-1..4 | All 4 amendments ✅ Landed 2026-05-11; OQ-PM-6 closed | VA.8 status table confirms |
+| B8 footstep variants | VA.4 + VA.5: 4 .ogg + per-step ±5% pitch jitter via dedicated `_footstep_rng` | ADR-0003 determinism preserved |
+| B9 paper-doll + VA.1/VA.7 contradiction | VA.2 paper-doll = intentional Monty Python cutout; VA.7 R-VA-4 scope-clarified to frame-sequence-within-state | Internal contradiction resolved by scope precision |
+| B10 facing == deadzone | D.4 dual Schmitt trigger + 4 new bool vars + G.1 enter/exit split + new INV-8 + F.4.2 Scene Manager #2 obligation 4→8-var | Hysteresis pair locked |
+
+### New RECOMMENDED items this pass (4 minor, all cosmetic; queue with prior review's ~20 deferred items)
+- **REC-RR-1** — D.4 Worked Example "Pre-B10 oscillation case the fix blocks" uses `(-0.21, 0.0)` as drift input, but rationale text states drift floor ~0.18; example is internally inconsistent (-0.21 magnitude is above stated drift floor; both pre/post-B10 produce same outcome at 0.21). Recommend rewriting with `(0.18, 0.0)`-bounded values to actually showcase the [0.15, 0.20) protected band.
+- **REC-RR-2** — D.3 Formula 5 Scenario C: Frame label "Frame N+11 (restore_from_snapshot...)" but assignment shows `_last_grounded_frame = N+10`. Off-by-one in comment.
+- **REC-RR-3** — Status header (player-movement.md line 3) still reads "In Design" + A.7 update template not yet applied. Should advance to "Approved (re-review APPROVED 2026-05-11 lean mode)".
+- **REC-RR-4** — H section preamble shows progressive AC counts (28 → 29 → 30 BLOCKING) but no final tally; A.1 row notes "36 AC / 30 BLOCKING / 6 ADVISORY". Add 1-row tally in H preamble for easy verification.
+
+### Specialist disagreements
+None applicable (lean mode — no specialists spawned this pass).
+
+### Cross-doc reciprocals verified intact
+- ✓ `time-rewind.md` F.1 row #6: 8-field interface verbatim + ammo_count Amendment 2 + provisional removed
+- ✓ `state-machine.md` C.2.1 line 180+: `PlayerMovement (CharacterBody2D, root)` model (Round 5 exception applied); F.2 row #6 line 846 PlayerMovementSM extends StateMachine M2 reuse
+- ✓ `damage.md` F.1 row #6 line 800: ECHO HurtBox + HitBox + Damage hosted as PlayerMovement children
+- ✓ `docs/architecture/adr-0002-time-rewind-storage-format.md` Amendment 2 (Proposed): 9-field Resource (8 PM-noted + 1 TRC-internal)
+- ✓ `docs/registry/architecture.yaml`: 4 PM entries (state_ownership.player_movement_state / interfaces.player_movement_snapshot / forbidden_patterns.delta_accumulator_in_movement / api_decisions.facing_direction_encoding) + last_updated 2026-05-11 with ammo_count extension noted
+- ✓ `docs/engine-reference/godot/modules/animation.md`: "Critical Default" section records B3 finding with required `_ready()` override pattern + boot-time assert recommendation
+- ✓ `tools/ci/pm_static_check.sh`: file present
+
+### Senior Verdict (lean-mode self-attest synthesis)
+Pillar 1 ("학습 도구") failure points from prior review (B1 / B5 / B6 / C.4.0 mental model) are all now demonstrably closed. Three architectural integrity blockers (B1, B2, B3) closed with (a) by-construction safety, (b) physical file presence, (c) post-cutoff engine fact verified against official docs and recorded in engine-reference. Cross-doc reciprocal hygiene intact; B10 forward-compatibility risk caught (Scene Manager #2 4→8-var obligation expansion).
+
+### Status transition
+- Status header in player-movement.md line 3: still "In Design" (REC-RR-3) — should advance per A.7 template.
+- `systems-index.md` System #6 row: "In Design — NEEDS REVISION" → "Approved (re-review APPROVED 2026-05-11 lean mode)".
+- Progress Tracker: Approved 4→5; Designed (pending re-review) 0→0; In Design 1→0.
+
+### Recommended next actions
+1. **`/consistency-check`** (user-selected) — verify no value conflicts across the 5 now-Approved/LOCKED system GDDs (#1 Input, #5 SM, #6 PM, #8 Damage, #9 TR). Catches cross-GDD drift before architecture/Tier 1 prototype work.
+2. **Housekeeping pass** (deferred to user discretion) — apply REC-RR-1..4 inline + the ~20 carried-over RECOMMENDED items from prior review log (G4 i-frame end cue, G6 post-cut rise rationale, S1 INV-1 + @export_range, Q4-Q9 mock listener specs, P2/P3, GD2-GD5, A4-A10, AU4-AU11).
+3. **Tier 1 prototype risk-unblocking**: OQ-PM-2 (`seek(time, true)` looping anim verification — R-VA-1 HIGH risk) before idle/run frame authoring.
+4. **Next system candidates** (per recommended design order): Scene Manager #2 (resolves OQ-PM-1 8-var ephemeral clear responsibility — B1 + B10 cascade obligation), Player Shooting #7 (resolves OQ-PM-NEW Weapon ammo restoration orchestration), or HUD #13 (Tier 1 token UI).
+
+---
+
 ## Review — 2026-05-11 — Verdict: MAJOR REVISION NEEDED
 Scope signal: L
 Specialists: game-designer, systems-designer, qa-lead, gameplay-programmer, godot-gdscript-specialist, art-director, audio-director, creative-director (synthesis)

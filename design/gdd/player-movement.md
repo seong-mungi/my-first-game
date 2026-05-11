@@ -17,13 +17,14 @@
 
 - **DEC-PM-1** (2026-05-10): Tier 1 PlayerMovementSM = **6 states** (`idle / run / jump / fall / aim_lock / dead`). `hit_stun` removed per damage.md DEC-3 (binary 1-hit lethal — no non-lethal damage trigger). `dash`, `double_jump`, `wall_grip` deferred to Tier 2 evaluation (Pillar 5 작은 성공). Reconsideration trigger: introduction of any non-lethal damage source in Damage GDD or knockback mechanic in Boss Pattern GDD.
 - **DEC-PM-2** (2026-05-10): `aim_lock` 의미 = **hold-button** (Cuphead-style lock-aim). 별도 input action `aim_lock` 보유. 버튼 누른 동안 ECHO 정지 + 자유 8-방향 조준 + facing_direction 갱신; 버튼 떼면 즉시 idle/run 복귀. `shoot` 입력은 movement을 freeze하지 *않으며* aim_lock과 독립 (game-concept "점프 + 사격 동시 가능" 보존). Input System #1 GDD가 `aim_lock` action 명명 final 확정 의무.
-- **DEC-PM-3** (2026-05-10): Time Rewind 복원 시 ammo 정책 = **"resume with live ammo"** (PlayerSnapshot은 ammo 캡처 안 함). `restore_from_snapshot()` 후 ECHO는 *현재 라이브* `ammo_count`를 사용. DYING grace 안에서 ammo가 0이 된 경우 복원 후에도 0. `time-rewind.md` OQ-1 / E-22 / F6 해소. ADR-0002 amendment 불필요. Player Shooting #7 GDD가 ammo 자체 시맨틱 소유.
+- **DEC-PM-3 v2** (2026-05-11 — supersedes 2026-05-10 "resume with live ammo" per fresh-session `/design-review` B5 Pillar 1 contradiction): Time Rewind 복원 시 ammo 정책 = **PlayerSnapshot이 `ammo_count: int` (8번째 PM-노출 필드)를 per-tick 캡처**. `restore_from_snapshot(snap)` 호출 시 ECHO의 ammo는 9프레임 전(`restore_idx` 시점)의 값으로 복원된다 — Pillar 1 ("처벌이 아닌 학습 도구") 단일 출처 contract. DYING 윈도우 안에서 ammo가 0으로 떨어졌어도 복원 후 9프레임 전의 ammo로 회복. `time-rewind.md` OQ-1 / E-22 / F6 모두 (b) variant로 해소. **ADR-0002 Amendment 2 obligatory** — schema 7→8 PM-exposed 필드 (Resource 전체 9 필드: 8 PM-exposed + 1 TRC-internal `captured_at_physics_frame`). Player Shooting #7 GDD가 ammo 자체 시맨틱 + write authority 소유 (sub-decision: OQ-PM-NEW per advisor guidance — TRC orchestration vs Weapon parallel restoration; PM은 `PM.restore_from_snapshot(snap)` 시그니처 유지하며 `snap.ammo_count`를 ignore — write authority는 Weapon).
+- **DEC-PM-3 v1** *(superseded 2026-05-11)*: ~~Time Rewind 복원 시 ammo 정책 = "resume with live ammo" (PlayerSnapshot은 ammo 캡처 안 함). ADR-0002 amendment 불필요.~~ — 폐기 이유: rewind가 0-ammo 상태로 복원되면 Pillar 1 contradiction (rewind = punishment, not learning tool). Player Shooting #7 GDD 작성 전 fresh-session `/design-review` (2026-05-11) B5 raised.
 
 ---
 
 ## A. Overview
 
-Player Movement는 ECHO의 *2D 횡스크롤 이동 · 사격 자세 · 사망 후 복원*을 단일 책임자(`PlayerMovement extends CharacterBody2D`)에서 호스팅하는 코어 게임플레이 시스템이다. 본 시스템은 두 측면의 단일 출처다: (1) **이동 레이어** — 달리기 · 점프 · 낙하 컨트롤 응답성, 8방향 사격용 `facing_direction`, `aim_lock` 동안의 movement-freeze + 자유 8-방향 조준 (DEC-PM-2 hold-button 시맨틱), 그리고 PlayerMovementSM이 호스팅하는 Tier 1 **6 상태** (`idle / run / jump / fall / aim_lock / dead`; DEC-PM-1) — Pillar 1 "1히트 즉사 → 1초 회수 카타르시스"의 *반응성 측면* 담당. (2) **데이터 레이어** — Time Rewind(#9)가 매 `_physics_process` 틱에 read하는 7-필드 `PlayerSnapshot` 스키마 (`global_position` · `velocity` · `facing_direction` · `animation_name` · `animation_time` · `current_weapon_id` · `is_grounded`; ADR-0001 / ADR-0002 락인) + 사망·되감기 시점에 `restore_from_snapshot(snap: PlayerSnapshot) -> void` *단일 경로*로만 write 허용 (forbidden_pattern `direct_player_state_write_during_rewind`의 enforcement site). 결정론(Pillar 2)은 ADR-0003의 `CharacterBody2D` + 직접 transform + `process_physics_priority = 0` 정책으로 보장한다 — solver를 거치지 않으므로 `restore_from_snapshot()`의 직접 필드 할당이 다음 틱의 *권위 있는* state다. Foundation은 아니지만 3중 호스트 책임을 진다: ECHO HurtBox(#8 자식 노드 — DEC-4에 따라 `monitorable` 토글은 SM 책임이며 본 GDD는 노드 *호스팅*만 담당), WeaponSlot(#7), 적·보스가 추격 타깃으로 read하는 위치 데이터(#10/#11). 본 GDD는 이동 메커닉 디자인을 소유하고, 복원 절차의 정확성은 time-rewind.md C.3-C.4 + ADR-0001/0002/0003과의 양방향 정합 의무로 단일 출처를 유지한다.
+Player Movement는 ECHO의 *2D 횡스크롤 이동 · 사격 자세 · 사망 후 복원*을 단일 책임자(`PlayerMovement extends CharacterBody2D`)에서 호스팅하는 코어 게임플레이 시스템이다. 본 시스템은 두 측면의 단일 출처다: (1) **이동 레이어** — 달리기 · 점프 · 낙하 컨트롤 응답성, 8방향 사격용 `facing_direction`, `aim_lock` 동안의 movement-freeze + 자유 8-방향 조준 (DEC-PM-2 hold-button 시맨틱), 그리고 PlayerMovementSM이 호스팅하는 Tier 1 **6 상태** (`idle / run / jump / fall / aim_lock / dead`; DEC-PM-1) — Pillar 1 "1히트 즉사 → 1초 회수 카타르시스"의 *반응성 측면* 담당. (2) **데이터 레이어** — Time Rewind(#9)가 매 `_physics_process` 틱에 read하는 8-필드 PM-노출 `PlayerSnapshot` 스키마 (`global_position` · `velocity` · `facing_direction` · `animation_name` · `animation_time` · `current_weapon_id` · `is_grounded` PM-owned 7 필드 + `ammo_count: int` Weapon-owned 1 필드; ADR-0001 + ADR-0002 Amendment 2 락인 2026-05-11; Resource 전체 9 필드 = 8 PM-노출 + 1 TRC-internal `captured_at_physics_frame`) + 사망·되감기 시점에 `restore_from_snapshot(snap: PlayerSnapshot) -> void` *단일 경로*로만 write 허용 (forbidden_pattern `direct_player_state_write_during_rewind`의 enforcement site). 결정론(Pillar 2)은 ADR-0003의 `CharacterBody2D` + 직접 transform + `process_physics_priority = 0` 정책으로 보장한다 — solver를 거치지 않으므로 `restore_from_snapshot()`의 직접 필드 할당이 다음 틱의 *권위 있는* state다. Foundation은 아니지만 3중 호스트 책임을 진다: ECHO HurtBox(#8 자식 노드 — DEC-4에 따라 `monitorable` 토글은 SM 책임이며 본 GDD는 노드 *호스팅*만 담당), WeaponSlot(#7), 적·보스가 추격 타깃으로 read하는 위치 데이터(#10/#11). 본 GDD는 이동 메커닉 디자인을 소유하고, 복원 절차의 정확성은 time-rewind.md C.3-C.4 + ADR-0001/0002/0003과의 양방향 정합 의무로 단일 출처를 유지한다.
 
 ---
 
@@ -84,7 +85,7 @@ Pillar 1의 손-끝 도달은 *복원 절차의 정확성*에 의존한다. 다�
 
 #### C.1.1 Class hierarchy
 
-`PlayerMovement`는 ECHO root 노드 — `class_name PlayerMovement extends CharacterBody2D` 스크립트가 attach된 `CharacterBody2D` 인스턴스다. Tier 1 이동 레이어(달리기 / 점프 / 낙하 / aim_lock — 6 movement states)와 7-필드 PlayerSnapshot 데이터 레이어를 동시에 단일 호스팅한다.
+`PlayerMovement`는 ECHO root 노드 — `class_name PlayerMovement extends CharacterBody2D` 스크립트가 attach된 `CharacterBody2D` 인스턴스다. Tier 1 이동 레이어(달리기 / 점프 / 낙하 / aim_lock — 6 movement states)와 8-필드 PM-노출 PlayerSnapshot 데이터 레이어 (PM-owned 7 + Weapon-owned 1 `ammo_count` per ADR-0002 Amendment 2)를 동시에 단일 호스팅한다.
 
 `process_physics_priority = 0` (ADR-0003 사다리: PM = 0, TimeRewindController = 1, enemies = 10). **속성 위치**: `.tscn` root 노드 Inspector에서 set — 스크립트 전용이 *아니다* (씬 작성 시 누락 위험).
 
@@ -117,23 +118,26 @@ PlayerMovement (CharacterBody2D, process_physics_priority=0)
 
 `EchoLifecycleSM`과 `PlayerMovementSM`은 **flat composition** — 어느 한쪽도 다른 쪽을 포함하지 않는다. `PlayerMovementSM.DeadState`는 `EchoLifecycleSM.state_changed` 시그널의 DYING/DEAD 값에 *반응적*으로 진입한다 (signal-reactive, NOT polled — C.6 wiring 명세). 본 트리는 ECHO root 노드 모델의 **단일 출처**이며, state-machine.md C.2.1 line 178-188은 F.4 Bidirectional Update에서 본 GDD에 정렬된다 (Round 5 cross-doc-contradiction exception — A.Overview에서 lock된 `PlayerMovement extends CharacterBody2D` 모델이 권위).
 
-#### C.1.3 7-필드 PlayerSnapshot 출처표 (PlayerMovement single-writer)
+#### C.1.3 8-필드 PM-노출 PlayerSnapshot 출처표 (PlayerMovement + Weapon co-write; ADR-0002 Amendment 2 락인 2026-05-11)
 
-| Field | Type | 출처 | Write site (단일 경로) |
-|---|---|---|---|
-| `global_position` | Vector2 | CharacterBody2D 상속 | `move_and_slide()` 결과 (Phase 5) OR `restore_from_snapshot()` |
-| `velocity` | Vector2 | CharacterBody2D 상속 | per-tick velocity 계산 (Phase 4) OR `restore_from_snapshot()` |
-| `facing_direction` | int | PlayerMovement 신규 `var facing_direction: int` | per-tick (Phase 6c) OR `restore_from_snapshot()` |
-| `current_animation_name` | StringName | `_anim.current_animation` proxy (read-only property) | `AnimationPlayer.play()` (자동 갱신) |
-| `current_animation_time` | float | `_anim.current_animation_position` proxy (read-only property) | AnimationPlayer 자체 (자동 갱신) |
-| `current_weapon_id` | int | PlayerMovement 신규 `_current_weapon_id` 멤버 | WeaponSlot `weapon_equipped` signal handler OR `restore_from_snapshot()` |
-| `is_grounded` | bool | PlayerMovement 신규 `_is_grounded` 멤버 (cached) | `is_on_floor()` 결과 (Phase 6a, post-`move_and_slide()`) OR `restore_from_snapshot()` |
+> **Terminology** (DEC-PM-3 v2 기준): **PM-노출 8 필드** (PlayerMovement single-writer 7 + Weapon single-writer 1 `ammo_count`) + **TRC-internal 1 필드** (`captured_at_physics_frame`, Amendment 1) = **PlayerSnapshot Resource 전체 9 필드**. AC-H1-01 round-trip identity check는 8 PM-노출 필드 대상.
 
-> **TRC 캡처 추가 메타 (PM 노출 X)**: TRC가 ring buffer slot에 8번째 필드 `captured_at_physics_frame: int`을 별도로 기록 (ADR-0002 Amendment 1). PlayerMovement는 이 필드를 노출하지 않으며 TRC가 `_capture_to_ring()` 시점에 `Engine.get_physics_frames()`을 직접 read한다.
+| Field | Type | 출처 | Write site (단일 경로) | Owner |
+|---|---|---|---|---|
+| `global_position` | Vector2 | CharacterBody2D 상속 | `move_and_slide()` 결과 (Phase 5) OR `restore_from_snapshot()` | PM |
+| `velocity` | Vector2 | CharacterBody2D 상속 | per-tick velocity 계산 (Phase 4) OR `restore_from_snapshot()` | PM |
+| `facing_direction` | int | PlayerMovement 신규 `var facing_direction: int` | per-tick (Phase 6c) OR `restore_from_snapshot()` | PM |
+| `current_animation_name` | StringName | `_anim.current_animation` proxy (read-only property) | `AnimationPlayer.play()` (자동 갱신) | PM |
+| `current_animation_time` | float | `_anim.current_animation_position` proxy (read-only property) | AnimationPlayer 자체 (자동 갱신) | PM |
+| `current_weapon_id` | int | PlayerMovement 신규 `_current_weapon_id` 멤버 | WeaponSlot `weapon_equipped` signal handler OR `restore_from_snapshot()` | PM |
+| `is_grounded` | bool | PlayerMovement 신규 `_is_grounded` 멤버 (cached) | `is_on_floor()` 결과 (Phase 6a, post-`move_and_slide()`) OR `restore_from_snapshot()` | PM |
+| `ammo_count` | int | **WeaponSlot** (Player Shooting #7 — Tier 1 provisional) | WeaponSlot per-tick OR Weapon-side restoration trigger (OQ-PM-NEW); **PM은 `restore_from_snapshot(snap)`에서 `snap.ammo_count`를 ignore** — write authority Weapon 소유 | **Weapon (#7)** |
 
-**Single-writer policy** (forbidden_pattern `direct_player_state_write_during_rewind` 단일 enforce site):
+> **TRC 캡처 추가 메타 (PM/Weapon 노출 X)**: TRC가 ring buffer slot에 9번째 필드 `captured_at_physics_frame: int`을 별도로 기록 (ADR-0002 Amendment 1). PlayerMovement도 WeaponSlot도 이 필드를 노출하지 않으며 TRC가 `_capture_to_ring()` 시점에 `Engine.get_physics_frames()`을 직접 read한다.
 
-- 위 7개 필드는 PlayerMovement의 per-tick 갱신 경로와 `restore_from_snapshot()` *외*에는 어떤 외부 시스템도 직접 쓰지 못한다.
+**Single-writer policy** (forbidden_pattern `direct_player_state_write_during_rewind` PM enforce site):
+
+- 위 7개 PM-소유 필드는 PlayerMovement의 per-tick 갱신 경로와 `restore_from_snapshot()` *외*에는 어떤 외부 시스템도 직접 쓰지 못한다. `ammo_count`는 별도 단일-writer (Weapon #7) 보유 — PM enforce site 적용 X.
 - `restore_from_snapshot()` 호출 중 `_is_restoring: bool = true` 플래그가 모든 cascade write 경로(anim method-track 핸들러 / WeaponSlot signal handler / 외부 emit)를 가드한다 — 상세 C.4.
 - 본 정책은 **PlayerMovement 자신의 7 필드에만** 적용. 호스팅하는 child 노드의 자체 멤버(예: `HurtBox.monitorable`)는 각 owning GDD가 단일 출처 — `HurtBox.monitorable`은 `EchoLifecycleSM.RewindingState.enter()/exit()` (damage.md DEC-4).
 
@@ -255,31 +259,41 @@ PlayerMovementSM은 `extends StateMachine` 으로 framework의 transition queue 
 
 #### C.3.3 Coyote / jump buffer predicates (frame-counter 기반)
 
-`Engine.get_physics_frames()` 차감으로 결정론적 측정. delta 누적 *금지*.
+`Engine.get_physics_frames()` 차감으로 결정론적 측정. delta 누적 *금지*. **B1 fix 2026-05-11**: 활성-플래그 (bool) + 프레임 (int) 쌍 패턴 — bool short-circuit AND가 math 평가 *이전*에 차단하므로 int64 overflow 자체가 불가능 (이전 `INT_MIN` sentinel은 `current - INT_MIN` 산술 overflow로 predicate를 항상 TRUE로 반전시키는 phantom-jump 버그 보유; D.3 Formula 5 + AC-H5-04 단일 출처).
 
 ```gdscript
 # Phase 6a 갱신:
 if is_grounded:
     _last_grounded_frame = Engine.get_physics_frames()
+    _grounded_history_valid = true
 
-# Phase 3a 평가 (jump 발화 가드):
+# Phase 3a 평가 (coyote — bool short-circuit이 math 평가 차단):
 var coyote_eligible: bool = (
-    Engine.get_physics_frames() - _last_grounded_frame <= coyote_frames
+    _grounded_history_valid
+    and (Engine.get_physics_frames() - _last_grounded_frame) <= coyote_frames
     and not (current_movement_state is JumpState)
 )
 # jump 발화 조건: is_grounded OR coyote_eligible
 
 # Phase 2 (input edge 감지) 시 jump_buffer 등록:
 if jump_pressed:
-    _jump_buffered_at_frame = Engine.get_physics_frames()
+    _jump_buffer_frame = Engine.get_physics_frames()
+    _jump_buffer_active = true
 
 # Phase 3a 평가 (착지 직후 자동 발화):
 var jump_buffered: bool = (
-    Engine.get_physics_frames() - _jump_buffered_at_frame <= jump_buffer_frames
+    _jump_buffer_active
+    and (Engine.get_physics_frames() - _jump_buffer_frame) <= jump_buffer_frames
     and is_grounded
 )
-# Dead 진입 시 _jump_buffered_at_frame = INT_MIN — phantom jump 방지.
-# restore_from_snapshot()도 동일 클리어 (C.4).
+
+# Phase 3a post-fire — buffer 소비 (jump 실제 발화 시):
+# if should_jump and _jump_buffer_active:
+#     _jump_buffer_active = false
+#
+# Dead 진입 시 / restore_from_snapshot() — 단일 deactivate site:
+# _jump_buffer_active = false ; _grounded_history_valid = (snap.is_grounded if restore else false)
+# bool=false 단일 set이 phantom-jump 영구 차단 — math overflow 불가능 (C.4.1 Step 4 단일 출처).
 ```
 
 #### C.3.4 mid-`move_and_slide()` SM cascade (atomicity 인헤리트)
@@ -316,9 +330,37 @@ B.2 ("9프레임 *되-실행*", "같은 탄막을 다시 본다") 어휘는 *wor
 ```gdscript
 class_name PlayerMovement extends CharacterBody2D
 
+@onready var _anim: AnimationPlayer = $AnimationPlayer
+@onready var _movement_sm: PlayerMovementSM = $PlayerMovementSM
+
 # Single guard flag — Phase 1 시점에 매 tick `false`로 클리어 (C.3.1).
 # restore_from_snapshot 내부에서 `true` set, 다음 _physics_process Phase 1에서 자동 클리어.
 var _is_restoring: bool = false
+
+# Active-flag + frame pair (B1 fix 2026-05-11) — bool=false가 phantom-jump 영구 차단 site.
+# INT_MIN sentinel 대체 — `current - INT_MIN` int64 overflow predicate 반전 버그 제거.
+# bool short-circuit AND가 math 평가 이전에 false return — D.3 Formula 5 + C.3.3 단일 패턴.
+var _jump_buffer_active: bool = false
+var _jump_buffer_frame: int = 0         # only meaningful when _jump_buffer_active == true
+var _grounded_history_valid: bool = false
+var _last_grounded_frame: int = 0       # only meaningful when _grounded_history_valid == true
+
+# B10 fix 2026-05-11 — per-axis dual Schmitt trigger state for facing hysteresis
+# (D.4 Formula 2). Mutually exclusive per axis. Cleared per F.4.2 #2 obligation.
+var _facing_x_pos_active: bool = false
+var _facing_x_neg_active: bool = false
+var _facing_y_pos_active: bool = false
+var _facing_y_neg_active: bool = false
+
+# B3 — Godot 4.6 AnimationMixer.callback_mode_method default = DEFERRED (0).
+# IMMEDIATE 강제 — _is_restoring 가드 모델이 method-track callback synchronous-to-seek() 요구.
+# DEFERRED 하에서는 callback이 다음 idle 프레임에 fire — 가드 클리어 후 stale write → 가드 무효화.
+# 단일 출처: docs/engine-reference/godot/modules/animation.md "Critical Default" section.
+# AC-H1-07 (boot invariant) + C.4.4/C.4.5 가드 패턴 + VA.5 method-track 정책 모두 본 override 의존.
+func _ready() -> void:
+    _anim.callback_mode_method = AnimationMixer.ANIMATION_CALLBACK_MODE_METHOD_IMMEDIATE
+    assert(_anim.callback_mode_method == AnimationMixer.ANIMATION_CALLBACK_MODE_METHOD_IMMEDIATE, \
+        "PlayerMovement requires IMMEDIATE callback mode for _is_restoring guard (B3 fix 2026-05-11)")
 
 # PlayerSnapshot 적용 단일 경로. TRC priority=1이 호출. 외부 시스템 직접 호출 금지.
 # forbidden_pattern `direct_player_state_write_during_rewind` 단일 우회 메서드.
@@ -337,9 +379,17 @@ func restore_from_snapshot(snap: PlayerSnapshot) -> void:
     _current_weapon_id = snap.current_weapon_id
     _is_grounded = snap.is_grounded
 
-    # Step 4 — Coyote / jump_buffer 카운터 명시적 클리어 — phantom jump 방지 (C.3.3).
-    _last_grounded_frame = INT_MIN if not snap.is_grounded else Engine.get_physics_frames()
-    _jump_buffered_at_frame = INT_MIN
+    # Step 4 — Active-flag deactivate — phantom jump 방지 (B1 fix 2026-05-11; C.3.3 단일 패턴).
+    #   bool=false set이 단일 deactivate site. predicate AND 첫 항이 false → math 평가 skip.
+    #   이전 `INT_MIN` sentinel은 `current - INT_MIN` int64 overflow predicate 반전 버그 보유.
+    _jump_buffer_active = false
+    _jump_buffer_frame = 0
+    if snap.is_grounded:
+        _last_grounded_frame = Engine.get_physics_frames()
+        _grounded_history_valid = true
+    else:
+        _grounded_history_valid = false
+        _last_grounded_frame = 0
 
     # Step 5 — PlayerMovementSM forced re-enter (T14-T17 derivation).
     #   target은 idle/run/jump/fall 중 하나. dead/aim_lock은 절대 target 아님 (C.4.3).
@@ -478,7 +528,7 @@ Input System #1 GDD `design/gdd/input.md` (re-review APPROVED 2026-05-11 lean mo
 | **Damage (#8)** | PM이 HurtBox + HitBox + Damage 노드 *호스팅만*. Damage 컴포넌트가 자체 wiring 소유. PM은 간접 — Damage emit `lethal_hit_detected`는 EchoLifecycleSM이 구독 (PM 직접 구독 금지) | Composition: `.tscn`에 자식 노드 인스턴스화. PM `_ready()`은 Damage 노드에 *touch 안 함* | PM이 `Damage.player_hit_lethal` / `lethal_hit_detected` 직접 구독 (C.2.3 forbidden); PM이 `HurtBox.monitorable` write (DEC-4 enforce site 위반) |
 | **[Input System #1](input.md)** *(F.4.1 #2 closure 2026-05-11 — Input #1 Designed; provisional flag removed)* | PM이 `Input.is_action_*` polling per tick (`_physics_process` Phase 2 only). 폴링 패턴 + 콜백 금지의 단일 출처는 [`input.md` C.1.2 Rule 1+2](input.md) — PM은 그 규칙의 *consumer*이며 자체 정책 X | `Input.is_action_pressed` / `is_action_just_pressed` / `get_vector` 직접 호출 (input.md C.4 `InputActions.*` StringName const 사용 의무) | `_unhandled_input` / `_input` callback에 movement 로직 binding (latency + 시점 mismatch — input.md C.1.2 Rule 2 단일 출처 forbidden, `forbidden_patterns.gameplay_input_in_callback` CI gate per architecture.yaml + AC-IN-05); InputEvent emit 구독; `&"jump"` literal 산발 (input.md C.4 + AC-IN-04 BLOCKING) |
 | **WeaponSlot (#7)** | PM이 WeaponSlot 자식 노드 호스팅. `weapon_equipped(weapon_id: int)` signal → PM `_on_weapon_equipped`이 `_current_weapon_id` cache. `restore_from_snapshot()`은 7-필드 권위 — WeaponSlot signal cascade는 `_is_restoring` 가드로 차단 (C.4.5) | Composition: 자식 노드. signal-reactive cache | `_is_restoring` 동안 `WeaponSlot.set_active(...)` 발화 (silent fallback도 7-필드 권위 침범) |
-| **Scene Manager #2** *(provisional)* | PM은 `scene_will_change` 시그널을 *직접 구독하지 않음*. EchoLifecycleSM이 O6 의무로 ephemeral state 클리어 (state-machine.md C.2.2 O6). PM의 `_last_grounded_frame` / `_jump_buffered_at_frame` 클리어는 **OQ-PM-1로 deferred** (Scene Manager #2 GDD 작성 시 결정) | TBD | PM이 독립적으로 `scene_will_change` 구독 (duplicate handler, race with SM clear) |
+| **Scene Manager #2** *(provisional)* | PM은 `scene_will_change` 시그널을 *직접 구독하지 않음*. EchoLifecycleSM이 O6 의무로 ephemeral state 클리어 (state-machine.md C.2.2 O6). PM의 4-var coyote/buffer ephemeral state (`_grounded_history_valid` + `_last_grounded_frame` + `_jump_buffer_active` + `_jump_buffer_frame` — B1 fix 2026-05-11) 클리어는 **OQ-PM-1로 deferred** (Scene Manager #2 GDD 작성 시 결정) | TBD | PM이 독립적으로 `scene_will_change` 구독 (duplicate handler, race with SM clear) |
 | **AnimationPlayer (Godot 빌트인)** | PM이 자식 노드 호스팅 + per-tick read property + restore 시 `play()` + `seek(time, true)` 호출 | `_anim.current_animation` / `current_animation_position` proxy; `_anim.play(name)` / `_anim.seek(time, true)` | `_anim.seek(time)` 단독 호출 (second arg `true` 누락 — capture lag); `_anim.advance(delta)` (결정성 위반) |
 | **Sprite2D (Godot 빌트인)** | PM이 자식 노드 호스팅. facing_direction 시각화 — `flip_h` 토글 vs 좌/우 anim 분기 결정은 **Visual/Audio 섹션**에서 art-director consult | TBD | — |
 | **Enemy AI (#10) / Boss Pattern (#11)** | 적/보스가 PM `global_position` *read만* (chase target). PM은 적/보스의 어떤 시그널도 구독 안 함 | Read-only: `var target_pos := player.global_position` | 적/보스가 PM 메서드 호출 / signal emit / state mutation |
@@ -607,18 +657,20 @@ Frame-12 cut path (꽤 늦게 release):
 
 ### D.3 Coyote Time / Jump Buffer Predicates
 
-**Formula 1 — Coyote eligibility (Phase 3a 평가):**
+**Formula 1 — Coyote eligibility (Phase 3a 평가) — B1 fix:**
 ```
 coyote_eligible = (
-    Engine.get_physics_frames() - _last_grounded_frame <= coyote_frames
+    _grounded_history_valid                                              # B1 fix: bool short-circuit guard
+    AND (Engine.get_physics_frames() - _last_grounded_frame) <= coyote_frames
     AND not (current_movement_state is JumpState)
 )
 ```
 
-**Formula 2 — Jump buffer eligibility (Phase 3a 평가):**
+**Formula 2 — Jump buffer eligibility (Phase 3a 평가) — B1 fix:**
 ```
 jump_buffered = (
-    Engine.get_physics_frames() - _jump_buffered_at_frame <= jump_buffer_frames
+    _jump_buffer_active                                              # B1 fix: bool short-circuit guard
+    AND (Engine.get_physics_frames() - _jump_buffer_frame) <= jump_buffer_frames
     AND is_grounded
 )
 ```
@@ -631,47 +683,73 @@ should_jump = (
 )
 ```
 
-**Formula 4 — Buffer 등록 (Phase 2 jump_pressed 시):**
+**Formula 4 — Buffer 등록 (Phase 2 jump_pressed 시) — B1 fix:**
 ```
-_jump_buffered_at_frame = Engine.get_physics_frames()    # only on edge fire
+_jump_buffer_frame = Engine.get_physics_frames()    # only on edge fire
+_jump_buffer_active = true                          # B1 fix: 활성화 플래그 동시 set (페어 invariant)
 ```
 
-**Formula 5 — Sentinel reset (Dead 진입 + restore_from_snapshot):**
+**Formula 5 — Active-flag reset (Dead 진입 + restore_from_snapshot) — B1 fix 2026-05-11:**
 ```
-_jump_buffered_at_frame = INT_MIN    # GDScript: -9223372036854775808
-_last_grounded_frame    = INT_MIN    # only if not snap.is_grounded
+# Active-flag pattern: bool=false single-set이 predicate AND 첫 항을 차단.
+# math 평가 skip → int64 overflow 불가능 by construction.
+_jump_buffer_active     = false
+_jump_buffer_frame      = 0
+_grounded_history_valid = snap.is_grounded   # restore: snap 따름 / Dead 진입: false
+_last_grounded_frame    = Engine.get_physics_frames() if snap.is_grounded else 0
 ```
+
+> **B1 fix rationale**: 이전 패턴 `_jump_buffer_frame = INT_MIN (-9223372036854775808)`은 다음 tick `Engine.get_physics_frames()=1`일 때 `1 - (-9223372036854775808)` int64 산술 overflow → 음수 결과 (또는 plat에 따라 매우 큰 양수 — 정의되지 않은 동작) → predicate `(current - INT_MIN) <= jump_buffer_frames`가 의도와 정반대인 TRUE로 반전 → 첫 프레임부터 *fresh `jump_pressed` 입력 없이* phantom jump 발화. 3-specialist convergence (systems-designer + qa-lead + godot-gdscript-specialist) 확인.
 
 | Variable | Symbol | Type | Range | Description |
 |---|---|---|---|---|
 | `coyote_frames` | C | int | 4–8 frames | Floor 떠난 후 jump 여전히 가능한 윈도우 (Tier 1 = 6) |
 | `jump_buffer_frames` | B | int | 4–8 frames | grounded 직전 buffered jump 자동 발화 윈도우 (Tier 1 = 6) |
-| `_last_grounded_frame` | F_g | int | INT_MIN ~ current | 마지막 `is_on_floor() = true` 프레임; Phase 6a set |
-| `_jump_buffered_at_frame` | F_b | int | INT_MIN ~ current | 가장 최근 jump press 프레임; INT_MIN = inactive |
+| `_grounded_history_valid` | V_g | bool | true/false | true = 마지막 reset 이후 grounded 경험 있음 (B1 fix 활성 플래그) |
+| `_last_grounded_frame` | F_g | int | ≥ 0 | 마지막 `is_on_floor() = true` 프레임; **V_g=true일 때만 유의미** |
+| `_jump_buffer_active` | V_b | bool | true/false | true = 활성 jump buffer 존재 (B1 fix 활성 플래그) |
+| `_jump_buffer_frame` | F_b | int | ≥ 0 | 가장 최근 jump press 프레임; **V_b=true일 때만 유의미** |
 
-**Output Range:** boolean. INT_MIN sentinel은 `(current - INT_MIN) > any threshold`이므로 reset 직후 항상 false 보장.
+**Output Range:** boolean. **활성 플래그 V_g/V_b = false**일 때 predicate AND short-circuit이 math 평가 *이전*에 차단 → reset 직후 항상 false 보장 (int64 overflow by construction 불가능). 이전 `INT_MIN` sentinel 패턴은 B1 fix 2026-05-11로 폐기.
 
 **Worked Example:**
 
 ```
 Scenario A (coyote): platform 떠난 후 3 frames에 jump
-  Frame N:    is_grounded=true → _last_grounded_frame = N
+  Frame N:    is_grounded=true → _last_grounded_frame = N, _grounded_history_valid = TRUE
   Frame N+1:  is_grounded=false (edge 떠남)
   Frame N+3:  jump_pressed = true
-              coyote_eligible: (N+3 - N) ≤ 6 → 3 ≤ 6 → TRUE; not in JumpState → TRUE
+              coyote_eligible: V_g AND (N+3 - N) ≤ 6 AND not JumpState → TRUE AND 3 ≤ 6 AND TRUE → TRUE
               should_jump: (TRUE AND (FALSE OR TRUE)) = TRUE → T3 발화
 
 Scenario B (buffer): 착지 3 frames 전에 jump
-  Frame N:    jump_pressed → _jump_buffered_at_frame = N; is_grounded=false
+  Frame N:    jump_pressed → _jump_buffer_frame = N, _jump_buffer_active = TRUE; is_grounded=false
   Frames N+1, N+2:  is_grounded=false
   Frame N+3:  is_grounded=true (착지)
-              jump_buffered: (N+3 - N) ≤ 6 AND is_grounded → 3 ≤ 6 AND TRUE → TRUE
+              jump_buffered: V_b AND (N+3 - N) ≤ 6 AND is_grounded → TRUE AND 3 ≤ 6 AND TRUE → TRUE
               should_jump: (FALSE OR TRUE) = TRUE → T3 발화 on landing tick
+              post-fire: _jump_buffer_active = FALSE (buffer 소비 — C.3.3 post-fire 패턴)
 
-Scenario C (sentinel): Dead 진입 후 buffer 클리어
-  Frame N (Dead 진입): _jump_buffered_at_frame = INT_MIN
-  Frame N+10 (restore_from_snapshot): _jump_buffered_at_frame remains INT_MIN
-  Frame N+11 post-restore: jump_buffered = (N+11 - INT_MIN) > 6 → FALSE (no phantom jump)
+Scenario C (active-flag reset — B1 fix 2026-05-11): Dead 진입 후 buffer 클리어
+  Frame N (Dead 진입):
+    _jump_buffer_active     = false
+    _jump_buffer_frame      = 0
+    _grounded_history_valid = false   (Dead 시점에서 grounded 정보 무효화)
+    _last_grounded_frame    = 0
+  Frame N+10 (restore_from_snapshot, snap.is_grounded=true):
+    _jump_buffer_active     = false   (idempotent re-clear)
+    _grounded_history_valid = true
+    _last_grounded_frame    = N+10    (Engine.get_physics_frames())
+  Frame N+11 post-restore (no fresh jump_pressed):
+    jump_buffered = (_jump_buffer_active=false AND ...) → FALSE short-circuit
+                   ↑ math 평가 skip; (N+11 - 0) 빼기 자체가 실행되지 않음
+                   → 어떤 frame counter 값에서도 phantom jump 발화 불가능 by construction.
+
+# 이전 sentinel 패턴 버그 (B1 — removed 2026-05-11):
+# Frame N+11: (N+11 - INT_MIN) = (N+11 - -9223372036854775808) → int64 overflow
+#   → 결과는 정의되지 않은 동작; 실측 Godot 4.6 GDScript는 음의 큰 수로 wrap
+#   → predicate `<= jump_buffer_frames` (6)이 TRUE로 반전
+#   → fresh jump_pressed 없이 첫 프레임부터 phantom jump 발화 (Pillar 1 위반)
 ```
 
 ### D.4 Facing Direction Update
@@ -700,17 +778,61 @@ static func _decode_facing(f: int) -> Vector2i:
     return _DIRS[f]  # f ∈ 0..7 항상
 ```
 
-**Formula 2 — Outside aim_lock (Run/Jump/Fall/Idle Phase 6c):**
-```gdscript
-const FACING_THRESHOLD_OUTSIDE: float = 0.2
+**Formula 2 — Outside aim_lock (Run/Jump/Fall/Idle Phase 6c) — B10 hysteresis pair fix 2026-05-11:**
 
-if absf(move_axis.x) >= FACING_THRESHOLD_OUTSIDE \
-   or absf(move_axis.y) >= FACING_THRESHOLD_OUTSIDE:
-    var v: Vector2i = Vector2i(signi(move_axis.x), signi(move_axis.y))
-    var encoded: int = _encode_facing(v)
-    if encoded != -1:    # (0,0) sentinel → preserve
-        facing_direction = encoded
-# else: preserve previous
+```gdscript
+# Per-axis dual Schmitt trigger. Each axis has independent pos/neg active
+# flags (mutually exclusive). ENTER threshold (0.2) commits to a sign; EXIT
+# threshold (0.15) releases. Drift on the opposite side below opposite-ENTER
+# threshold ALSO releases (via "value < +exit" / "value > -exit" guard).
+# This blocks Steam Deck stick drift (~±0.18) from oscillating facing
+# across the deadzone-aligned single threshold.
+#
+# Ephemeral state vars (declared in C.4.1; cleared per F.4.2 #2):
+#   _facing_x_pos_active : bool   # locked to +x
+#   _facing_x_neg_active : bool   # locked to -x
+#   _facing_y_pos_active : bool   # locked to +y
+#   _facing_y_neg_active : bool   # locked to -y
+#
+# Invariant (G.4.1 INV-4 + new INV-8): t_exit < t_enter; t_aim_lock <= t_enter.
+
+var t_enter: float = tuning.facing_threshold_outside_enter   # 0.20
+var t_exit:  float = tuning.facing_threshold_outside_exit    # 0.15
+
+# X-axis Schmitt
+if _facing_x_pos_active:
+    if move_axis.x < t_exit:           # also covers drift past zero on -x side
+        _facing_x_pos_active = false
+elif _facing_x_neg_active:
+    if move_axis.x > -t_exit:          # symmetric
+        _facing_x_neg_active = false
+else:
+    if move_axis.x >= t_enter:
+        _facing_x_pos_active = true
+    elif move_axis.x <= -t_enter:
+        _facing_x_neg_active = true
+
+# Y-axis Schmitt (same pattern)
+if _facing_y_pos_active:
+    if move_axis.y < t_exit:
+        _facing_y_pos_active = false
+elif _facing_y_neg_active:
+    if move_axis.y > -t_exit:
+        _facing_y_neg_active = false
+else:
+    if move_axis.y >= t_enter:
+        _facing_y_pos_active = true
+    elif move_axis.y <= -t_enter:
+        _facing_y_neg_active = true
+
+# Encode locked signs → facing
+var x_sign: int = (1 if _facing_x_pos_active
+                   else (-1 if _facing_x_neg_active else 0))
+var y_sign: int = (1 if _facing_y_pos_active
+                   else (-1 if _facing_y_neg_active else 0))
+var encoded: int = _encode_facing(Vector2i(x_sign, y_sign))
+if encoded != -1:    # (0,0) sentinel → preserve previous
+    facing_direction = encoded
 ```
 
 **Formula 3 — Inside AimLockState (Phase 6c override):**
@@ -733,8 +855,13 @@ if absf(move_axis.x) >= FACING_THRESHOLD_AIM_LOCK \
 |---|---|---|---|---|
 | `facing_direction` | f | int | 0..7 enum | 8-way 방향 (E~SE CCW); PlayerSnapshot capture 대상 |
 | `move_axis` | a | Vector2 | -1.0 ~ 1.0 per axis | analog input (Phase 2 read) |
-| `FACING_THRESHOLD_OUTSIDE` | t1 | float | 0.1–0.35 | outside aim_lock threshold (Tier 1 = 0.2) |
-| `FACING_THRESHOLD_AIM_LOCK` | t2 | float | 0.05–0.2 | aim_lock threshold (Tier 1 = 0.1) |
+| `facing_threshold_outside_enter` | t1_enter | float | 0.15–0.35 | **B10 fix 2026-05-11** — outside aim_lock ENTER threshold to commit to a new sign on an axis (Tier 1 = 0.2; matches `gamepad_deadzone` per input.md C.1.3 + AC-IN-06/07) |
+| `facing_threshold_outside_exit` | t1_exit | float | 0.05–`t1_enter`-0.02 | **B10 fix 2026-05-11** — outside aim_lock EXIT threshold to release an active sign (Tier 1 = 0.15; below Steam Deck stick drift floor ~0.18 to ensure release on stick-rest noise; must be strictly less than `t1_enter` per INV-8) |
+| `FACING_THRESHOLD_AIM_LOCK` | t2 | float | 0.05–0.2 | aim_lock threshold (Tier 1 = 0.1; well below stick drift floor — no hysteresis needed since drift can't oscillate facing across 0.1 from rest near 0) |
+| `_facing_x_pos_active` | s_x+ | bool | {false, true} | **B10 fix** — ephemeral; true ↔ +x sign locked (mutually exclusive with `_facing_x_neg_active`) |
+| `_facing_x_neg_active` | s_x- | bool | {false, true} | **B10 fix** — ephemeral; true ↔ -x sign locked |
+| `_facing_y_pos_active` | s_y+ | bool | {false, true} | **B10 fix** — ephemeral; true ↔ +y sign locked |
+| `_facing_y_neg_active` | s_y- | bool | {false, true} | **B10 fix** — ephemeral; true ↔ -y sign locked |
 
 **Output Range:** `facing_direction` ∈ {0..7}. `(0,0)` ≡ -1 sentinel은 *내부에서만*; 외부 노출 facing_direction은 항상 유효 enum.
 
@@ -757,6 +884,41 @@ Frame 10:  AimLockState; move_axis=(0.0, -0.15)
 null input 보존:
 AimLock + move_axis=(0,0): preserve; PlayerSnapshot facing=직전값 (예 2=N).
 *결코* "방향 미정"이 캡처되지 않음.
+
+B10 hysteresis drift defense (Steam Deck stick rest ~±0.18 noise; t_enter=0.2 / t_exit=0.15):
+Frame 1:   move_axis=(0.21, 0.0); not active → 0.21 ≥ 0.2 enter → _x_pos_active=true;
+           x_sign=+1, y_sign=0 → enc=0=E; facing=0
+Frame 2:   move_axis=(0.18, 0.0); _x_pos_active=true → 0.18 < 0.15 exit? FALSE
+           (0.18 is NOT < 0.15) → preserve _x_pos_active=true;
+           x_sign=+1, y_sign=0 → enc=0=E; facing=0 ✓ (drift held)
+Frame 3:   move_axis=(-0.18, 0.0); _x_pos_active=true → -0.18 < 0.15 exit? TRUE
+           → release: _x_pos_active=false;
+           check enter on -x: -0.18 ≤ -0.2? FALSE → NOT activated;
+           x_sign=0, y_sign=0 → enc=-1 sentinel → preserve; facing=0 ✓
+           (CRITICAL: pre-B10 single-threshold logic would have flipped to W
+            here because |-0.18| < 0.2 → both axes below threshold → preserve
+            previous facing=E; same result actually for THIS drift. The real
+            failure mode is below ↓)
+Frame 4:   move_axis=(0.21, 0.0); not active (released F3) → 0.21 ≥ 0.2 enter
+           → _x_pos_active=true; facing=0 ✓
+Frame 5:   move_axis=(-0.21, 0.0); _x_pos_active=true → -0.21 < 0.15 exit? TRUE
+           → release: _x_pos_active=false; check -x enter: -0.21 ≤ -0.2? TRUE
+           → _x_neg_active=true; x_sign=-1, y_sign=0 → enc=4=W; facing=4 ✓
+           (Deliberate large stick flip — hysteresis allows intentional change.)
+
+Pre-B10 oscillation case the fix blocks:
+   Pre-B10 single threshold 0.2; Steam Deck rest with mild perturbation.
+   Frame 1: (0.25, 0.0) → facing=E
+   Frame 2: (0.18, 0.0) → below 0.2 → preserve E
+   Frame 3: (-0.21, 0.0) → -0.21 ≤ -0.2 → flip facing=W  ← UNINTENDED on drift
+   Frame 4: (0.25, 0.0) → flip back to E                  ← UNINTENDED
+   → Visual: facing oscillates E↔W on stick-rest drift noise.
+
+   Post-B10 with hysteresis (above scenarios) — frame 3 type (-0.18) doesn't
+   release & doesn't activate -x; frame 3 type (-0.21) DOES release +x but
+   needs to also satisfy -0.21 ≤ -0.2 to activate -x. Drift between -0.15
+   and -0.2 is in the "neither" zone — facing preserved at whatever was last
+   locked. ✓ stable facing under drift.
 ```
 
 ---
@@ -806,7 +968,7 @@ AimLock + move_axis=(0,0): preserve; PlayerSnapshot facing=직전값 (예 2=N).
 | # | 시스템 | 데이터 흐름 | 인터페이스 | Hard/Soft |
 |---|---|---|---|---|
 | **#1** | Input System *(provisional)* | PM이 InputMap actions polling | `Input.is_action_pressed/just_pressed/just_released` + `Input.get_vector("move_left","move_right","move_up","move_down")`. Action 명: `move_left/move_right/move_up/move_down/jump/aim_lock` 직접 read. `shoot/rewind_consume/pause`는 read X | **Hard** |
-| **#2** | Scene / Stage Manager *(provisional)* | `scene_will_change` 시 PM ephemeral state 클리어 — *EchoLifecycleSM 경유* | EchoLifecycleSM이 `scene_will_change` 구독 (state-machine.md C.2.2 O6); PM 직접 구독 X. PM `_last_grounded_frame` / `_jump_buffered_at_frame` 클리어 책임 OQ-PM-1로 deferred | **Soft** *(provisional)* |
+| **#2** | Scene / Stage Manager *(provisional)* | `scene_will_change` 시 PM ephemeral state 클리어 — *EchoLifecycleSM 경유* | EchoLifecycleSM이 `scene_will_change` 구독 (state-machine.md C.2.2 O6); PM 직접 구독 X. PM 4-var coyote/buffer ephemeral state (`_grounded_history_valid` + `_last_grounded_frame` + `_jump_buffer_active` + `_jump_buffer_frame` — B1 fix 2026-05-11) 클리어 책임 OQ-PM-1로 deferred | **Soft** *(provisional)* |
 | **#5** | State Machine Framework | PlayerMovementSM이 `extends StateMachine` 으로 framework 활용 | `class_name PlayerMovementSM extends StateMachine` (M2 reuse). framework transition queue + atomicity 인헤리트 (C.2.5). framework 코드 변경 금지 (state-machine.md C.2.1 line 206) | **Hard** |
 | **#5** | EchoLifecycleSM (instance) | `state_changed` signal → PM `_on_lifecycle_state_changed`. DYING/DEAD 시 PlayerMovementSM force `Dead` (T13). ALIVE 시 no-op | `signal state_changed(from: StringName, to: StringName, frame: int)` (state-machine.md C.1.5). PM은 `to` 값만 read | **Hard** |
 | **#7** | Player Shooting / Weapon *(provisional)* | PM이 WeaponSlot 자식 노드 호스팅 + `weapon_equipped(weapon_id: int)` signal 구독 → `_current_weapon_id` cache | `signal weapon_equipped(weapon_id: int)` (Player Shooting GDD 정의 예정). PM은 read만 | **Soft** *(cache; provisional)* |
@@ -855,7 +1017,7 @@ PlayerMovement는 자체 signal을 *Tier 1에서 owns 하지 않는다*.
 |---|---|
 | **Input System #1** | (a) `aim_lock` action 명명 confirm; (b) `move_left/right/up/down` 분리 vs axis 결정; (c) deadzone 0.2 (E-PM-9 차단); (d) KB+M 기본 키 (C.5.3) |
 | **Player Shooting #7** | (a) `weapon_equipped(weapon_id: int)` signal 정의; (b) `_on_anim_spawn_bullet` `_is_restoring` 가드 의무 (C.4.4); (c) reload + ammo restoration이 DEC-PM-3 재평가 trigger인지 |
-| **Scene Manager #2** | `scene_will_change` emit 시점 + PM `_last_grounded_frame` / `_jump_buffered_at_frame` 클리어 책임 (OQ-PM-1 해소) |
+| **Scene Manager #2** | `scene_will_change` emit 시점 + PM 8-var ephemeral state 클리어 책임 (OQ-PM-1 해소): **4-var coyote/buffer** (`_grounded_history_valid` + `_last_grounded_frame` + `_jump_buffer_active` + `_jump_buffer_frame` — B1 fix 2026-05-11) + **4-var facing hysteresis** (`_facing_x_pos_active` + `_facing_x_neg_active` + `_facing_y_pos_active` + `_facing_y_neg_active` — B10 fix 2026-05-11). 모두 `false` / `0` reset; failure-mode: 미클리어 시 씬 전환 직후 첫 tick에 stale-locked facing 또는 phantom coyote/buffer jump |
 | **VFX #14** | landing puff / dust trail method-track callback `_is_restoring` 가드 정책 (C.4.4 referenced_by) |
 | **Audio #21** | footstep SFX method-track `_is_restoring` 가드 생략 정책 (lightweight artifact) |
 | **Visual/Audio (본 GDD)** | `facing_direction` 시각화 (`flip_h` vs 좌/우 anim 분기) art-director 결정 (C.6 + C.1.4) |
@@ -875,7 +1037,7 @@ PlayerMovement는 자체 signal을 *Tier 1에서 owns 하지 않는다*.
 
 ### G.1 Owned Knobs (PlayerMovement Resource)
 
-> **Storage policy** (Decision G-A 2026-05-10): All 13 owned numeric knobs live in `class_name PlayerMovementTuning extends Resource` (.tres asset at `assets/data/tuning/player_movement_tuning.tres`). PlayerMovement holds `@export var tuning: PlayerMovementTuning`. **Structural constants** (`INT_MIN` sentinels, the 9-entry `_FACING_TABLE`, `_DIRS` array) remain as `const` in `player_movement.gd` — they are *encoding logic*, not balance. Resource hot-reload supported in editor; **runtime mutation of any owned knob during gameplay is forbidden** (G.4.1 invariant). Heading retains "PlayerMovement Resource" wording per skeleton; the canonical Resource class name is `PlayerMovementTuning`.
+> **Storage policy** (Decision G-A 2026-05-10; updated 2026-05-11 per B1 fix): All 13 owned numeric knobs live in `class_name PlayerMovementTuning extends Resource` (.tres asset at `assets/data/tuning/player_movement_tuning.tres`). PlayerMovement holds `@export var tuning: PlayerMovementTuning`. **Structural constants** (the 9-entry `_FACING_TABLE`, `_DIRS` array, encoding helper `const`s) remain as `const` in `player_movement.gd` — they are *encoding logic*, not balance. **Note (B1 fix 2026-05-11)**: The previously-listed `INT_MIN` sentinel constants have been *removed* — the buffer/coyote state is now represented by active-flag (bool) + frame (int) pairs (`_jump_buffer_active`/`_jump_buffer_frame` + `_grounded_history_valid`/`_last_grounded_frame`); these are *runtime ephemeral state vars*, not constants, and live as `var` declarations adjacent to `_is_restoring` (C.4.1). Resource hot-reload supported in editor; **runtime mutation of any owned knob during gameplay is forbidden** (G.4.1 invariant). Heading retains "PlayerMovement Resource" wording per skeleton; the canonical Resource class name is `PlayerMovementTuning`.
 
 13 fields total. All `@export`-typed for editor visibility. Source formula column links to D-section verbatim.
 
@@ -891,8 +1053,9 @@ PlayerMovement는 자체 signal을 *Tier 1에서 owns 하지 않는다*.
 | 8 | `jump_cut_velocity` | float (px/s) | **160.0** | 100–200 | D.2 Formula 5 | 점프 중 release 시 위쪽 velocity cap. 100 = aggressive cut; 200 = subtle cut |
 | 9 | `coyote_frames` | int (frames) | **6** | 4–8 | D.3 Formula 1 | Floor 떠난 후 jump 가능 윈도우 (~100ms @60fps). Maddy Thorson Celeste 표준 |
 | 10 | `jump_buffer_frames` | int (frames) | **6** | 4–8 | D.3 Formula 2 | Grounded 직전 buffered jump 윈도우. coyote와 동일 default; 비대칭 튜닝 시 버그 보고 다발 |
-| 11 | `facing_threshold_outside` | float | **0.2** | 0.1–0.35 | D.4 Formula 2 | Outside aim_lock에서 facing 갱신 deadzone. Input #1 deadzone (0.2)와 일치 권장 |
-| 12 | `facing_threshold_aim_lock` | float | **0.1** | 0.05–0.2 | D.4 Formula 3 | AimLock 내부 facing precision (조준 정밀도). 항상 ≤ facing_threshold_outside |
+| 11 | `facing_threshold_outside_enter` | float | **0.2** | 0.15–0.35 | D.4 Formula 2 | **B10 fix 2026-05-11** — Outside aim_lock ENTER threshold (commit to a sign on an axis). Input #1 deadzone (0.2)와 일치 — input.md C.1.3 + AC-IN-06/07 BLOCKING |
+| 11b | `facing_threshold_outside_exit` | float | **0.15** | 0.05–`enter`-0.02 | D.4 Formula 2 | **B10 fix 2026-05-11** — Outside aim_lock EXIT threshold (release locked sign). 항상 < `enter` (INV-8). Steam Deck stick drift floor ~0.18을 cover하여 drift-induced facing oscillation 차단 |
+| 12 | `facing_threshold_aim_lock` | float | **0.1** | 0.05–0.2 | D.4 Formula 3 | AimLock 내부 facing precision (조준 정밀도). 항상 ≤ facing_threshold_outside_enter (INV-4) |
 | 13 | `abs_vel_x_eps` | float (px/s) | **0.5** | 0.1–2.0 | C.4.3 `_ABS_VEL_X_EPS` | T14↔T15 derive boundary. Below 0.1 = float drift thrashing; above 2.0 = 가짜 Idle restore |
 
 **Tuning Resource skeleton:**
@@ -915,12 +1078,13 @@ extends Resource
 @export_range(4, 8) var coyote_frames: int = 6
 @export_range(4, 8) var jump_buffer_frames: int = 6
 # D.4 — Facing thresholds
-@export_range(0.1, 0.35) var facing_threshold_outside: float = 0.2
+@export_range(0.15, 0.35) var facing_threshold_outside_enter: float = 0.2   # B10 fix 2026-05-11
+@export_range(0.05, 0.33) var facing_threshold_outside_exit: float = 0.15   # B10 fix 2026-05-11 (< enter per INV-8)
 @export_range(0.05, 0.2) var facing_threshold_aim_lock: float = 0.1
 # C.4.3 — Movement-state derive epsilon
 @export_range(0.1, 2.0) var abs_vel_x_eps: float = 0.5
 
-# Validation called by PlayerMovement._ready() — see G.4.1 INV-1..7.
+# Validation called by PlayerMovement._ready() — see G.4.1 INV-1..8.
 func _validate() -> void:
     assert(gravity_falling >= gravity_rising,
         "INV-1: gravity_falling must be >= gravity_rising")
@@ -928,14 +1092,17 @@ func _validate() -> void:
         "INV-2: air_control_coefficient must be < 1.0 (B.5 anti-fantasy)")
     assert(abs_vel_x_eps > 0.0,
         "INV-3: abs_vel_x_eps must be > 0 to prevent T14↔T15 thrashing")
-    assert(facing_threshold_aim_lock <= facing_threshold_outside,
-        "INV-4: aim_lock threshold must be <= outside threshold")
+    assert(facing_threshold_aim_lock <= facing_threshold_outside_enter,
+        "INV-4: aim_lock threshold must be <= outside ENTER threshold (B10 fix 2026-05-11)")
     var apex_h: float = (jump_velocity_initial * jump_velocity_initial) \
         / (2.0 * gravity_rising)
     assert(apex_h >= 50.0 and apex_h <= 250.0,
         "INV-5: apex height %f px out of [50, 250] range" % apex_h)
     assert(coyote_frames + jump_buffer_frames <= 16,
         "INV-6: coyote + jump_buffer must be <= 16 frames")
+    assert(facing_threshold_outside_exit < facing_threshold_outside_enter,
+        "INV-8 (B10 fix 2026-05-11): hysteresis exit must be strictly less than enter; got exit=%f enter=%f" \
+            % [facing_threshold_outside_exit, facing_threshold_outside_enter])
 ```
 
 ### G.2 Imported Knobs (referenced from other GDDs)
@@ -948,7 +1115,7 @@ PM consumes these values via cross-system contracts; **owning GDD is single sour
 | `i_frame_frames` | `time-rewind.md` Rule 11 | 30 (REWINDING phase length, ≈0.5 s @60fps) | Visual/Audio i-frame flicker timing reference; E-PM-15 (PM does NOT directly inspect, but Visual cue duration = this value) | Mutate in `time-rewind.md` only |
 | `gamepad_deadzone` | `Input System #1` *(provisional)* | 0.2 (Tier 1 default; C.5.3) | E-PM-9 (`sign(0.05)` Run mistrigger 차단). PM consumes *deadzone-applied* `move_axis`; PM's `facing_threshold_outside=0.2` aligns so that input below the threshold contributes neither to movement nor to facing | Input #1 owns; PM regression test asserts upstream deadzone applied before PM's Phase 2 read |
 
-> **Not imported**: `REWIND_WINDOW_SECONDS` (1.0 s) and `max_tokens` (5) from `time-rewind.md` are *not referenced* by PM — TRC owns ring buffer slot count and token economy entirely. PM only receives `restore_from_snapshot(snap)` calls and is agnostic to the buffer's age semantics. DEC-PM-3 also explicitly excludes ammo from PlayerSnapshot, isolating PM from token + ammo state.
+> **Not imported**: `REWIND_WINDOW_SECONDS` (1.5 s) and `max_tokens` (5) from `time-rewind.md` are *not referenced* by PM — TRC owns ring buffer slot count and token economy entirely. PM only receives `restore_from_snapshot(snap)` calls and is agnostic to the buffer's age semantics. DEC-PM-3 also explicitly excludes ammo from PlayerSnapshot, isolating PM from token + ammo state.
 
 ### G.3 Future Knobs (Tier 2+)
 
@@ -977,17 +1144,18 @@ DEC-PM-1 locks Tier 1 to 6 states (`idle / run / jump / fall / aim_lock / dead`)
 | INV-1 | `gravity_falling >= gravity_rising` | `assert(tuning.gravity_falling >= tuning.gravity_rising)` | Inverted gravity = anti-feel; Celeste-style snappy fall 위반 |
 | INV-2 | `air_control_coefficient < 1.0` | `assert(tuning.air_control_coefficient < 1.0)` | B.5 anti-fantasy (공중 360° 제어 = 결정론 패턴 학습 가치 희석) |
 | INV-3 | `abs_vel_x_eps > 0.0` | `assert(tuning.abs_vel_x_eps > 0.0)` | 0 시 T14↔T15 boundary thrashing (float noise) |
-| INV-4 | `facing_threshold_aim_lock <= facing_threshold_outside` | `assert(...)` | aim_lock = 정밀 조준; outside보다 둔감하면 의미 모순 |
+| INV-4 | `facing_threshold_aim_lock <= facing_threshold_outside_enter` | `assert(tuning.facing_threshold_aim_lock <= tuning.facing_threshold_outside_enter)` | **B10 fix 2026-05-11** — aim_lock = 정밀 조준; outside enter보다 둔감하면 의미 모순. 명명 변경 per B10 split (`facing_threshold_outside` → `facing_threshold_outside_enter`) |
 | INV-5 | apex height invariant: `(jump_velocity_initial² / (2 × gravity_rising))` ∈ [50.0, 250.0] px | `assert(50.0 <= h <= 250.0)` where `h = v_j²/(2*g_up)` | level-designer 협의 시 144 px target (D.2 Decision A) 보호 — 50 px 이하는 not-jumpy, 250 px 이상은 platform spacing 재튜닝 의무 |
 | INV-6 | `coyote_frames + jump_buffer_frames <= 16` | `assert(tuning.coyote_frames + tuning.jump_buffer_frames <= 16)` | 합 > 16 = 입력 feel 과도 관용 (~270 ms total slack); QA 회귀 다발 |
 | INV-7 | restore 도중 owned knob 변경 금지 | runtime: PlayerMovement는 `_is_restoring=true` 동안 `tuning.set_*` 호출 시 `assert(not _is_restoring)` (Tier 1에서는 setter 정의 없음 — `@export` 직접 할당으로 충분; 향후 setter 도입 시 의무) | Resource hot-swap이 restore 중간에 발생하면 mid-tick 결정성 breach |
+| INV-8 | `facing_threshold_outside_exit < facing_threshold_outside_enter` | `assert(tuning.facing_threshold_outside_exit < tuning.facing_threshold_outside_enter)` | **B10 fix 2026-05-11** — Schmitt hysteresis precondition: exit ≥ enter는 hysteresis 완전 무효화 (single-threshold logic으로 회귀 → Steam Deck stick drift 재발). 동치 (`==`) 도 금지 — 정확히 동일하면 boundary value에서 oscillation 가능 |
 
 PlayerMovement._ready() 호출 패턴 (G.1 skeleton에 명시; 본 표는 INV catalog만 정의):
 
 ```gdscript
 func _ready() -> void:
     assert(tuning != null, "PlayerMovementTuning resource not assigned")
-    tuning._validate()    # all INV-1..INV-6 checks
+    tuning._validate()    # all INV-1..INV-6 + INV-8 (B10 fix 2026-05-11) checks
     # INV-7는 setter 도입 시점에 추가
 ```
 
@@ -1035,7 +1203,7 @@ ADR 신규 발행 *불필요* — 위 항목은 모두 `damage.md` AC-21 precede
 
 ### H.1 Snapshot Restoration (TR contract)
 
-> **Coverage**: C.4.1 6-step `restore_from_snapshot()` · C.4.2 `_is_restoring` lifetime · C.4.3 `_derive_movement_state()` T14-T17 · C.4.4 anim method-track guard · C.4.5 WeaponSlot signal guard · DEC-PM-3 ammo-not-captured. **6 AC** (all BLOCKING Logic GUT unless tagged).
+> **Coverage**: C.4.1 6-step `restore_from_snapshot()` · C.4.2 `_is_restoring` lifetime · C.4.3 `_derive_movement_state()` T14-T17 · C.4.4 anim method-track guard · C.4.5 WeaponSlot signal guard · DEC-PM-3 v2 ammo-captured · **B3 fix: `callback_mode_method = IMMEDIATE` boot invariant**. **7 AC** (all BLOCKING Logic GUT unless tagged). AC-H1-05 obsoleted by AC-H1-05-v2 (B5 fix 2026-05-11); AC-H1-07 newly added (B3 fix 2026-05-11).
 
 **AC-H1-01** *(Logic GUT — BLOCKING)* — 7-field round-trip identity.
 **GIVEN** `PlayerMovement` is in `DeadState` and a `PlayerSnapshot` with `is_grounded=true, abs(velocity.x) < abs_vel_x_eps, global_position=(100,200), velocity=(0,-5), facing_direction=3, current_weapon_id=2, animation_name=&"idle", animation_time=0.3` is applied via `restore_from_snapshot(snap)`,
@@ -1061,13 +1229,23 @@ ADR 신규 발행 *불필요* — 위 항목은 모두 `damage.md` AC-21 precede
 **WHEN** `weapon_equipped` fires with `new_id != snap.current_weapon_id`,
 **THEN** `_current_weapon_id` remains equal to `snap.current_weapon_id` (the value just set in Step 3); handler returns without mutating the field; `_current_weapon_id` change count during restore tick = 0.
 
-**AC-H1-05** *(Logic GUT + Static grep — BLOCKING)* — DEC-PM-3 ammo-not-captured.
-**GIVEN** `PlayerSnapshot` schema is defined,
+**AC-H1-05** *(Logic GUT + Static grep — BLOCKING)* — ~~DEC-PM-3 ammo-not-captured.~~ **OBSOLETED 2026-05-11** by DEC-PM-3 v2 (B5 resolution) — superseded by AC-H1-05-v2 below.
+~~**GIVEN** `PlayerSnapshot` schema is defined,~~
+~~**WHEN** the test inspects `PlayerSnapshot.get_property_list()` (or equivalent reflection),~~
+~~**THEN** no property named `ammo_count` (or `ammo`/`current_ammo`) exists; AND~~
+~~**WHEN** static grep runs `grep -n 'ammo' src/.../player_movement.gd src/.../player_snapshot.gd`,~~
+~~**THEN** zero matches in both files (DEC-PM-3 isolation: ammo is Player Shooting #7 territory).~~
+
+**AC-H1-05-v2** *(Logic GUT + Static grep — BLOCKING)* — DEC-PM-3 v2 ammo-captured (ADR-0002 Amendment 2).
+**GIVEN** `PlayerSnapshot` Resource schema is defined,
 **WHEN** the test inspects `PlayerSnapshot.get_property_list()` (or equivalent reflection),
-**THEN** no property named `ammo_count` (or `ammo`/`current_ammo`) exists; AND
-**WHEN** static grep runs `grep -n 'ammo' src/.../player_movement.gd src/.../player_snapshot.gd`,
-**THEN** zero matches in both files (DEC-PM-3 isolation: ammo is Player Shooting #7 territory).
-*Resolves: time-rewind.md OQ-1 / E-22 / F6.*
+**THEN** property `ammo_count: int` EXISTS on the schema; AND
+**GIVEN** a snapshot `snap` with `ammo_count=7`, `current_weapon_id=2`, and the other 6 PM-owned fields set per AC-H1-01 fixture,
+**WHEN** `PlayerMovement.restore_from_snapshot(snap)` runs (PM side),
+**THEN** PM does **NOT** mutate `WeaponSlot.ammo_count` directly — `WeaponSlot.ammo_count` is the same value it held before `restore_from_snapshot()` was invoked (write authority is Weapon #7, OQ-PM-NEW); AND
+**WHEN** TRC orchestration completes the rewind (Weapon-side restoration triggered by `rewind_completed` signal — Weapon GDD #7 authoring obligation),
+**THEN** `WeaponSlot.ammo_count == snap.ammo_count` after the orchestration tick.
+*Resolves: time-rewind.md OQ-1 / E-22 / F6 (b) variant; obligates: Player Shooting #7 GDD H section reciprocal AC + ADR-0002 Amendment 2 stub at `docs/architecture/adr-0002-time-rewind-storage-format.md`.*
 
 **AC-H1-06** *(Logic GUT — BLOCKING)* — T14-T17 4-branch derive correctness.
 **GIVEN** four fixture snapshots covering the 4 valid branches:
@@ -1081,6 +1259,15 @@ ADR 신규 발행 *불필요* — 위 항목은 모두 `damage.md` AC-21 precede
 **AND** for the pathological case (`is_grounded=true, velocity.y < 0` — E-PM-2 GAP-1 Decision A 2026-05-10 *is_grounded wins*): derive returns `IdleState` or `RunState` per `velocity.x` (is_grounded authority); the next-tick Phase 5 `move_and_slide()` + Phase 6a re-evaluation auto-corrects via T5 → Fall. Test asserts the 1-tick state at restore-tick is Idle/Run, NOT Jump.
 *Cross-ref: state-machine.md AC-09 (force_re_enter mechanics).*
 
+**AC-H1-07** *(Logic GUT — BLOCKING)* — AnimationPlayer `callback_mode_method = IMMEDIATE` boot invariant (B3 fix 2026-05-11).
+**GIVEN** `PlayerMovement._ready()` has completed and the test scene's `AnimationPlayer` node (`$AnimationPlayer`, addressed via `_anim`) is initialized,
+**WHEN** the test reads `_anim.callback_mode_method`,
+**THEN** the value equals `AnimationMixer.ANIMATION_CALLBACK_MODE_METHOD_IMMEDIATE` (== 1) — NOT the Godot 4.6 default `ANIMATION_CALLBACK_MODE_METHOD_DEFERRED` (== 0).
+**AND WHEN** the test invokes `_anim.seek(t, true)` where the animation at `t` contains a method-track key calling a no-op tracer method on `PlayerMovement` (e.g., `_test_tracer_callback`),
+**THEN** the tracer method MUST fire *within the seek() call stack* (synchronous to the seek invocation) — verifiable via a counter incremented before/after the seek call in the test body. Tracer counter post-`seek()` == 1; tracer counter mid-`seek()` (inspected via guard) == 1.
+**AND** the boot-time `assert` in `PlayerMovement._ready()` (per C.4.1 init pattern) MUST fire in debug builds if `_anim.callback_mode_method` is reverted to `DEFERRED` post-`_ready()`. Static grep `grep -nE 'callback_mode_method\s*=\s*AnimationMixer\.ANIMATION_CALLBACK_MODE_METHOD_(DEFERRED|MANUAL)' player_movement.gd` returns zero matches (only IMMEDIATE assignment allowed in the file — single-writer).
+*B3 fix 2026-05-11 — Godot 4.6 `AnimationMixer.callback_mode_method` default verified DEFERRED via WebFetch (https://docs.godotengine.org/en/stable/classes/class_animationmixer.html); recorded in `docs/engine-reference/godot/modules/animation.md` "Critical Default" section. DEFERRED silently breaks the entire `_is_restoring` guard model (C.4.1/4.2/4.4/4.5 + AC-H1-02/03/04 + VA.5 method-track policy) — method-track callbacks would fire on the next idle frame *after* Phase 1 auto-cleared the guard, producing stale spawns/cues during rewind restoration. IMMEDIATE override is mandatory for the entire single-writer architecture. Engine-version-critical (post-LLM-cutoff Godot 4.6 May 2025 → Jan 2026).*
+
 ### H.2 Movement State Machine (PlayerMovementSM)
 
 > **Coverage**: C.2.1 6 states · C.2.2 17-row T-matrix · C.2.3 trigger constraints · C.2.4 input ignore rules · C.2.5 framework atomicity (M2 reuse). **5 AC** (all BLOCKING).
@@ -1088,7 +1275,7 @@ ADR 신규 발행 *불필요* — 위 항목은 모두 `damage.md` AC-21 precede
 **AC-H2-01** *(Logic GUT — BLOCKING)* — AimLock blocks jump buffer (C.2.4 input ignore).
 **GIVEN** `PlayerMovementSM` is in `AimLockState` AND a `jump_just_pressed = true` is injected in Phase 2,
 **WHEN** Phase 3a evaluates transitions,
-**THEN** `JumpState` is NOT entered; `current_state` remains `AimLockState`; `_jump_buffered_at_frame` is NOT updated (buffer registration skipped). Verified on the press tick AND the following tick.
+**THEN** `JumpState` is NOT entered; `current_state` remains `AimLockState`; **neither** `_jump_buffer_frame` **nor** `_jump_buffer_active` is updated (buffer registration skipped — Formula 4 pair-set blocked). `_jump_buffer_active` remains at its pre-press value (typically `false`). Verified on the press tick AND the following tick.
 *Cross-ref obligation: Input System #1 must include reciprocal AC asserting `aim_lock` hold + `jump` press are independent input events with PM ignore semantics — F.4.2 obligation.*
 
 **AC-H2-02** *(Logic GUT — BLOCKING)* — T13 signal-reactive Dead entry.
@@ -1144,7 +1331,7 @@ ADR 신규 발행 *불필요* — 위 항목은 모두 `damage.md` AC-21 precede
 
 **AC-H3-04** *(Static grep / CI — BLOCKING)* — Wall-clock + async + single-arg seek absence.
 **GIVEN** `player_movement.gd` is committed,
-**WHEN** CI runs the grep step in `tools/ci/pm_static_check.sh` (or equivalent),
+**WHEN** CI runs `tools/ci/pm_static_check.sh` (authored 2026-05-11 per B2 fix),
 **THEN** zero matches for each of:
 - `Time\.get_ticks_msec\|OS\.get_ticks_msec\|Time\.get_unix_time` (GREP-PM-3, ADR-0003 결정성 클락)
 - `await\s+get_tree\(\)\.physics_frame\|await\s+.*\.timeout` (GREP-PM-6, async transition forbidden)
@@ -1189,7 +1376,7 @@ Any non-zero match → CI fail. False-positive exemption: `# ALLOW-PM-GREP-N` in
 
 ### H.5 Jump / Gravity / Coyote / Buffer
 
-> **Coverage**: D.2 jump impulse · apex height invariant (144 px) · variable cut · D.3 coyote/buffer predicates · INT_MIN sentinel reset on Dead/restore. **4 AC** (count-34 plan: coyote + buffer collapsed into one compound AC).
+> **Coverage**: D.2 jump impulse · apex height invariant (144 px) · variable cut · D.3 coyote/buffer predicates · **active-flag reset on Dead/restore (B1 fix 2026-05-11 — was INT_MIN sentinel)**. **4 AC** (count-34 plan: coyote + buffer collapsed into one compound AC).
 
 **AC-H5-01** *(Logic GUT — BLOCKING)* — Jump impulse + apex height invariant.
 **GIVEN** `PlayerMovement` is in `RunState` (grounded) with Tier 1 defaults (`jump_velocity_initial = 480.0`, `gravity_rising = 800.0`),
@@ -1218,26 +1405,27 @@ Combined per count-34 plan; both predicates use `Engine.get_physics_frames()` di
 **THEN** `coyote_eligible = false`; T3 does NOT fire (window expired).
 
 *Buffer case:*
-**GIVEN** `jump_pressed = true` fires at frame M while `is_grounded = false` (`_jump_buffered_at_frame = M`), `jump_buffer_frames = 6`,
+**GIVEN** `jump_pressed = true` fires at frame M while `is_grounded = false` (Formula 4 sets `_jump_buffer_frame = M` AND `_jump_buffer_active = true`), `jump_buffer_frames = 6`,
 **WHEN** PM lands at frame M+3,
-**THEN** `jump_buffered = (M+3 - M) <= 6 AND is_grounded = true`; T3 auto-fires on landing tick without fresh `jump_pressed` input.
+**THEN** `jump_buffered = (_jump_buffer_active AND (M+3 - M) <= 6 AND is_grounded) = TRUE AND TRUE AND TRUE = true`; T3 auto-fires on landing tick without fresh `jump_pressed` input. Post-fire: `_jump_buffer_active = false` (buffer 소비).
 **AND WHEN** PM lands at frame M+7,
-**THEN** `jump_buffered = false`; no auto-T3.
+**THEN** `jump_buffered = false` (math 차단; `_jump_buffer_active` still true 이지만 `(M+7-M)=7 > 6`); no auto-T3.
 *D.3 Formulas 1, 2, 3 — both PASS and FAIL boundaries required per AC.*
 
-**AC-H5-04** *(Logic GUT — BLOCKING)* — INT_MIN sentinel reset on Dead + restore.
-**GIVEN** `_jump_buffered_at_frame = M` (valid buffer registered) AND `PlayerMovementSM` transitions to `DeadState` (T13),
+**AC-H5-04** *(Logic GUT — BLOCKING)* — Active-flag reset on Dead + restore (B1 fix 2026-05-11).
+**GIVEN** `_jump_buffer_active = true` AND `_jump_buffer_frame = M` (valid buffer registered at frame M) AND `PlayerMovementSM` transitions to `DeadState` (T13),
 **WHEN** `DeadState.enter()` fires,
-**THEN** `_jump_buffered_at_frame == INT_MIN` (specifically `-9223372036854775808`).
+**THEN** `_jump_buffer_active == false` AND `_jump_buffer_frame == 0` AND `_grounded_history_valid == false` AND `_last_grounded_frame == 0`.
 **AND WHEN** `restore_from_snapshot(snap)` is later called (Step 4),
-**THEN** `_jump_buffered_at_frame == INT_MIN` (re-cleared); also `_last_grounded_frame == INT_MIN` if `not snap.is_grounded` else equals current frame.
-**AND WHEN** the post-restore tick evaluates `jump_buffered`,
-**THEN** `(current_frame - INT_MIN)` overflows to a large positive number greater than `jump_buffer_frames` → `jump_buffered = false`; no phantom jump fires without fresh `jump_pressed` input.
-*D.3 Formula 5 + C.3.3 Scenario C. Phantom-jump prevention is critical for Pillar 1 input continuity (B.4 #1).*
+**THEN** `_jump_buffer_active == false` (re-cleared, idempotent); `_grounded_history_valid == snap.is_grounded`; `_last_grounded_frame == Engine.get_physics_frames()` if `snap.is_grounded` else `0`.
+**AND WHEN** the post-restore tick evaluates `jump_buffered` (C.3.3 predicate),
+**THEN** `jump_buffered == false` via boolean short-circuit — `_jump_buffer_active == false` AND-shortcircuits *before* any subtraction `(current_frame - _jump_buffer_frame)` is evaluated. Equivalently, `coyote_eligible == false` via `_grounded_history_valid == false` short-circuit when `not snap.is_grounded`.
+**AND** no phantom jump fires without fresh `jump_pressed` input. **Negative-case verification**: With `_jump_buffer_active = false` and `_jump_buffer_frame = 0`, set `current_frame = 1` and assert `jump_buffered == false` (regression catches accidental field reorder — the math `(1 - 0) <= 6` would be TRUE *if* the bool were missing from the predicate; only the bool short-circuit prevents the bug).
+*D.3 Formula 5 + C.3.3 Scenario C. **B1 fix 2026-05-11** — sentinel `INT_MIN` pattern replaced with active-flag pattern; no int64 overflow possible by construction (the math operand pair `(current - frame)` is only evaluated when the bool is true, and when true the frame is a legitimate non-negative `Engine.get_physics_frames()` value). 3-specialist convergence (systems-designer + qa-lead + godot-gdscript-specialist). Phantom-jump prevention critical for Pillar 1 input continuity (B.4 #1).*
 
 ### H.6 Damage / SM Integration
 
-> **Coverage**: C.3.4 mid-`move_and_slide()` cascade · C.6 Damage composition (PM hosts only) · DEC-4 single-direction (HurtBox.monitorable owned by SM, NOT PM) · E-PM-15..17 · EchoLifecycleSM signal-reactive Dead entry. **5 AC**.
+> **Coverage**: C.3.4 mid-`move_and_slide()` cascade · C.6 Damage composition (PM hosts only) · DEC-4 single-direction (HurtBox.monitorable owned by SM, NOT PM) · E-PM-15..17 · EchoLifecycleSM signal-reactive Dead entry · **Pillar 1 first-encounter reachability (B6 fix 2026-05-11)**. **6 AC**.
 
 **AC-H6-01** *(Integration GUT — BLOCKING)* — Mid-`move_and_slide()` lethal cascade atomicity.
 **GIVEN** `PlayerMovement._physics_process` is executing Phase 5 (`move_and_slide()`) AND a collision triggers the full cascade chain `HitBox.area_entered → HurtBox.hurtbox_hit → Damage.lethal_hit_detected → EchoLifecycleSM transition_to(DyingState) → state_changed(DYING) → PlayerMovementSM._on_lifecycle_state_changed → transition_to(DeadState)`,
@@ -1278,6 +1466,22 @@ Total `DeadState` entry count over the two-tick (restore + re-hit) sequence = 2.
 **THEN** Dead enters the framework pending queue (per state-machine.md C.2.5); `Run → Jump` completes; Dead immediately dispatches; final `current_state == DeadState`. `state_changed` emits exactly: `(Run → Jump)` then `(Jump → Dead)` in that order. No state skipped, no transition dropped.
 *Mirror: state-machine.md AC-07 (queue atomicity from framework side). E-PM-8 coyote + mid-`move_and_slide()` Damage overlap is covered by this same fixture.*
 
+**AC-H6-06** *(Integration GUT — BLOCKING, B6 fix 2026-05-11)* — First-encounter rewind reachability within DYING window (Pillar 1 "학습 도구" gate).
+
+**Pillar anchor**: Pillar 1 — the 12-frame DYING grace is asserted in spec but, until this AC, was *never measured against simple-stimulus reaction time*. Without a scripted-input reachability proof, a player who never makes it from "I died" → "press rewind" within 200 ms still has theoretical access to rewind but practically dead — Pillar 1 ("처벌이 아닌 학습 도구") becomes aspirational instead of contractual. AC-H6-06 closes the gap: the window's reachability is now a CI gate.
+
+**GIVEN** the test fixture instantiates a PM scene with `PlayerMovement` in `RunState`, `EchoLifecycleSM._tokens >= 1`, and 1 active enemy `HitBox` scheduled to overlap PM at frame `N + 5`; `Input.is_action_just_pressed(&"rewind_consume")` is scripted via fixture (no human-in-loop) per AC-H4-01 input-injection pattern,
+
+**WHEN** the test simulates the lethal hit at frame `N + 5` (Phase 5 cascade enters `DyingState` same tick; PM `transition_to(DeadState)` enqueued) AND injects `rewind_consume = true` at frame `N + 5 + 12` (window-end boundary; 200 ms wall-clock @ 60 fps = simple-stimulus reaction median),
+
+**THEN** `EchoLifecycleSM` transitions `DYING → REWINDING` within the input-arrival tick; `TimeRewindController.restore_from_snapshot()` fires (verified via 1-call spy on PM `_is_restoring` toggling); `PlayerMovementSM.current_state` is NOT `DeadState`-final after the REWINDING entry tick (the queued Dead is cancelled by signal-reactive ALIVE re-derive via T14-T17 30 frames later); `PlayerMovement.global_position` matches the position at frame `N - 4` (9 frames pre-impact per `time-rewind.md` Rule 4 + Rule 9 `RESTORE_OFFSET_FRAMES`).
+
+**AND boundary FAIL case**: same setup but `rewind_consume` injected at frame `N + 5 + 13` (1 frame past grace; `damage.md` DEC-6 hazard_grace_frames=12 effective 13 — B-R4-1 fix) → `EchoLifecycleSM` transitions `DYING → DEAD`; `restore_from_snapshot()` does NOT fire (spy confirms 0 calls); PM `current_state == DeadState` final.
+
+**AND token-zero FAIL case** (Pillar 4 anti-fantasy "안전망 아님"): same boundary input at `N + 5 + 12` but `_tokens == 0` → `try_consume_rewind()` returns false; Token Denied audio cue plays (per `time-rewind.md` Audio Events table); `DYING → DEAD` regardless. Confirms the reachability gate is *capacity-gated*, not *latency-gated*.
+
+*Mirror: `time-rewind.md` Rule 4 (12-frame grace) + Rule 7 (token-zero no-op) + Rule 9 (try_consume_rewind sequence); `damage.md` DEC-6 (hazard_grace_frames=12 + B-R4-1 effective 13); `state-machine.md` AC-15 (DYING→DEAD direct path). Reachability is a PM-side fixture because PM hosts the cascade endpoint (DeadState entry + restore_from_snapshot call site).*
+
 ### H.7 Static Analysis & Forbidden Patterns
 
 > **Coverage**: G.4.1 INV-1..7 assertion fixtures · G.4.2 GREP-PM-1..7 regex CI gates · anim method-track `_is_restoring` guard scan · matches damage.md AC-21/29 precedent. **5 AC**.
@@ -1306,7 +1510,7 @@ Total `DeadState` entry count over the two-tick (restore + re-hit) sequence = 2.
 
 **AC-H7-03** *(Static grep / CI — BLOCKING)* — External direct-write + `_is_restoring` mutation + Phase 6a `is_on_floor` enforce.
 **GIVEN** `player_movement.gd` and all files in `src/` are committed,
-**WHEN** CI runs `tools/ci/pm_static_check.sh` grep step,
+**WHEN** CI runs `tools/ci/pm_static_check.sh` (authored 2026-05-11 per B2 fix),
 **THEN** zero matches for each of:
 - (a) GREP-PM-1: `grep -rnE '\.global_position\s*=|\.velocity\s*=|\.facing_direction\s*=|\._current_weapon_id\s*=|\._is_grounded\s*=' src/ --exclude=player_movement.gd` (external write to PM 7 fields forbidden)
 - (b) GREP-PM-5: `grep -nE '_is_restoring\s*=\s*(true|false)' player_movement.gd` outside the `restore_from_snapshot()` method body (single-writer enforce)
@@ -1315,25 +1519,35 @@ Total `DeadState` entry count over the two-tick (restore + re-hit) sequence = 2.
 False-positive exemption: `# ALLOW-PM-GREP-N` inline comment + justification (matches damage.md AC-21 precedent).
 *G.4.2 GREP-PM-1, 5, 7 consolidated.*
 
-**AC-H7-04** *(Static grep / CI — BLOCKING, GAP-6 Decision A 2026-05-10)* — Anim method-track `_is_restoring` guard universal scan.
+**AC-H7-04** *(Static grep / CI — BLOCKING, GAP-6 Decision A 2026-05-10; awk rewritten 2026-05-11 per B4 fix)* — Anim method-track `_is_restoring` guard universal scan.
 **GIVEN** `player_movement.gd` is committed,
-**WHEN** CI runs:
-```
+**WHEN** CI runs `tools/ci/pm_static_check.sh` (B2 fix 2026-05-11) which executes a state-machine awk over each `_on_anim_*` function body:
+```bash
+# Per _on_anim_* function: extract body via state-machine awk.
+# Enter on `func FN[non-word]`; exit on next `^func ` or `^class `.
+# Word-boundary uses [^a-zA-Z0-9_] for BSD-awk compat (macOS).
 grep -nE '^func _on_anim_[a-z_]+' player_movement.gd \
-  | while read line; do
-      func_name=$(echo "$line" | sed -E 's/.*(_on_anim_[a-z_]+).*/\1/')
-      body=$(awk "/^func $func_name/,/^func |^[a-zA-Z_]+/" player_movement.gd)
-      if ! echo "$body" | grep -qE '_is_restoring' \
-         && ! echo "$body" | grep -qE '# ALLOW-PM-GREP-4'; then
-          echo "VIOLATION: $func_name lacks _is_restoring guard"
+  | sed -E 's/^[0-9]+:func[[:space:]]+(_on_anim_[a-z_]+).*/\1/' \
+  | while read FN; do
+      [[ -z "$FN" ]] && continue
+      BODY=$(awk -v fn="$FN" '
+        BEGIN { in_block = 0 }
+        $0 ~ ("^func " fn "[^a-zA-Z0-9_]") { in_block = 1; print; next }
+        in_block && /^(func |class )/ { in_block = 0 }
+        in_block { print }
+      ' player_movement.gd)
+      if ! echo "$BODY" | grep -qE '_is_restoring' \
+         && ! echo "$BODY" | grep -qE '# ALLOW-PM-GREP-4'; then
+          echo "VIOLATION: $FN lacks _is_restoring guard"
           exit 1
       fi
   done
 ```
-(or a Godot-native equivalent in `tools/ci/pm_static_check.sh`),
+**Critical fix history (B4)**: The 2026-05-10 inline version used `awk "/^func $func_name/,/^func |^[a-zA-Z_]+/"` — the end pattern `^[a-zA-Z_]+` matches the start `func` line itself (because `func` starts with `f`), so the range collapsed to a single line and the body was *never inspected*. Every `_on_anim_*` callback silently passed regardless of guard presence. The state-machine awk above is the correct extractor; **`tools/ci/pm_static_check.sh` is the implementation source of truth** — the inline snippet here is documentation, not the executed code path.
+
 **THEN** every `_on_anim_*` function in `player_movement.gd` either contains `_is_restoring` (`if _is_restoring: return` typically as first guard line) OR has `# ALLOW-PM-GREP-4: <justification>` inline comment.
 Universal guard policy with explicit opt-out (lightweight SFX e.g. footstep can opt out via comment per Audio GDD decision — F.4.2 obligation gate).
-*C.4.4 obligation. Partial guard = silent regression risk.*
+*C.4.4 obligation. Partial guard = silent regression risk. Validated by 3-fixture smoke test (Tier 1 graceful pass / violation fixture / clean fixture) before B4 lock.*
 
 **AC-H7-05** *(Logic GUT — BLOCKING)* — 1000-cycle PlayerMovementSM transition determinism.
 **GIVEN** a fixture stubs `Engine.get_physics_frames()` to a deterministic counter AND scripts a fixed input sequence producing transitions `Idle → Run → Jump → Fall → Idle` (with apex T6, landing T8),
@@ -1371,7 +1585,7 @@ const EXPECTED_TRANSITIONS: Array[StringName] = [
 
 **ADVISORY classification rationale** (per damage.md AC-26/27 precedent): document-state checks are PR Review checklist items, not BLOCKING automated CI gates, until `tools/ci/gdd_consistency_check.gd` is authored. **Upgrade path**: when CI tool is built (queued under damage.md OQ-DMG-5 tooling pattern), this AC promotes to BLOCKING with the same grep specs as the CI step.
 
-> **F.4.2 obligations registry** (separate from this AC — *deferred to target GDD authoring*): ~~Input #1 (deadzone + AimLock-jump exclusivity)~~ ✅ **Resolved 2026-05-11** (Input #1 GDD Designed + re-review APPROVED 2026-05-11 lean mode; deadzone locked at input.md C.1.3 + AC-IN-06/07 BLOCKING; AimLock-jump exclusivity locked at input.md C.3.3 + AC-IN-16 BLOCKING; PM AC-H4-04 ADVISORY ⇒ **obsolete** — Input #1 BLOCKING ACs replace; F.4.1 #3 closure batch 2026-05-11), Player Shooting #7 (`_on_anim_spawn_bullet` `_is_restoring` guard + ammo restoration policy review), Scene Manager #2 (`_last_grounded_frame` / `_jump_buffered_at_frame` clear responsibility — OQ-PM-1), VFX #14 (`_is_restoring` guard policy), Audio #21 (footstep guard decision — gates AC-H7-04 ALLOW exemption policy), Visual/Audio (this GDD's own pending section), HUD #13 (PM signal exposure re-eval). **Each target GDD's H section MUST include the reciprocal AC at authoring time** — this is not a current-PR PASS/FAIL gate.
+> **F.4.2 obligations registry** (separate from this AC — *deferred to target GDD authoring*): ~~Input #1 (deadzone + AimLock-jump exclusivity)~~ ✅ **Resolved 2026-05-11** (Input #1 GDD Designed + re-review APPROVED 2026-05-11 lean mode; deadzone locked at input.md C.1.3 + AC-IN-06/07 BLOCKING; AimLock-jump exclusivity locked at input.md C.3.3 + AC-IN-16 BLOCKING; PM AC-H4-04 ADVISORY ⇒ **obsolete** — Input #1 BLOCKING ACs replace; F.4.1 #3 closure batch 2026-05-11), Player Shooting #7 (`_on_anim_spawn_bullet` `_is_restoring` guard + ammo restoration policy review), Scene Manager #2 (4-var coyote/buffer ephemeral state clear responsibility — `_grounded_history_valid`/`_last_grounded_frame`/`_jump_buffer_active`/`_jump_buffer_frame` per B1 fix; OQ-PM-1), VFX #14 (`_is_restoring` guard policy), Audio #21 (footstep guard decision — gates AC-H7-04 ALLOW exemption policy), Visual/Audio (this GDD's own pending section), HUD #13 (PM signal exposure re-eval). **Each target GDD's H section MUST include the reciprocal AC at authoring time** — this is not a current-PR PASS/FAIL gate.
 
 ---
 
@@ -1386,8 +1600,8 @@ const EXPECTED_TRANSITIONS: Array[StringName] = [
 
 | Element | Implementation | Asset class |
 |---------|---------------|-------------|
-| **Body** | Single E-facing sprite set per state. `Sprite2D.flip_h = (facing_direction in [3, 4, 5])` — W/NW/SW quadrant. Driven by PM code (NOT AnimationPlayer track) | `char_echo_<state>.png` E-facing |
-| **Gun arm overlay** | Separate `Sprite2D` child node (sibling of body Sprite2D); 8 directional sprites swapped per `facing_direction` (0..7); pose-to-pose cut, no interpolation (Section 9 Ref 2 cutout aesthetic) | `char_echo_arm_<dir>_01.png` × 8 (reducible to 5 unique + 3 flip) |
+| **Body** | Single E-facing sprite set per state. `Sprite2D.flip_h = (facing_direction in [3, 4, 5])` — W/NW/SW quadrant. **Driven by PM code (NOT AnimationPlayer track)** in `_physics_process` Phase 6c after facing_direction update. **Scope rationale (B9 fix 2026-05-11)**: `Sprite2D.flip_h` is a *scene-graph property mutation*, not a *frame-sequence animation* — same domain as `velocity` / `global_position` / VA.3 i-frame `Sprite2D.visible` toggle (which is also PM-code-driven, NOT AnimationPlayer-driven, per established precedent). VA.7 R-VA-4 AnimationPlayer mandate scope-clarified: applies to frame-sequence animations within a state (idle loop, run cycle, jump arc), not to scene-graph properties. No internal contradiction. | `char_echo_<state>.png` E-facing |
+| **Gun arm overlay** | Separate `Sprite2D` child node (sibling of body Sprite2D); 8 directional sprites swapped per `facing_direction` (0..7); pose-to-pose cut, no interpolation (Section 9 Ref 2 cutout aesthetic). **Arm sprite swap (`Sprite2D.texture = _arm_pool[facing_direction]`) is also PM-code-driven per Phase 6c** — same scope as body `flip_h`. The 2-Sprite2D paper-doll architecture sits *under* one AnimationPlayer node that drives the **body's own frame sequences** (e.g., AimLock body is single-frame; idle/run are looping multi-frame); the arm Sprite2D has no AnimationPlayer track (texture-swap-only). | `char_echo_arm_<dir>_01.png` × 8 (reducible to 5 unique + 3 flip) |
 
 **facing_direction → flip_h + arm sprite map:**
 
@@ -1414,8 +1628,8 @@ All ECHO body sprites authored at **60fps** (mandatory — see VA.7 RISK HIGH fo
 | **Run** | 6 (loop) | 2 contact + 2 passing + 2 transition; 45° forward lean (Section 5); cutout angular feet; NO motion blur on sprite (Section 9 Ref 2 forbids) | Frames 1 + 4 = `_on_anim_play_footstep_sfx` (foot-contact) |
 | **Jump** | 2 | F1 ascent (knees drawn, REWIND Core silhouette pop) + F2 apex tuck (optional — single held pose acceptable Tier 1) | F1 = `_on_anim_play_jump_sfx` (one-shot launch) |
 | **Fall** | 2 | F1 descent + F2 landing-prep (knees flex). Fall must read as committed weight (B.5 anti-fantasy: not floaty 360° control) | none on Fall; landing key on first frame of post-T8/T9 anim |
-| **AimLock** | 1 | Static body anchor (no lean — squared/planted); REWIND Core glow brighter (luminosity bump) — signals "charged precision". 8-way arm overlay sweeps independently with `facing_threshold_aim_lock=0.1` | T4 entry → `_on_anim_play_aimlock_press_sfx` |
-| **Dead** | 1 (DYING) + 1 (DEAD) | DYING = hit-stagger held pose (NOT collapse) + REWIND Core flicker — held for 12-frame `damage.md` DEC-6 grace; DEAD = transition to 1-frame `#FFFFFF` whiteout (art-bible.md Section 4 — only permitted pure-white use) → scene checkpoint | none — TR owns death audio |
+| **AimLock** | 1 | Static body anchor (no lean — squared/planted); REWIND Core glow brighter (luminosity bump) — signals "charged precision". 8-way arm overlay sweeps independently with `facing_threshold_aim_lock=0.1`. **Paper-doll aesthetic defense (B9 fix 2026-05-11)**: static body + sweeping arm = intentional Monty Python cutout aesthetic (`art-bible.md` Section 9 Ref 2). The "paper-doll" framing is the chosen visual language, NOT an unintended defect. Tier 1 mitigation = squared/planted stance + REWIND Core luminosity bump (not lean variants, which would contradict squared/planted). Tier 2+ may author 2-3 subtle weight-shift body frames (deferred, NOT BLOCKING) | T4 entry → `_on_anim_play_aimlock_press_sfx` |
+| **Dead** | 1 (DYING) + 1 (DEAD) | DYING = hit-stagger held pose (NOT collapse) + REWIND Core flicker **at 2-frame cadence (6 pulses over 12-frame window — `visible=true 1f / visible=false 1f` toggle, B6 fix 2026-05-11)**; held for 12-frame `damage.md` DEC-6 grace; flicker cadence distinguishes DYING from engine hitch (≥4 Hz threshold for "intentional pulse" perception vs "stutter" per art-director A6 finding); DEAD = transition to 1-frame `#FFFFFF` whiteout (art-bible.md Section 4 — only permitted pure-white use) → scene checkpoint | none — TR owns death audio (see VA.4 DYING/DEAD row for `sfx_dying_pending_01.ogg` cue spec) |
 
 **Cancellation by restore**: If `restore_from_snapshot()` fires during DYING grace, the stagger pose is cut by `seek(animation_time, true)` — no death animation completes. The rewind *cancels* the death, does not *reverse* it (matches B.2 fantasy + C.4.0 metaphor bridge).
 
@@ -1435,14 +1649,14 @@ All ECHO body sprites authored at **60fps** (mandatory — see VA.7 RISK HIGH fo
 | State / event | Trigger | Asset | Character |
 |---------------|---------|-------|-----------|
 | Idle ambient | none | none | **Silent Tier 1** — combat tension preserved; defer breath loop to Tier 3 if narrative-director requests |
-| Run footstep | AnimationPlayer method-track keys at frames 1 + 4 of run loop; alternating L/R via internal `_footstep_side` toggle | `sfx_player_run_footstep_concrete_01..04.ogg` × 4 variants (randomised) | Dry percussive transient ≤100 ms; cutout aesthetic (paper-on-concrete); Tier 1 single surface |
-| Jump launch | Method-track on JumpState entry frame (T3) | `sfx_player_jump_launch_01.ogg` × 1 | Synthetic exertion ≤150 ms; pitch-up whoosh / paper-tear; NO vocal grunt (Q5 unresolved) |
+| Run footstep | AnimationPlayer method-track keys at frames 1 + 4 of run loop; alternating L/R via internal `_footstep_side` toggle | `sfx_player_run_footstep_concrete_01..04.ogg` × 4 variants — pooled with **per-step ±5% pitch jitter (B8 fix 2026-05-11)** | Dry percussive transient ≤100 ms; cutout aesthetic (paper-on-concrete); Tier 1 single surface. **Pool + jitter pattern (resolves audio-director repetition-at-sprint finding)**: at every method-track callback, select 1 of 4 .ogg via uniform random + apply `AudioStreamPlayer.pitch_scale = 1.0 + randf_range(-0.05, 0.05)`. Perceptual math: 4 variants × continuous pitch values exceeds ~3 % human pitch-discrimination threshold (Just Noticeable Difference) — every step distinct under 12 steps/sec sprint cadence. **Asset budget unchanged** (7 PM audio files Tier 1 — VA.6 unchanged). RNG: dedicated `_footstep_rng: RandomNumberGenerator` (NOT shared `randf()` — capture/restore determinism per ADR-0003; seed from `Engine.get_physics_frames()` at callback entry to keep deterministic-replay-friendly without polluting global RNG). Industry reference: Celeste / Hollow Knight / Hades use same 4-pool + ~±5 % jitter pattern. **NOT** ±10 % (reads as different weight/surface — semantic noise). Pseudo-code: `func _on_anim_play_footstep_sfx() -> void: if _is_restoring: return # ALLOW-PM-GREP-4 (VA.5); var idx := _footstep_rng.randi() % 4; _footstep_player.stream = _footstep_pool[idx]; _footstep_player.pitch_scale = 1.0 + _footstep_rng.randf_range(-0.05, 0.05); _footstep_player.play()` |
+| Jump launch | Method-track on JumpState entry frame (T3) | `sfx_player_jump_launch_01.ogg` × 1 | Synthetic exertion ≤150 ms; pitch-up whoosh / paper-tear; **NO vocal grunt (Q5 RESOLVED 2026-05-11 per B6 fix — no-grunt locked across all PM-owned audio + TR-owned DYING cue; consistent with collage SF tone register + art-bible.md Section 9 cutout aesthetic; revisitable only at Tier 3 if narrative-director requests vocalization)** |
 | Fall | none | none | Silent — landing cue carries the arc |
 | Land impact | Method-track on T8/T9 landing frame (knee-bend impact pose) | `sfx_player_land_impact_01.ogg` × 1 | Heavier dull thud ≤150 ms; Tier 1 single tier (no hard/soft split — defer Tier 2) |
 | AimLock press | T4 entry (movement freeze + body anchor snap) | `sfx_player_aimlock_press_01.ogg` × 1 | Mechanical "lock" click ≤80 ms (camera-autofocus reference) |
 | AimLock held ambient | none | none | **Silent Tier 1** — visual freeze + crosshair carries held-state communication |
 | AimLock 8-way facing change tick | none | none | **Silent Tier 1** — high-frequency stick sweep would produce rattle; visual sufficient |
-| DYING / DEAD | **`time-rewind.md` Audio Events table owns** | n/a | DYING = synthwave filter sweep rising (TR); DEAD = silence cut (TR). PM emits zero audio in Dead state |
+| DYING / DEAD | **`time-rewind.md` Audio Events table owns** (TR-side method-track on `DyingState.enter()`) | n/a | DYING = `sfx_dying_pending_01.ogg` × 1 — **synth filter sweep 80 → 400 Hz over 200 ms (B6 fix 2026-05-11; resolves orphan Q5 audio cue + audio-director AU2)**; foreground level, ducks combat SFX; NO vocal grunt (consistent with VA.4 Jump launch no-grunt lock); 200 ms duration matches 12-frame DYING grace exactly (1:1 audio-visual envelope); DEAD = silence cut (TR). PM emits zero audio in Dead state |
 
 **Tier 1 PM-owned audio asset count: 7 .ogg files** (4 footstep + 1 jump + 1 land + 1 aim-press). All OGG Vorbis per art-bible.md Section 8 format spec.
 
@@ -1452,7 +1666,7 @@ Per-callback `_is_restoring` guard decisions, locking the AC-H7-04 ALLOW-PM-GREP
 
 | Callback | Guard? | ALLOW-PM-GREP-4 justification | Rationale |
 |----------|--------|------------------------------|-----------|
-| `_on_anim_play_footstep_sfx` | **ALLOW** (opt-out) | `# ALLOW-PM-GREP-4: lightweight SFX, restore-tick double-fire masked by rewind stinger, no state mutation` | Rhythmic transient ≤100 ms; perceptually masked by TR foreground stinger; no state-corrupting side effect |
+| `_on_anim_play_footstep_sfx` | **ALLOW** (opt-out) | `# ALLOW-PM-GREP-4: lightweight SFX, restore-tick double-fire masked by rewind stinger, no state mutation` | Rhythmic transient ≤100 ms; perceptually masked by TR foreground stinger; no state-corrupting side effect. **B8 fix 2026-05-11**: callback also applies ±5 % pitch jitter (VA.4) — `_footstep_rng` is a *dedicated* `RandomNumberGenerator` instance (NOT global `randf()`), so jitter consumption does not affect `PlayerSnapshot` capture/restore determinism (`Engine.get_physics_frames()` seed is identical at deterministic-replay tick N regardless of restore history). ALLOW exemption still valid: double-fire produces a single masked footstep at a slightly-different pitch, semantically identical to one normal fire |
 | `_on_anim_play_landing_sfx` | **ALLOW** (opt-out) | `# ALLOW-PM-GREP-4: lightweight SFX, restore-tick double-fire masked by rewind stinger, no state mutation` | Same as footstep — pure playback, masked under stinger |
 | `_on_anim_play_jump_sfx` | **GUARD required** (no opt-out) | n/a | Salient one-shot upward-motion semantic; stale fire during rewind = perceptual contradiction with backward-time visual; pitch-up character could read through stinger |
 | `_on_anim_play_aimlock_press_sfx` | **GUARD required** | n/a | Mode-shift confirmation cue; semantic event (not rhythmic) — stale fire = false UI feedback |
@@ -1506,21 +1720,23 @@ Per-callback `_is_restoring` guard decisions, locking the AC-H7-04 ALLOW-PM-GREP
 | R-VA-1 | `AnimationPlayer.seek(time, true)` on looping anim in Godot 4.6 | **HIGH** — post-cutoff API; OQ-PM-2 + `time-rewind.md` OQ-9 | Tier 1 prototype MUST verify before idle/run frame authoring is finalised. Looping seek may have unexpected behaviour (loop counter reset, loop-end callback fire, drift). If broken, idle + run animations have restore artifacts. |
 | R-VA-2 | `Sprite2D.visible` toggle vs `self_modulate.a` for i-frame flicker | **MEDIUM** | `visible=false` removes node from draw list → batching-friendly (preserves ≤500 draw call budget per art-bible.md Section 8). `self_modulate.a` translucent path may break Forward+ batching. Lock `visible` toggle as the implementation. |
 | R-VA-3 | REWIND Core `#00F5D4` inverts to ~`#FF0A2B` (magenta-red) during shader inversion frames 1–3 | **LOW** (aesthetically intentional) | Player-identification color appears to invert during peak inversion — semantically correct (reinforces inversion metaphor); do NOT shader-protect the cyan. |
-| R-VA-4 | `Sprite2D` + AnimationPlayer (NOT `AnimatedSprite2D`) — pipeline lock | **LOW** | C.1.2 specifies `Sprite2D` driven by AnimationPlayer; `AnimatedSprite2D` has different `seek` API, breaks `restore_from_snapshot()`. Animator pipeline mandate: all ECHO sprites authored as AnimationPlayer-driven Sprite2D frame sequences. |
+| R-VA-4 | `Sprite2D` + AnimationPlayer (NOT `AnimatedSprite2D`) — pipeline lock | **LOW** | C.1.2 specifies `Sprite2D` driven by AnimationPlayer; `AnimatedSprite2D` has different `seek` API, breaks `restore_from_snapshot()`. Animator pipeline mandate: all ECHO **frame-sequence animations** (idle loop, run cycle, jump arc, fall, dying held pose, dead held pose) authored as AnimationPlayer-driven `Sprite2D` frame sequences. **Scope clarification (B9 fix 2026-05-11)**: the mandate covers *frame-sequence authoring within a state*, NOT scene-graph property mutations. The following are PM-code-driven (NOT AnimationPlayer tracks) and explicitly outside R-VA-4's scope: (a) `Sprite2D.flip_h` body mirroring per facing quadrant (VA.1 body row — Phase 6c); (b) `Sprite2D.texture` arm-overlay swap per facing_direction (VA.1 gun-arm row — Phase 6c); (c) `Sprite2D.visible` 2:1 toggle i-frame flicker (VA.3 — `EchoLifecycleSM.RewindingState._physics_update()`); (d) `Sprite2D.visible` 1:1 toggle DYING REWIND Core flicker (VA.2 Dead row — same domain). These are *scene-graph property assignments*, conceptually equivalent to `velocity` / `global_position` mutations, and authoring them as AnimationPlayer tracks would (i) bypass `_is_restoring` guards by routing through method-track callbacks (B3 fix territory), (ii) couple facing logic to anim timeline instead of input read, (iii) defeat the single-source-of-truth for facing_direction (D.4). VA.1/VA.7 internal contradiction (review-log B9 part 2) now resolved by scope precision. |
 | R-VA-5 | `TextureFilter.NEAREST` on all character sprites | **LOW** | Standard project filter (art-bible.md Section 8). 48×96 sprites at 1:1 1080p are correctly served by NEAREST. |
 
 ### VA.8 Art bible amendment flags (deferred F.4.2 obligations)
 
-art-director consult identified 4 amendments needed in `design/art/art-bible.md`. **NOT applied this session — flagged for separate `/quick-design` art-bible amendment pass**:
+art-director consult identified 4 amendments needed in `design/art/art-bible.md`. **✅ ALL 4 LANDED 2026-05-11 (B7 fix — Session 15)**:
 
-| # | Section | Amendment |
-|---|---------|-----------|
-| ABA-1 | Section 3 | Clarify ECHO sprite size: "캐릭터 시각 높이 48px; 스프라이트 셀 48×96px (REWIND Core 등 돌출부 포함 셀 공간)." |
-| ABA-2 | Section 5 (ECHO) | Add: "facing_direction 시각화 = flip_h 몸체 + 8방향 팔 오버레이 (Option C — System #6 Visual/Audio 2026-05-10 결정)." |
-| ABA-3 | Section 1 Principle C | Add: "REWINDING 30프레임 i-frame 시각 = `Sprite2D.visible` 2:1 flicker (PM 소유, 색 신호 아님 — 색 반전 중에도 식별 가능)." |
-| ABA-4 | Section 2 Mood Table | Add row "DYING (피격 후 12프레임 유예)": emotional target "긴박한 반전 기대"; visual: "히트-스태거 포즈 유지 + REWIND Core 깜박임; 화이트아웃 없음." |
+| # | Section | Amendment | Status |
+|---|---------|-----------|--------|
+| ABA-1 | Section 3 (ECHO Silhouette) | Clarify ECHO sprite size: "캐릭터 시각 높이 48px; 스프라이트 셀 48×96px (REWIND Core 등 돌출부 포함 셀 공간)." | ✅ **Landed 2026-05-11** — Section 3 "스프라이트 사양" sub-block added (3 bullets: visual height / cell size / atlas placement); cites this GDD VA.6 as single source |
+| ABA-2 | Section 5 (ECHO Q5 archetype table) | Add: "facing_direction 시각화 = flip_h 몸체 + 8방향 팔 오버레이 (Option C — System #6 Visual/Audio 2026-05-10 결정)." | ✅ **Landed 2026-05-11** — new "facing 시각화" row in ECHO archetype table between 총기 and 포즈; cites Contra-style modular cutout + 62.5% asset savings rationale + cites PM D.4 facing encoding |
+| ABA-3 | Section 1 Principle C | Add: "REWINDING 30프레임 i-frame 시각 = `Sprite2D.visible` 2:1 flicker (PM 소유, 색 신호 아님 — 색 반전 중에도 식별 가능)." | ✅ **Landed 2026-05-11** — "REWINDING 30프레임 i-frame 시각 규칙" sub-block added with 4-bullet spec (mechanism / owner / no-color mandate / multi-channel safety) + cross-reference note distinguishing from ABA-4 DYING flicker (different cadence + owner) |
+| ABA-4 | Section 2 Mood Table | Add row "DYING (피격 후 12프레임 유예)": emotional target "긴박한 반전 기대"; visual: "히트-스태거 포즈 유지 + REWIND Core 깜박임; 화이트아웃 없음." | ✅ **Landed 2026-05-11** — new DYING row in Mood Table inserted between Time-Rewind Active and Death & Restart; integrates B6 fix specifics (1:1 flicker cadence 30 Hz + `sfx_dying_pending_01.ogg` 200 ms envelope) |
 
-> **📌 Asset Spec** — Visual/Audio requirements are defined. After the art bible is approved (ABA-1..4 amendments applied), run `/asset-spec system:player-movement` to produce per-asset visual descriptions, dimensions, and AI generation prompts for the 25 sprite frames + 7 audio files from this section.
+**B6 + B7 integration**: ABA-3 (REWINDING i-frame, 2:1 30f = 20 Hz) and ABA-4 (DYING REWIND Core flicker, 1:1 12f = 30 Hz) are **distinct events with distinct cadences** — art-bible.md ABA-3 sub-block explicitly cross-references ABA-4 to prevent confusion.
+
+> **📌 Asset Spec** — Visual/Audio requirements are defined; art bible amendments now landed. `/asset-spec system:player-movement` is now unblocked — recommended to run to produce per-asset visual descriptions, dimensions, and AI generation prompts for the 25 sprite frames + 7 audio files from this section.
 
 ---
 
@@ -1552,12 +1768,12 @@ PlayerMovement does not author HUD elements, menus, dialogs, or any `Control` / 
 
 | OQ ID | 질문 | Owner / Resolver | Closure trigger | 우선순위 | 비고 |
 |-------|------|-----------------|-----------------|---------|------|
-| **OQ-PM-1** | `_last_grounded_frame` / `_jump_buffered_at_frame` 카운터를 `scene_will_change` 시점에 클리어할 책임자 (PM `_ready()` reconnect vs EchoLifecycleSM scene reset cascade vs Scene Manager direct call) | **Scene Manager #2 GDD** | Scene Manager #2 GDD 작성 시 (F.4.2 obligation) | MEDIUM (Tier 2 다중 스테이지 도입 시 hot bug 후보) | 임시: Tier 1 단일 스테이지에서는 `restore_from_snapshot()` Step 4의 `INT_MIN` 클리어로 충분 |
+| **OQ-PM-1** | `_grounded_history_valid` / `_last_grounded_frame` / `_jump_buffer_active` / `_jump_buffer_frame` 4개 ephemeral var를 `scene_will_change` 시점에 클리어할 책임자 (PM `_ready()` reconnect vs EchoLifecycleSM scene reset cascade vs Scene Manager direct call) | **Scene Manager #2 GDD** | Scene Manager #2 GDD 작성 시 (F.4.2 obligation) | MEDIUM (Tier 2 다중 스테이지 도입 시 hot bug 후보) | 임시: Tier 1 단일 스테이지에서는 `restore_from_snapshot()` Step 4의 **active-flag 클리어** (B1 fix 2026-05-11 — `_jump_buffer_active = false` + `_grounded_history_valid = snap.is_grounded`)로 충분 |
 | **OQ-PM-2** | Godot 4.6 `AnimationPlayer.seek(time, true)` looping animation 호환성 — `time-rewind.md` OQ-9 + 본 GDD R-VA-1과 동일 의존 | **Tier 1 prototype** (gameplay-programmer + technical-artist) | Tier 1 ring buffer 프로토타입에서 idle/run looping anim에 대해 60fps capture + restore 1000-cycle 결정성 검증 | **HIGH** (loop counter reset / loop-end callback fire / seek drift 셋 중 하나라도 발생하면 idle/run 프레임 작업 차단) | art-director 권고: Tier 1 art 작업 *전*에 검증 |
 | **OQ-PM-3** | E-PM-2 derive policy *empirical falsification* — `is_grounded=true AND velocity.y<0` pathological snapshot의 1-tick 자동 정정 (Idle/Run → next-tick T5 → Fall) 시각적 artifact 허용 가능? | **Tier 1 prototype** | dev/test fixture로 pathological snap 인젝션 + 시각 검증 | LOW | GAP-1 Decision A 2026-05-10 *is_grounded wins* 락인. Empirically broken 시 Round 5 cross-doc-contradiction exception으로 derive 분기 추가 (option C dev assert) 재평가 |
 | **OQ-PM-4** | `Mix.Player.Movement` bus 명명 + 압축/리미터 체인 + ducking automation script | **Audio GDD #21** | Audio #21 작성 시 (F.4.2 obligation) | LOW | 본 GDD VA.4 mix priority 문장만 정의; 실제 bus implementation Audio가 소유 |
 | **OQ-PM-5** | 8-way 팔 오버레이 비대칭 무기 art (예: 좌우 비대칭 총기 디테일) — flip mirror 5 unique + 3 mirrors 충분? 아니면 8 unique 강제? | **First concept-art round** (art-director) | 1차 컨셉 아트 round | MEDIUM | art-director 권고: 1차 라운드에서 art 단순도 확정 후 lock |
-| **OQ-PM-6** | `art-bible.md` ABA-1 (sprite size 명시), ABA-2 (8-way 시각화 spec), ABA-3 (i-frame flicker rule), ABA-4 (DYING mood-table row) — 4 amendment 적용 | **art-bible amendment pass** (art-director — `/quick-design art-bible` 또는 직접 edit) | art-bible.md 4 amendment landed | MEDIUM | 본 GDD Visual/Audio Section VA.8 단일 출처 |
+| ~~**OQ-PM-6**~~ ✅ **RESOLVED 2026-05-11 (B7 fix)** | ~~`art-bible.md` ABA-1..4 4 amendment 적용~~ → **All 4 landed**: ABA-1 (Section 3 sprite 사양 sub-block), ABA-2 (Section 5 facing 시각화 row), ABA-3 (Section 1 Principle C REWINDING i-frame 규칙 sub-block), ABA-4 (Section 2 Mood Table DYING row with B6 fix specifics integrated) | art-bible amendment pass — direct edit applied via Session 15 B7 cleanup | ✅ Landed 2026-05-11 | ~~MEDIUM~~ CLOSED | art-bible.md updated; VA.8 status table reflects landings; `/asset-spec system:player-movement` now unblocked |
 | **OQ-PM-7** | E-PM-9 deadzone 0.2 — Input System #1 GDD가 enforce하기 *전*까지 Tier 1 prototype에서 noise drift 발생 시 임시 PM-side guard 추가 여부 | **Input System #1 GDD** | Input #1 GDD 작성 시 (F.4.2 obligation) | LOW | Tier 1 임시: `project.godot` `deadzone = 0.2` 직접 설정으로 충분 |
 | **OQ-PM-8** | `_on_anim_emit_dust_vfx` (VFX #14) `_is_restoring` 가드 정책 (RECOMMENDED vs ALLOW exemption) | **VFX #14 GDD** | VFX #14 GDD 작성 시 (F.4.2 obligation) | LOW | 본 GDD VA.5 = "GUARD recommended"로 잠정 lock; 최종 결정 VFX GDD 소유 |
 | **OQ-PM-9** | Tier 2 게이트 — DEC-PM-1 reconsideration 트리거 (dash / double_jump / wall_grip / hit_stun / knockback) 발화 시점 | **개별 Tier 2 GDD amendment** | (a) `damage.md` DEC-3 binary lethal 변경 시 OR (b) Boss Pattern #11 knockback 도입 시 OR (c) Pillar 5 통과 시점 | LOW | G.3 Future Knobs 표가 trigger 단일 출처 |
@@ -1587,7 +1803,9 @@ PlayerMovement does not author HUD elements, menus, dialogs, or any `Control` / 
 |----|---------|------|---------|
 | DEC-PM-1 | Locked Scope Decisions (top of file) | 2026-05-10 | Tier 1 PlayerMovementSM = 6 states (`idle/run/jump/fall/aim_lock/dead`); `hit_stun` removed (damage.md DEC-3 binary lethal); dash/double_jump/wall_grip Tier 2 |
 | DEC-PM-2 | Locked Scope Decisions | 2026-05-10 | `aim_lock` = hold-button Cuphead-style (movement freeze + free 8-way aim); independent of `shoot` (jump+shoot 동시 fantasy 보존); Input #1 owns final action naming |
-| DEC-PM-3 | Locked Scope Decisions | 2026-05-10 | Time-rewind restore ammo policy = "resume with live ammo"; PlayerSnapshot does NOT capture ammo; Player Shooting #7 owns ammo state |
+| ~~DEC-PM-3 v1~~ | ~~Locked Scope Decisions~~ | ~~2026-05-10~~ | ~~Time-rewind restore ammo policy = "resume with live ammo"~~ — **SUPERSEDED 2026-05-11** by DEC-PM-3 v2 (B5 Pillar 1 resolution) |
+| **DEC-PM-3 v2** | Locked Scope Decisions | **2026-05-11** | Time-rewind restore ammo policy = **per-tick captured `ammo_count: int`** (8th PM-noted field, Resource 9th — Weapon #7 single-writer); ADR-0002 **Amendment 2** obligatory; PM.restore_from_snapshot ignores snap.ammo_count (Weapon owns write authority — OQ-PM-NEW orchestration TBD); resolves time-rewind.md OQ-1 / E-22 / F6 (b) |
+| **OQ-PM-NEW** | Z. Open Questions | 2026-05-11 | Snapshot `ammo_count` write/restore orchestration — (a) TRC orchestrates multi-target restore (PM 7-field + Weapon ammo + TRC bookkeeping atomic) vs (b) Weapon owns parallel restoration triggered by `rewind_completed` signal. Defer to Player Shooting #7 GDD authoring (Tier 1 Week 1). Either way `PM.restore_from_snapshot(snap)` signature unchanged. |
 | Decision A (jump height) | D.2 (note above Formula 1) | 2026-05-10 | `jump_velocity_initial=480`, `gravity_rising=800` → `jump_height_max_px=144` exact (gameplay-programmer 144 px target preserved) |
 | Decision B (facing encoding) | D.4 (note above Formula 1) | 2026-05-10 | `facing_direction: int` 0..7 enum CCW from East; `_FACING_TABLE` 9-entry LUT; `(0,0)→-1` preserve sentinel internal-only |
 | Decision G-A | G.1 (Storage policy) | 2026-05-10 | All 13 owned numeric knobs in `PlayerMovementTuning extends Resource`; structural constants stay `const` in script |
@@ -1596,7 +1814,15 @@ PlayerMovement does not author HUD elements, menus, dialogs, or any `Control` / 
 | GAP-3 (priority enforce) | H.3 AC-H3-03 | 2026-05-10 | `.tscn` grep + runtime GUT belt-and-suspenders for `process_physics_priority=0` Inspector-set obligation |
 | GAP-6 (H7-04 guard policy) | H.7 AC-H7-04 + VA.5 | 2026-05-10 | Universal `_is_restoring` guard + per-callback `# ALLOW-PM-GREP-4` opt-out (footstep/landing ALLOW; jump/aim_lock_press/spawn_bullet GUARD) |
 | Decision (Visual/Audio Option C) | VA.1 | 2026-05-10 | Sprite2D facing visualization = flip_h body + 8-way arm overlay (Contra-style modular cutout) |
-| AC count target | H section preamble | 2026-05-10 | 34 AC total (28 BLOCKING + 6 ADVISORY); collapse plan: H.5 coyote+buffer compound, H.8 doc-state compound |
+| **B1 fix (active-flag pattern)** | C.3.3 / C.4.1 Step 4 / D.3 Formula 5 + var table / Scenario C / AC-H5-04 | **2026-05-11** | INT_MIN sentinel int64-overflow (`current - INT_MIN` wrap → predicate TRUE 반전 → phantom jump) → bool 활성 플래그 + int 프레임 쌍 패턴. `_jump_buffer_active` + `_grounded_history_valid` AND short-circuit이 math 평가를 차단. By construction overflow 불가능. /design-review 2026-05-11 B1 (3-specialist convergence: systems-designer + qa-lead + godot-gdscript-specialist) 해소 |
+| **B3 fix (IMMEDIATE callback override)** | C.4.1 `_ready()` + new AC-H1-07 + H.1 preamble 6→7 AC | **2026-05-11** | Godot 4.6 `AnimationMixer.callback_mode_method` default verified DEFERRED via WebFetch (docs.godotengine.org). PM `_ready()`에서 IMMEDIATE 강제 + boot-time `assert` + static grep 제약. 엔진 기본값 하에선 `_is_restoring` 가드 모델 (C.4.1/4.2/4.4/4.5 + AC-H1-02/03/04 + VA.5) 전체가 silent 무효 — method-track callback이 가드 클리어 후 fire. `docs/engine-reference/godot/modules/animation.md` "Critical Default" 단일 출처. /design-review 2026-05-11 B3 (gameplay-programmer) 해소. 엔진-버전 critical (post-LLM-cutoff) |
+| **B2 + B4 fix (pm_static_check.sh + awk range)** | AC-H3-04 / AC-H7-03 / AC-H7-04 + new `tools/ci/pm_static_check.sh` | **2026-05-11** | (1) **B2** — `tools/ci/pm_static_check.sh` authored (matches `damage.md` AC-21 `tools/ci/damage_static_check.sh` precedent). 3 BLOCKING ACs (H3-04, H7-03, H7-04) previously silent-passed because the script didn't exist; `(or equivalent)` hedge text in the AC bodies allowed CI to skip the gate. Script implements GREP-PM-3/4/6 (H3-04), GREP-PM-1/5/7 (H7-03), and the H7-04 per-callback guard scan, with `# ALLOW-PM-GREP-N` exemption mechanism. Tier 1 graceful pass when `src/player/player_movement.gd` doesn't yet exist; `PM_REQUIRE=1` env forces presence check. (2) **B4** — H7-04 inline awk `awk "/^func $func_name/,/^func \|^[a-zA-Z_]+/"` was structurally broken: end pattern `^[a-zA-Z_]+` matches the start `func` line itself (because `func` starts with `f`), so the awk range collapsed to a single line and the body was never inspected — every `_on_anim_*` callback silently passed regardless of guard presence. Rewritten as state-machine awk: `in_block` flag entered on `^func FN[non-word]`, exited on next `^func ` or `^class `. BSD-awk compatible (`[^a-zA-Z0-9_]` boundary, not `\b`). Validated by 3-fixture smoke test (Tier 1 graceful pass / 7-violation fixture / clean fixture all behave correctly) before lock. /design-review 2026-05-11 B2 + B4 (qa-lead, gameplay-programmer convergence) 해소 |
+| **B6 fix (DYING 12-frame visual + audio + reachability)** | H.6 new AC-H6-06 + VA.2 Dead row + VA.4 Jump launch + DYING/DEAD rows + time-rewind.md Audio Events DYING entry row | **2026-05-11** | **Option A locked** (creative call 2026-05-11) — keep `hazard_grace_frames = 12` (no `damage.md` cascade); resolve 3-domain convergence inside PM/TR scope: (a) **Motor reaction (game-designer G1)** — NEW AC-H6-06 first-encounter rewind reachability fixture: scripted-input injection at frame N+12 (window-end boundary; simple-stimulus reaction median 200 ms @ 60 fps) MUST trigger DYING→REWINDING; boundary FAIL at N+13 + token-zero FAIL at N+12 both required as negative cases. Pillar 1 reachability is now CI-gated instead of asserted. (b) **Visual hitch (art-director A6)** — VA.2 Dead row tightens "REWIND Core flicker" to explicit 2-frame cadence (`visible=true 1f / visible=false 1f` toggle, 6 pulses over 12 frames = 30 Hz). Distinguishes from engine hitch (≥4 Hz "intentional pulse" perception threshold). Held stagger pose unchanged. (c) **Audio cue (audio-director AU2 / orphan Q5)** — VA.4 DYING/DEAD row + time-rewind.md Audio Events DYING entry row specify `sfx_dying_pending_01.ogg`: synth filter sweep 80→400 Hz over 200 ms (1:1 envelope match to 12-frame window); foreground level, ducks combat SFX; NO vocal grunt (Q5 RESOLVED no-grunt locked across all PM + TR audio, consistent with collage SF tone register). PM-owned asset count unchanged (cue is TR-owned method-track per VA.4 row). Cross-doc reciprocal: time-rewind.md Audio Events DYING entry row updated. /design-review 2026-05-11 B6 (game-designer G1 + art-director A6 + audio-director AU2 3-domain convergence) 해소 |
+| **B7 fix (art-bible.md ABA-1..4 amendment pass)** | VA.8 status table (4 rows flipped to ✅ Landed) + OQ-PM-6 ✅ Resolved row + `design/art/art-bible.md` 4 amendments | **2026-05-11** | **All 4 ABA amendments landed in `art-bible.md`** via direct edit pass (Session 15 cleanup batch — `/quick-design art-bible` not required since amendments are surgical insertions with single-source authority already established): (a) **ABA-1** — `art-bible.md` Section 3 ECHO Silhouette gets new "스프라이트 사양" sub-block: visual height 48px + cell 48×96px + atlas placement (`atlas_chars_tier1.png` 512×512); cites this GDD VA.6 as single source. (b) **ABA-2** — Section 5 ECHO Q5 archetype table gets new "facing 시각화" row between 총기 and 포즈: `flip_h` 몸체 + 8-way 팔 오버레이 Contra-style modular cutout; 62.5% asset savings rationale (5 unique + 3 flip mirror vs 16 full-body); cites PM D.4 single source. (c) **ABA-3** — Section 1 Principle C gets new "REWINDING 30프레임 i-frame 시각 규칙" sub-block: `Sprite2D.visible` 2:1 toggle (visible=true 2f / false 1f = 10 pulses over 30f = ~20 Hz); PM-owned via `EchoLifecycleSM.RewindingState._physics_update()`; no-color mandate (survives shader inversion); multi-channel safety with audio + screen-shake; explicit cross-reference distinguishing from ABA-4 DYING flicker (different cadence + owner + scope). (d) **ABA-4** — Section 2 Mood Table gets new DYING row inserted between Time-Rewind Active and Death & Restart: emotional target "긴박한 반전 기대"; visual integrates B6 fix specifics (1:1 30 Hz REWIND Core flicker only, NOT whole sprite; `sfx_dying_pending_01.ogg` 80→400 Hz over 200 ms 1:1 envelope; 화이트아웃 없음 until DEAD entry). **B6+B7 integration**: ABA-3 (REWINDING 20 Hz whole-sprite) and ABA-4 (DYING 30 Hz Core-glow only) are now formally documented as distinct events. **OQ-PM-6 closed**. `/asset-spec system:player-movement` now unblocked. 0 AC change (cross-doc art doc updates, no PM AC body changes). /design-review 2026-05-11 B7 (art-director ABA-1..4 deferred amendment circular gate) 해소 |
+| **B8 fix (footstep variant pool + pitch jitter)** | VA.4 Run footstep row + VA.5 footstep ALLOW exemption row | **2026-05-11** | **Option A locked** (creative call 2026-05-11) — keep 4 `sfx_player_run_footstep_concrete_01..04.ogg` variants; add **per-step ±5 % pitch jitter** at method-track callback. Asset budget unchanged (Tier 1 PM audio = 7 files; VA.6 unchanged). Resolves audio-director "sprint-speed repetition perception" finding: at 12 steps/sec, 4 variants alone produce 25 % per-step repeat chance and a perceived 333 ms loop; adding pitch jitter that exceeds the ~3 % human Just-Noticeable-Difference threshold makes every step sonically distinct without authoring new assets. **Jitter mechanics**: `_footstep_rng: RandomNumberGenerator` dedicated instance (NOT global `randf()`), seeded from `Engine.get_physics_frames()` at callback entry — preserves ADR-0003 determinism + 1000-cycle PlayerSnapshot bit-identicality (AC-H3-01); restore-tick double-fire produces a single masked footstep at a slightly-different pitch (no semantic divergence). Industry precedent: Celeste / Hollow Knight / Hades same 4-pool + ~±5 % pattern. **NOT ±10 %** (semantic noise — reads as different weight/surface). VA.5 ALLOW exemption preserved (callback still restore-safe). 0 AC change (VA.4 row + VA.5 row notes are spec only — no formula or behavior contract added). /design-review 2026-05-11 B8 (audio-director AU3 footstep variant insufficient) 해소 |
+| **B9 fix (AimLock paper-doll + VA.1/VA.7 scope contradiction)** | VA.1 Body row + Gun arm overlay row + VA.2 AimLock row + VA.7 R-VA-4 risk row | **2026-05-11** | **Two-part resolution**: (1) **Paper-doll aesthetic defense** — static body + sweeping arm "paper-doll" framing is the *intentional* Monty Python cutout aesthetic (`art-bible.md` Section 9 Ref 2 established lineage); NOT an unintended defect. Tier 1 mitigation = existing "squared/planted" stance + REWIND Core luminosity bump (VA.2 AimLock row). Lean variants would *contradict* squared/planted decision. Tier 2+ subtle weight-shift body frames deferred (NOT BLOCKING). No asset budget change (VA.6 still 25 frames). (2) **VA.1/VA.7 scope contradiction resolved** — VA.1 stated body `flip_h` + arm sprite swap are "PM-code-driven (NOT AnimationPlayer track)", while VA.7 R-VA-4 mandated "all ECHO sprites authored as AnimationPlayer-driven `Sprite2D` frame sequences" → internal contradiction. Fix: scope-clarify R-VA-4 to cover *frame-sequence animations within a state* (idle loop / run cycle / jump arc / dying held / dead held), explicitly excluding scene-graph property mutations: (a) body `Sprite2D.flip_h`, (b) arm `Sprite2D.texture` swap, (c) i-frame `Sprite2D.visible` 2:1 toggle (VA.3), (d) DYING REWIND Core `Sprite2D.visible` 1:1 toggle (VA.2 B6 fix). All four are PM-code-driven per `_physics_process` Phase 6c (or `EchoLifecycleSM.RewindingState._physics_update()`), conceptually equivalent to `velocity` / `global_position` mutations. Authoring as AnimationPlayer tracks would (i) bypass `_is_restoring` guards via method-track callbacks (B3 fix territory), (ii) couple facing logic to anim timeline instead of input read, (iii) defeat D.4 facing_direction single-source. VA.1 body row + arm row tightened with scope rationale + cross-ref VA.3 pattern. 0 AC change (no new behavior; existing AC-H7-03 GREP-PM-1 already enforces external direct-write to facing_direction is PM-only; existing AC-H1-04 covers restore_from_snapshot calling AnimationPlayer.seek for frame-sequence restore). /design-review 2026-05-11 B9 (art-director AimLock paper-doll + VA.1/VA.7 internal contradiction Escalated REC→BLOCKING) 해소 |
+| **B10 fix (facing hysteresis pair — Schmitt trigger)** | D.4 Formula 2 rewrite + variable table + Worked Example drift scenario + C.4.1 declaration (+4 bool vars) + G.1 tuning table split (`facing_threshold_outside_enter` + `_exit`) + G.1 Resource @export (+1 field) + G.4.1 INV-4 rewording + new INV-8 + `_validate()` body update + F.4.2 Scene Manager #2 row 4→8-var expansion | **2026-05-11** | **Steam Deck stick drift (~±0.18) was oscillating facing across single threshold 0.2** (= `gamepad_deadzone` input.md C.1.3 + AC-IN-06/07). Fix: replace single `facing_threshold_outside = 0.2` with hysteresis pair **`facing_threshold_outside_enter = 0.2` + `facing_threshold_outside_exit = 0.15`**. Implementation = per-axis dual Schmitt trigger (4 bool flags: `_facing_{x,y}_{pos,neg}_active` mutually exclusive per axis). ENTER threshold commits axis to a sign; EXIT releases (also releases on drift past zero into opposite below-enter zone). Both axes encoded together → `_encode_facing()` → `facing_direction`. Drift below 0.15 cannot oscillate sign; drift between 0.15-0.2 on currently-active sign preserves; deliberate flip (|input| ≥ 0.2 opposite sign) re-locks new sign. Worked Example adds 5-frame drift defense scenario + 4-frame pre-B10 oscillation case the fix blocks. **New invariant INV-8**: `exit < enter` strict (`==` forbidden — boundary value re-introduces oscillation; runtime `_validate()` asserts). INV-4 renamed `facing_threshold_outside` → `facing_threshold_outside_enter`. **F.4.2 Scene Manager #2 obligation expanded 4→8-var** (must clear 4 B1 + 4 B10 ephemeral flags on `scene_will_change`; failure = phantom-jump *or* stale-locked facing on scene-entry first tick). AimLock formula (Formula 3) unchanged — `t_aim_lock = 0.1` is below drift floor, no hysteresis needed. Input #1 cross-doc decision (`gamepad_deadzone = 0.2` lock at input.md C.1.3) is the upstream anchor — PM hysteresis is a *separate concern* (PM-side asymmetric thresholds; does NOT re-implement deadzone math per `forbidden_patterns.deadzone_in_consumer`). 0 new AC (existing AC-H4-02 8-way facing worked-example sequence still passes verbatim with hysteresis — outcome unchanged on the documented frames; new drift scenario is in D.4 Worked Example, NOT a separate AC since it tests the same `_encode_facing` contract). /design-review 2026-05-11 B10 (Escalated REC→BLOCKING — `facing_threshold == gamepad_deadzone` Steam Deck stick drift) 해소 |
+| AC count target | H section preamble | **2026-05-11 (was 2026-05-10)** | 34 AC (2026-05-10) → 35 AC (2026-05-11 B3 fix; AC-H1-07 추가) → **36 AC (2026-05-11 B6 fix; AC-H6-06 추가)**. AC-H1-05 obsoleted by AC-H1-05-v2 (count 유지, B5 fix). B2+B4 fix adds 0 ACs (rewires 3 existing AC bodies + new tooling). B7+B8+B9+B10 fixes add 0 ACs (spec tightening / cross-doc art docs / scope-clarify / formula refactor). 28 BLOCKING → 29 (B3) → **30 BLOCKING (B6)** + 6 ADVISORY. Collapse plan 유지. **Final post-revision: 36 AC / 30 BLOCKING / 6 ADVISORY** |
 
 ### A.2 Cross-doc citations (read for full context)
 
@@ -1609,7 +1835,7 @@ PlayerMovement does not author HUD elements, menus, dialogs, or any `Control` / 
 | `design/gdd/damage.md` | C.1.1/C.1.2 (HurtBox/HitBox composition), C.3.2 step 0 (first-hit lock primary guard — Round 5 fix 2026-05-10), C.6.4/C.6.5 (priority ladder + frame-N invariant), DEC-3 (binary 1-hit lethal), DEC-4 (`HurtBox.monitorable` SM-owned single-direction), DEC-6 (12-frame hazard grace + 1 priority compensation), AC-9 (DYING latch), AC-12 (REWINDING monitorable=false), AC-20 (Rewinding enter/exit toggle), AC-21 (grep regex CI precedent), AC-29 (1000-cycle determinism), AC-36 (first-hit lock GUT); F.4.1 #4 reciprocal applied Session 9 | **Hard upstream** (composition only — no direct subscribe); 5 mirror AC |
 | `design/art/art-bible.md` | Section 1 Principle A (Clarity-First Collage 0.2s glance test), Principle C (REWIND inversion + glitch), Section 2 Mood Table (DYING/DEAD), Section 3 (ECHO Silhouette 48px + dorsal REWIND Core), Section 4 (Color Palette — Neon Cyan `#00F5D4` / Rewind Cyan `#7FFFEE` / Concrete Dark `#1A1A1E` / Concrete Mid `#3C3C44`; backup safety #4 multi-channel), Section 5 (ECHO 8-way arm protrusion design), Section 6 (lineart layer 검은 stroke 2-4 px), Section 8 (`atlas_chars_tier1.png` 512×512 NEAREST PNG OGG; ≤500 draw calls), Section 9 Ref 2 (Monty Python cutout) + Ref 4 (Cuphead frame economy) | **Visual single-source**; 4 amendment flags (ABA-1..4 — `art-director` consult 2026-05-10) |
 | `docs/architecture/adr-0001-time-rewind-scope.md` | R-T1 Player-only checkpoint | Lock for `restore_from_snapshot()` scope (PM 7 fields only — no world rewind) |
-| `docs/architecture/adr-0002-time-rewind-storage-format.md` | R-T2 State Snapshot ring buffer (90 PlayerSnapshot, write-into-place) + Amendment 1 (lethal-hit head freeze + `captured_at_physics_frame` 8th field) | 7-field schema lock — DEC-PM-3 ammo exclusion compatible (no Amendment 2 needed) |
+| `docs/architecture/adr-0002-time-rewind-storage-format.md` | R-T2 State Snapshot ring buffer (90 PlayerSnapshot, write-into-place) + Amendment 1 (lethal-hit head freeze + `captured_at_physics_frame` Resource 9th field) + **Amendment 2 (2026-05-11 Proposed) — `ammo_count: int` 8th PM-noted field per DEC-PM-3 v2** | 8 PM-노출 필드 schema lock (Resource 9 필드 total — 8 PM-노출 + 1 TRC-internal); DEC-PM-3 v2 ammo inclusion drove Amendment 2 |
 | `docs/architecture/adr-0003-determinism-strategy.md` | R-T3 `CharacterBody2D` + 직접 transform (no RigidBody2D); `Engine.get_physics_frames()` clock; `process_physics_priority` ladder PM=0, TRC=1, enemies=10 | C.1.1, C.3.1, C.3.2, D.3 sentinel reset 핵심 의존 |
 | `docs/registry/architecture.yaml` | `state_ownership.player_movement_state`, `interfaces.player_movement_snapshot`, `forbidden_patterns.delta_accumulator_in_movement`, `api_decisions.facing_direction_encoding` (4 entries Session 9 등록) | F.4.1 #6 reciprocal landed; AC-H8-01 grep verifier |
 | `.claude/docs/coding-standards.md` | Test Evidence by Story Type (Logic/Integration/Visual/UI/Config-Data); Automated Test Rules (determinism + isolation + no hardcoded data); CI/CD Rules (Godot headless GUT4 runner) | H.1-H.8 AC test type tagging 정합 |

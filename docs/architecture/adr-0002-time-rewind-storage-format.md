@@ -1,7 +1,7 @@
 # ADR-0002: Time Rewind Storage Format — State Snapshot Ring Buffer
 
 ## Status
-Accepted (with Amendment 1 — 2026-05-09)
+Accepted (with Amendment 1 — 2026-05-09; Amendment 2 — Proposed 2026-05-11)
 
 ## Date
 2026-05-09
@@ -46,6 +46,65 @@ func try_consume_rewind() -> bool:
 **Backwards compatibility**: All public signal contracts and snapshot fields are unchanged. The amendment is internal to `TimeRewindController`. Subscribers and callers (HUD, VFX, State Machine) are unaffected. Memory cost: +8 bytes for the cached int. CPU cost: one int copy on `player_hit_lethal`.
 
 **Cosmetic correction (informational)**: This ADR's Performance Implications section quotes "PlayerSnapshot ≈ 32 bytes ... ring buffer = 2.88 KB". Re-measured against Godot 4 Resource overhead: actual is ~192 B per slot, ring buffer ≈ 17–21 KB. Still negligible against the 1.5 GB ceiling. The original 5 KB ceiling claim remains correct *as a ceiling*, but the typical figure is 4× higher than originally stated. No behavior change.
+
+### Amendment 2 — Snapshot ammo capture (Proposed 2026-05-11)
+
+**Status**: Proposed. Awaits ratification at first `/architecture-review` after Player Shooting #7 GDD authoring.
+
+**Driver**: `design/gdd/player-movement.md` DEC-PM-3 v2 (B5 Pillar 1 resolution, 2026-05-11) + `design/gdd/time-rewind.md` F6 (b) variant. Fresh-session `/design-review design/gdd/player-movement.md` 2026-05-11 surfaced Pillar 1 contradiction: rewind returning ECHO to a state captured 9 frames before death also returns *current live* `ammo_count` (DEC-PM-3 v1 "resume with live ammo" policy 2026-05-10). If `ammo_count` reached 0 during the DYING window or the 9 frames prior, the rewind delivers ECHO to an unwinnable state — "rewind = punishment, not learning tool" — violating Pillar 1 (learning tool stance).
+
+**Issue**: Original ADR-0002 7-field PM-noted snapshot schema (+ Amendment 1's 8th TRC-internal `captured_at_physics_frame` field = 8-field Resource total) excluded `ammo_count`. The pre-Amendment-2 schema cannot restore ammo because TRC doesn't capture it. The only resolution paths were: (a) keep schema, design weapon system to prevent unwinnable ammo states (leaks fix into Weapon GDD #7 design space); (b) extend schema with `ammo_count: int`. Option (b) chosen per DEC-PM-3 v2.
+
+**Resolution**: Schema extends to **9-field Resource total — 8 PM-noted (Amendment 2 adds `ammo_count: int`) + 1 TRC-internal (`captured_at_physics_frame` from Amendment 1)**. Capture is per-tick like other fields. The single-writer for `ammo_count` is **Weapon (#7)** — NOT PlayerMovement — to keep PM/Weapon layering clean.
+
+**Field addition**:
+
+```gdscript
+class_name PlayerSnapshot extends Resource
+
+# Existing 7 PM-owned fields (ADR-0002 base):
+@export var global_position: Vector2
+@export var velocity: Vector2
+@export var facing_direction: int
+@export var animation_name: StringName
+@export var animation_time: float
+@export var current_weapon_id: int
+@export var is_grounded: bool
+
+# Amendment 2 (2026-05-11) — Weapon-owned, 8th PM-noted field:
+@export var ammo_count: int
+
+# Amendment 1 (2026-05-09) — TRC-internal, 9th Resource field:
+@export var captured_at_physics_frame: int
+```
+
+**Write authority** (key layering decision):
+
+| Field | Single-writer | Capture site |
+|-------|---------------|--------------|
+| `global_position`..`is_grounded` (7 fields) | PlayerMovement | PM `_physics_process` Phase 6c |
+| `ammo_count` (Amendment 2) | **WeaponSlot** (Player Shooting #7) | Weapon write-into-snapshot mechanism — sub-decision deferred (OQ-PM-NEW: TRC orchestration vs Weapon `rewind_completed` subscription) |
+| `captured_at_physics_frame` | TRC | `_capture_to_ring()` |
+
+`PM.restore_from_snapshot(snap)` signature unchanged. PM **ignores** `snap.ammo_count` (Weapon owns write authority). Weapon-side restoration mechanism is OQ-PM-NEW — deferred to Player Shooting #7 GDD authoring.
+
+**Performance impact** (verified against ADR-0002 Amendment 1 25 KB cap):
+
+- Raw fields: 48 B → 52 B (+4 B per slot for `int ammo_count`)
+- Resource total: ~192 B → ~196 B per slot
+- Ring buffer: 17.28 KB → 17.64 KB (+0.36 KB)
+- Headroom vs 25 KB cap: 7.36 KB remaining (≥5 Tier 2 fields' worth)
+- CPU capture: +1 field copy = +100–500 ns/tick (well within 1 ms envelope)
+
+**Backwards compatibility**: PM-side public API (`restore_from_snapshot` signature, Phase ordering, `_is_restoring` guard) is unchanged. New obligation: Weapon-side restoration handler — authored at Player Shooting #7 GDD time. Existing AC-A1 / AC-A4 / AC-F1 in `time-rewind.md` updated to reference 9-field Resource (8 PM-noted + 1 TRC-internal).
+
+**Open sub-decisions deferred to Player Shooting #7 GDD**:
+
+- OQ-PM-NEW (write authority orchestration): TRC orchestrates multi-target restore (PM 7 + Weapon ammo + TRC bookkeeping atomic) vs Weapon owns parallel restoration triggered by `rewind_completed` signal.
+- Weapon-side capture site (`_physics_process` per-tick OR signal-driven mid-tick).
+- DYING-window ammo behavior: should ammo decrement during DYING be visible to rewind? (Likely yes — same per-tick capture rule.)
+
+**Ratification gate**: First `/architecture-review` after Player Shooting #7 GDD `Designed` status. Until then, this Amendment is **Proposed** and downstream (PM, time-rewind, architecture.yaml) treat it as locked policy with implementation deferred.
 
 ## Engine Compatibility
 
