@@ -127,3 +127,74 @@ Total: 8–10 hours focused solo revision, single session, `/clear` before re-re
 Re-review can run `--depth lean` (single-session, no specialist agents) — the heavy adversarial pass has now been done, and lean re-review will confirm the 22 BLOCKING fixes without burning another 7-agent session. Recommend `/clear` before re-review.
 
 ---
+
+## Review — 2026-05-11 — Verdict: APPROVED
+Scope signal: L (unchanged from prior review — 1252 lines, 24 ACs, 18 deliverables, 13 F.4.1 cross-doc edits, 8 F.4.2 deferred obligations)
+Specialists: none (lean mode — no specialist agents spawned; prior fresh-session review already completed the 7-agent adversarial pass)
+Mode: lean (Phases 1–5, no Phase 3b specialist delegation per `--depth lean`)
+Blocking items: 0 | Recommended: 2 | Nice-to-have: 4
+Prior verdict resolved: Yes — all 22 BLOCKING from 2026-05-11 (MAJOR REVISION NEEDED) verified resolved with citable A.1 Decision Log mapping (Sessions 13–14 Tasks #5/#6/#9/#10/#11)
+GDD posture at re-review entry: revised file 1252 lines, 24 ACs (23 BLOCKING + 1 ADVISORY), 18 deliverables, 4 architecture.yaml registry additions queued.
+
+### Summary
+Re-review evidence base: A.1 Decision Log row-by-row mapping + direct grep verification + comparison against the 2026-05-11 fresh-session review entry above. Every B# fix has a citable site in current text — no silent-pass risk. The revision tightened scope (24 ACs vs prior 20, 18 deliverables vs prior 11) without introducing new BLOCKING issues. Round-7 cross-doc-contradiction exception umbrella for SM additions (O7/O8/O9 — first_death_in_session signal owner + first_rewind_success_in_session signal owner + _trigger_held gate) is consistent with the Round 5 damage.md S1 precedent and is the right escape hatch given SM's Approved/LOCKED status. systems-index promoted from "In Design — NEEDS REVISION" to "Approved"; Designed counter 0→1.
+
+### Blocking items resolved (22/22)
+
+| # | Prior issue | Resolution site in current text |
+|---|-------------|-------------------------------|
+| B1 | Cascade 3/5 consumers + trivially-true | AC-IN-03 rewritten 5-consumer (PM/SM/TRC/PS/Menu) + pairwise `poll_frame` equality + edge-cleared next-frame check; harness deliverable `tests/helpers/cascade_5_consumer_harness.gd` (H.13 #3) |
+| B2 | 5-min rule zero AC | AC-IN-21 added (H.11b ADVISORY playtest, N=5 min, escalation to N=15) + protocol deliverable `production/qa/pillar4-5min-rule-playtest.md` (H.13 #18) |
+| B3 | First-death hint Pillar 4 carve-out undeclared | C.1.5 explicit Pillar 4 carve-out paragraph + comparative justification (Dark Souls / Cuphead / Hollow Knight precedent) + glyph-alt rejection rationale + Decision Log A.1 entry |
+| B4 | AC-IN-20-A vs C.1.4 veto-path 4-way contradiction | C.1.4 line 141 `set_input_as_handled()` on every decision (resume + initiate + veto); AC-IN-24 (renumbered from AC-IN-20-A) verifies both paths; B4 reconciliation paragraph documents CD adjudication |
+| B5 | E-IN-NEW factually wrong on `_input` dispatch order | E-IN-NEW rewritten with correct Godot 4.6 dispatch order (`_input` → GUI → `_shortcut_input` → `_unhandled_key_input` → `_unhandled_input`); benign conclusion preserved on different grounds; "registration order matters" claim removed |
+| B6 | F-key anatomy "right ring finger" wrong | C.3.1 row corrected to "left index finger" + Hotline Miami Shift-aim muscle-memory separation rationale; Decision Log B6 row |
+| B7 | `scripts/input/` violates `src/` standard | All 4 code snippets use `src/input/` (lines 128, 189, 284, 332); AC-IN-04 grep targets `src/` |
+| B8 | D.1.1 axis filter missing | PROFILE_AXES whitelist `[LEFT_X, LEFT_Y, TRIGGER_LEFT, TRIGGER_RIGHT]` + early-return on unbound axes; AC-IN-23 verifies; B8 axis filter rationale paragraph |
+| B9 | D.3 radial deadzone formula entirely missing | D.3 added with formula + variable table + 5 worked examples (Echo case T=0.2 from sub-deadzone Steam Deck drift through diagonal full-tilt clamp); cross-references C.1.3 policy |
+| B10 | Cross-knob invariant absent | INVARIANT-IN-1 (`gamepad_stick_deadzone < GAMEPAD_DETECTION_THRESHOLD` strict) + INVARIANT-IN-2 (margin ≥ 0.05) + boot-time assert in ActiveProfileTracker `_ready()`; AC-IN-22 verifies degenerate config rejection |
+| B11 | `InputEvent.timestamp` Godot 4.6 unverified | D.2 banned list reduced to `Time.*` / `OS.*` family only; B11 fix paragraph documents removal rationale (engine-reference verification 2026-05-11); AC-IN-18 grep pattern updated |
+| B12 | `.tres` Resource schema undefined | A.6.1 InputMapSnapshot Resource class spec + production class location `src/input/input_map_snapshot.gd` (H.13 #6); AC-IN-15 cross-refs A.6.1 |
+| B13 | Mock override pattern undefined | A.6.2 ActiveProfileMock Node class + child-injection pattern (NOT autoload override) + formula-drift prevention obligation; AC-IN-17 cross-refs A.6.2 |
+| B14 | O-IN-1 `_trigger_held` adds state to Approved SM | F.4.1 #4 marked ✅ — applied to SM C.2.2 O9 under Round-7 cross-doc-contradiction exception (active.md Session 14 header umbrella); SM "8가지 의무" → "9가지 의무" |
+| B15 | Latch on first death not first rewind use | C.1.5 rewritten — show every DYING + permanent dismiss on first rewind success (`_lethal_hit_latched_prev == true`) + scene-change re-arm; SM owns 2 signals (O7/O8); AC-IN-13 5-scenario coverage including hazard-grace exclusion |
+| B16 | "Cuphead lock-aim precedent" false citation | C.3.2 row re-justified on left-right separation (LT=rewind, RB=avoid right-hand pinch); B16 fix paragraph documents CD adjudication; OQ-IN-6 added for Tier 1 RB+RT pinch playtest |
+| B17 | AC-IN-20-A / AC-IN-20 ID collision | AC-IN-20-A renumbered to AC-IN-24 (3 cross-ref sites updated); H.10 + H.11 + H.12 all consistent |
+| B18 | Phantom F.4.1 #14 + missing fixtures | H.13 cleaned to 18 deliverables; phantom #14 reference removed; 4 adversarial fixtures (one_line_pass / empty_body / logic_in_callback / no_func) + first_death_hint_spy + input_map_snapshot.gd + pillar4 protocol added (H.13 #13–18) |
+| B19 | AC-IN-20 misclassified ADVISORY | AC-IN-20 reclassified BLOCKING with manual git-diff gate + reclass rationale paragraph (closes OQ-SM-3 + OQ-15 + 4 PM provisional flags) |
+| B20 | AC-IN-02 checks count not names | AC-IN-02 strengthened — exact 9-StringName set equality (`size` + `EXPECTED.all(...)` + `ACTUAL.all(...)` + per-element `has_action`) + silent-rename trap documentation |
+| B21 | No `InputStateProvider` adapter seam | C.1.6 added — 5-method static wrapper signature lock-in + Tier 1 passthrough invariant + Tier 3 #24 migration scope (hold_duration_scaling / mash_assist / toggle_mode); F.4.2 #7 row updated |
+| B22 | `_input` ban lacks AT injection exception | C.1.2 Rule 2 expanded to 3 active (Tier 1: Menu / PauseHandler / ActiveProfileTracker) + 1 carve-out (Tier 3: AssistiveInputBridge prefix OR `_at_bridge_exempt: bool` marker); F.4.1 #13 architecture.yaml entry includes carve-out spec; F.4.2 row 8 (Tier 3 #24) hosts activation responsibility |
+
+### Recommended revisions (2 — non-blocking)
+
+- **R1** A.3 Specialist Consult Trail row "H Acceptance Criteria" reads "20 ACs (19 BLOCKING + 1 ADVISORY) + 11 tooling deliverables" — stale. Current state per H.12 + H.13 is **24 ACs (23 BLOCKING + 1 ADVISORY) + 18 tooling deliverables**. One-line edit; not a gate.
+- **R2** F.4.1 #4 introduces O-IN-3b's `_lethal_hit_latched_prev` predicate via the new `first_rewind_success_in_session` signal but does not name a concrete SM exposure mechanism (private member vs signal payload vs `is_lethal_hit_rewind()` query method) for AC-IN-13 scenario (e) to inspect. SM authoring will surface this; recommend pre-deciding to avoid a second cross-doc-exception round. Suggested: payload `(profile: StringName, was_lethal_hit: bool)` so HUD can no-op on hazard-grace rewinds without a private read.
+
+### Nice-to-have (4 — carried from prior review)
+
+- F.4.2 #2 to HUD #13 — explicitly add art-director consult for first-death prompt as Pillar 3 collage element.
+- F.4.2 #4 to Audio #4 — audio companion obligation for first-death hint (accessibility R29 from prior review).
+- AC-IN-20 deliverable `production/qa/input-f41-batch.md` could include a `rollback-safe?` column.
+- B.4 "Achievers primary" framing — Tier 2 audience playtest validation candidate (not gated).
+
+### Senior verdict
+
+*Lean mode — no creative-director synthesis spawned. Verdict reflects the main reviewer's synthesis based on row-by-row B# verification, dependency graph validation, and comparison against the prior fresh-session review.*
+
+GDD is implementation-ready. The two recommended revisions are minor maintenance edits — neither blocks programmer pickup. The revision pass tightened scope without bloat (24 ACs vs prior 20, 18 deliverables vs prior 11; line count grew 939 → 1252 absorbing the 22 BLOCKING fixes + new D.3 formula + A.6 schema appendices). Cross-doc rigor — the prior review's primary failure mode — is now the GDD's strongest property: every Pillar promise has a citable AC, every cross-doc obligation has a reciprocal F.4.1 entry with a Round-7 exception umbrella where required, every test-helper has both a deliverable file path and a calling AC. Story closure for System #1 Input is gated on AC-IN-20 (BLOCKING manual ledger) confirming the 13-edit F.4.1 batch lands in target GDDs/registry — recommend that batch be applied in a single short follow-up session before #1's first sprint pickup.
+
+### Specialist disagreements
+None — lean mode, no specialist agents spawned. Prior-review (2026-05-11 fresh-session) adjudications stand: gamepad `aim_lock = RB` kept (LT collision worse); AC-IN-24 veto-path consume-on-decision applied.
+
+### Cross-doc impact closure
+- **state-machine.md** (Approved/LOCKED): F.4.1 #4 + #5 + #6 + #7 cross-doc edits queued (under Round-7 exception umbrella). SM C.2.2 O9 already applied per Session 14 Task #11 close-out. Remaining: O7/O8 signal additions + line 868 placeholder fix + can_pause naming alias.
+- **time-rewind.md** (Approved/LOCKED): F.4.1 #8 + #9 cross-doc edits queued (C.3 #1 InputMap cross-ref + OQ-15 Resolved marker).
+- **player-movement.md** (In Design — NEEDS REVISION 10 BLOCKING): F.4.1 #1 + #2 + #3 cross-doc edits queued (C.5.3 *(Provisional)* removal + C.6 row 470 cleanup + F.4.2 obligation registry close).
+- **systems-index.md**: F.4.1 #10 + #11 + #12 applied this session (System #1 row → Approved + Designed counter 0→1 + Last Updated header prepend).
+- **docs/registry/architecture.yaml**: F.4.1 #13 4 new entries pending (state_ownership.input_actions_catalog + interfaces.input_polling_contract + 3 forbidden_patterns + 2 autoload api_decisions + last_updated). AC-IN-20 BLOCKING gate.
+
+### Re-review expectation
+Story-readiness check (`/story-readiness` once stories are written) should confirm: (a) AC-IN-20 ledger fully checked, (b) all 13 F.4.1 cross-doc edits applied to target files, (c) 18 deliverables exist as scaffolds before sprint pickup. No further `/design-review` cycles required for input.md unless a downstream system surfaces a cross-doc contradiction.
+
+---

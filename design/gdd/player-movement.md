@@ -423,7 +423,9 @@ func _on_weapon_equipped(weapon_id: int) -> void:
     # 정상 swap UI/SFX cue 등...
 ```
 
-### C.5 Input Contract (Provisional pending Input System #1)
+### C.5 Input Contract (Locked — Input System #1 Designed 2026-05-11)
+
+> **F.4.1 #1 closure (2026-05-11 — Input #1 re-review APPROVED)**: "(Provisional pending Input System #1)" header removed. Input #1 GDD now exists at [`design/gdd/input.md`](input.md). The 4 items previously deferred to Input #1 authorship are **verbatim locked** per Input #1 single source — see C.5.3 below for the resolution map.
 
 #### C.5.1 Action map (Tier 1 floor — `project.godot` already mapped)
 
@@ -448,15 +450,22 @@ func _on_weapon_equipped(weapon_id: int) -> void:
 
 **Celeste 정밀도 일치**: 두 값 모두 Maddy Thorson published 6 frames 기준 (G.1 tunable).
 
-#### C.5.3 Provisional flag
+#### C.5.3 Resolved Lock (Input #1 F.4.1 closure 2026-05-11)
 
-Input System #1 GDD 정식화 시 다음 4 항목 의무:
-- `aim_lock` action 명명 confirm (DEC-PM-2 표기 그대로 사용 권장)
-- `move_left/right/up/down` 4개 분리 vs `move_horizontal/vertical` 2 axis 결정
-- 게임패드 stick deadzone 0.2 (Tier 1 default; G.1 tunable)
-- KB+M 기본 키 (`A/D/W/S` move, `Space` jump, `Shift` aim_lock 추정)
+Input System #1 GDD `design/gdd/input.md` (re-review APPROVED 2026-05-11 lean mode) is the single source for the 4 items previously deferred to Input #1 authorship. Each item below is now **verbatim locked** with cross-ref:
 
-본 표는 Input System #1 GDD 작성 후 *위 4 항목만* 정정 가능 (Round 5 cross-doc-contradiction exception 시).
+| # | PM provisional item | Input #1 single source | Locked value |
+|---|---|---|---|
+| 1 | `aim_lock` action naming confirm (DEC-PM-2) | input.md C.1.1 row 6 + C.4 `InputActions.AIM_LOCK` | `aim_lock` (StringName const `&"aim_lock"`) |
+| 2 | `move_left/right/up/down` 4-action split vs 2-axis decision | input.md C.1.1 rows 1–4 + C.4 (4 separate `MOVE_*` constants) | **4 separate actions** (`move_left`, `move_right`, `move_up`, `move_down`); composed via `Input.get_vector(...)` for radial composite. Locked. |
+| 3 | Gamepad stick deadzone 0.2 (Tier 1 default) | input.md C.1.3 + D.3 + G.1.1; INVARIANT-IN-1/IN-2 cross-knob constraints | **0.2 radial composite** in `project.godot` `[input]` block for all 4 move actions. Tier 3 mutation only via `SettingsManager.apply_deadzone()` paused-tree apply. |
+| 4 | KB+M default keys | input.md C.3.1 (KB+M Profile table) + A.1 Decision Log row "KB+M aim_lock = F" | `A/D/W/S` move, `Space` jump, **`F` aim_lock** (NOT `Shift` — Shift conflict resolved to `rewind_consume`; rationale: Hotline Miami Shift-aim muscle-memory separation per input.md C.3.1 row + B6 fix Session 14), `LMB` shoot, `Shift` rewind_consume, `Escape` pause |
+
+**AimLock-jump exclusivity AC** (PM F.4.2 obligation): locked at input.md C.3.3 — InputMap fires `aim_lock` (hold) + `jump` (just_pressed) as independent events with zero chord-swallow logic. PM Phase 2 polling sees both action states simultaneously. Replaces PM AC-H4-04 (now obsolete — Input AC-IN-16 BLOCKING is the canonical contract).
+
+**Deadzone enforcement** (PM E-PM-9 obligation): locked at input.md C.1.3 + AC-IN-06/07 — `project.godot` 0.2 radial composite is the single enforcement site; PM does NOT re-implement deadzone math (`forbidden_patterns.deadzone_in_consumer` per architecture.yaml). PM B10 `facing_threshold_outside` hysteresis is a **separate concern** (PM-side asymmetric thresholds enter=0.2 / exit=0.15 per PM B10 fix) and does not conflict with Input deadzone single source.
+
+**No further mutation expected**: per Input #1 C.2 Tier 1 invariant + Round-7 cross-doc-contradiction exception protocol, any future change to the 4 locked values requires (a) Input #1 GDD revision, (b) PM C.5.3 sync update via cross-doc exception, (c) reciprocal architecture.yaml registry update.
 
 ### C.6 Interactions With Other Systems
 
@@ -467,7 +476,7 @@ Input System #1 GDD 정식화 시 다음 4 항목 의무:
 | **TimeRewindController (#9)** | TRC가 매 tick PM 7-필드 read; REWINDING 시 `restore_from_snapshot(snap)` invoke | TRC 측 `@export var player: PlayerMovement` (declarative; missing-ref editor-visible) | `get_parent()` / autoload lookup / `find_node()` / scene-tree group lookup |
 | **EchoLifecycleSM (#5)** | EchoLifecycleSM `state_changed` signal → PM `_on_lifecycle_state_changed`. DYING/DEAD 시 PlayerMovementSM force-transition to DeadState (T13). ALIVE 시 no-op | Signal-reactive: `_lifecycle_sm.state_changed.connect(_on_lifecycle_state_changed)` in PM `_ready()`. **call_deferred로 connect 권장** (state-machine.md C.3.4 — scene-tree-order race 회피) | PM polling `_lifecycle_sm.current_state` per tick (`cross_entity_sm_transition_call` forbidden_pattern 위반) |
 | **Damage (#8)** | PM이 HurtBox + HitBox + Damage 노드 *호스팅만*. Damage 컴포넌트가 자체 wiring 소유. PM은 간접 — Damage emit `lethal_hit_detected`는 EchoLifecycleSM이 구독 (PM 직접 구독 금지) | Composition: `.tscn`에 자식 노드 인스턴스화. PM `_ready()`은 Damage 노드에 *touch 안 함* | PM이 `Damage.player_hit_lethal` / `lethal_hit_detected` 직접 구독 (C.2.3 forbidden); PM이 `HurtBox.monitorable` write (DEC-4 enforce site 위반) |
-| **Input System #1** | PM이 `Input.is_action_*` polling per tick (`_physics_process` Phase 2 only) | `Input.is_action_pressed` / `is_action_just_pressed` / `get_vector` 직접 호출 | `_unhandled_input` / `_input` callback에 movement 로직 binding (latency + 시점 mismatch); InputEvent emit 구독 |
+| **[Input System #1](input.md)** *(F.4.1 #2 closure 2026-05-11 — Input #1 Designed; provisional flag removed)* | PM이 `Input.is_action_*` polling per tick (`_physics_process` Phase 2 only). 폴링 패턴 + 콜백 금지의 단일 출처는 [`input.md` C.1.2 Rule 1+2](input.md) — PM은 그 규칙의 *consumer*이며 자체 정책 X | `Input.is_action_pressed` / `is_action_just_pressed` / `get_vector` 직접 호출 (input.md C.4 `InputActions.*` StringName const 사용 의무) | `_unhandled_input` / `_input` callback에 movement 로직 binding (latency + 시점 mismatch — input.md C.1.2 Rule 2 단일 출처 forbidden, `forbidden_patterns.gameplay_input_in_callback` CI gate per architecture.yaml + AC-IN-05); InputEvent emit 구독; `&"jump"` literal 산발 (input.md C.4 + AC-IN-04 BLOCKING) |
 | **WeaponSlot (#7)** | PM이 WeaponSlot 자식 노드 호스팅. `weapon_equipped(weapon_id: int)` signal → PM `_on_weapon_equipped`이 `_current_weapon_id` cache. `restore_from_snapshot()`은 7-필드 권위 — WeaponSlot signal cascade는 `_is_restoring` 가드로 차단 (C.4.5) | Composition: 자식 노드. signal-reactive cache | `_is_restoring` 동안 `WeaponSlot.set_active(...)` 발화 (silent fallback도 7-필드 권위 침범) |
 | **Scene Manager #2** *(provisional)* | PM은 `scene_will_change` 시그널을 *직접 구독하지 않음*. EchoLifecycleSM이 O6 의무로 ephemeral state 클리어 (state-machine.md C.2.2 O6). PM의 `_last_grounded_frame` / `_jump_buffered_at_frame` 클리어는 **OQ-PM-1로 deferred** (Scene Manager #2 GDD 작성 시 결정) | TBD | PM이 독립적으로 `scene_will_change` 구독 (duplicate handler, race with SM clear) |
 | **AnimationPlayer (Godot 빌트인)** | PM이 자식 노드 호스팅 + per-tick read property + restore 시 `play()` + `seek(time, true)` 호출 | `_anim.current_animation` / `current_animation_position` proxy; `_anim.play(name)` / `_anim.seek(time, true)` | `_anim.seek(time)` 단독 호출 (second arg `true` 누락 — capture lag); `_anim.advance(delta)` (결정성 위반) |
@@ -1362,7 +1371,7 @@ const EXPECTED_TRANSITIONS: Array[StringName] = [
 
 **ADVISORY classification rationale** (per damage.md AC-26/27 precedent): document-state checks are PR Review checklist items, not BLOCKING automated CI gates, until `tools/ci/gdd_consistency_check.gd` is authored. **Upgrade path**: when CI tool is built (queued under damage.md OQ-DMG-5 tooling pattern), this AC promotes to BLOCKING with the same grep specs as the CI step.
 
-> **F.4.2 obligations registry** (separate from this AC — *deferred to target GDD authoring*): Input #1 (deadzone + AimLock-jump exclusivity), Player Shooting #7 (`_on_anim_spawn_bullet` `_is_restoring` guard + ammo restoration policy review), Scene Manager #2 (`_last_grounded_frame` / `_jump_buffered_at_frame` clear responsibility — OQ-PM-1), VFX #14 (`_is_restoring` guard policy), Audio #21 (footstep guard decision — gates AC-H7-04 ALLOW exemption policy), Visual/Audio (this GDD's own pending section), HUD #13 (PM signal exposure re-eval). **Each target GDD's H section MUST include the reciprocal AC at authoring time** — this is not a current-PR PASS/FAIL gate.
+> **F.4.2 obligations registry** (separate from this AC — *deferred to target GDD authoring*): ~~Input #1 (deadzone + AimLock-jump exclusivity)~~ ✅ **Resolved 2026-05-11** (Input #1 GDD Designed + re-review APPROVED 2026-05-11 lean mode; deadzone locked at input.md C.1.3 + AC-IN-06/07 BLOCKING; AimLock-jump exclusivity locked at input.md C.3.3 + AC-IN-16 BLOCKING; PM AC-H4-04 ADVISORY ⇒ **obsolete** — Input #1 BLOCKING ACs replace; F.4.1 #3 closure batch 2026-05-11), Player Shooting #7 (`_on_anim_spawn_bullet` `_is_restoring` guard + ammo restoration policy review), Scene Manager #2 (`_last_grounded_frame` / `_jump_buffered_at_frame` clear responsibility — OQ-PM-1), VFX #14 (`_is_restoring` guard policy), Audio #21 (footstep guard decision — gates AC-H7-04 ALLOW exemption policy), Visual/Audio (this GDD's own pending section), HUD #13 (PM signal exposure re-eval). **Each target GDD's H section MUST include the reciprocal AC at authoring time** — this is not a current-PR PASS/FAIL gate.
 
 ---
 
