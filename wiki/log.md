@@ -7,6 +7,37 @@ updated: 2026-05-10
 
 Reverse chronological log of wiki operations. Newest at top.
 
+## [2026-05-11] autoresearch | 런앤건 8방향 조준 사용성 (gamepad + KB+M + 접근성)
+
+- **Mode:** main agent · 4 parallel research agents · 3 rounds (combined) · 33 web searches · 6 pages
+- **Topic:** 런앤건 게임 8방향 조준 사용성 시스템 — 게임패드 + 키보드+마우스 + 접근성
+- **Pages created (6):**
+  - Synthesis: [[Research 8-Way Aim Usability For Run-and-Gun]] — 마스터 통합 페이지, 게임패드/KB+M/접근성 3축 + Echo action items
+  - Concept: [[Aim Lock Modifier Pattern]] — Lock-then-aim 모던 컨벤션 (Cuphead/Galuga/Hard Corps 비교) + 발견성 문제 + 안티 패턴
+  - Concept: [[Analog Stick To 8-Way Quantization]] — 4단계 파이프라인 (radial deadzone → Schmitt → sector → hysteresis) + Steam Deck floor + Echo 디폴트
+  - Concept: [[Aim Assist Accessibility Tiers]] — Returnal 4-tier + XAG 107 의무 + 어시스트 ↔ 난이도 직교 + 시간 메커닉 통합
+  - Source: [[Game Developer Thumbstick Deadzones]] — Josh Sutphin 2014 산업 canonical (axial 거부, radial 표준, scaled radial 정밀)
+  - Source: [[XAG 107 Aim Assist Guidelines]] — Microsoft Xbox 접근성 가이드 #107 권위
+- **Key findings:**
+  - **게임패드 — Lock-then-aim 컨벤션 수렴**: Cuphead RB / Hard Corps L+R / Galuga ZR 모두 같은 패밀리. Echo `aim_lock=RB` on-pattern.
+  - **양자화 4단계 표준**: scaled radial deadzone + 마그니튜드 Schmitt (0.20/0.15) + sector snap-to-8 + 각도 hysteresis (±4°) + commitment timer (2-3 frame).
+  - **Steam Deck 드리프트 floor ~0.18** — Echo `FACING_THRESHOLD_AIM_LOCK = 0.10`은 LCD 1세대에서 마진 부족. **0.15로 상향 권장**.
+  - **KB+M — 마우스 360° vs WASD 8방향은 *장르가 결정***: top-down twin-stick (Hotline/Gungeon/Throne)은 마우스 360°. Side-scroll run-and-gun (Cuphead/Galuga PC)은 WASD 8방향 + lock 수정자.
+  - **`aim_lock` KB+M 산업 표준 없음**. Cuphead=C, Galuga=리바인드 미공개. Echo `aim_lock=F`는 방어 가능 (Shift/RMB/Q-E 회피 근거 강함).
+  - **Returnal 4-tier 어시스트가 모던 표준** (Off/Low/Medium/High). 디폴트 Medium은 일반 게임 권장, **Echo는 1-hit + rewind 메카닉 → Off 디폴트 권장**.
+  - **XAG 107 의무**: single-stick + auto-fire + 4-tier 어시스트 + ±50% 감도 + 난이도 ↔ 어시스트 직교. Echo Tier 1 게이트.
+  - **Game Accessibility Guidelines**: 어시스트 ON 시 업적 게이트 X (Celeste 모델 gold standard).
+- **Echo Action Items (입력 #1 GDD 갱신 후보):**
+  1. `FACING_THRESHOLD_AIM_LOCK 0.10 → 0.15` (Steam Deck 드리프트 floor 회피)
+  2. 각도 hysteresis ±4° 추가 (45° 경계 떨림 방지)
+  3. 2-3 프레임 sector commitment timer 추가
+  4. KB+M `aim_lock=F` 유지 + 근거 강화 (Shift 대시 충돌, RMB 장르-wrong, Q/E 무기 스왑 충돌)
+  5. Gamepad `aim_lock=RB` 유지 (Cuphead/Galuga 컨벤션)
+  6. Aim assist 4-tier 디폴트 Off + XAG 107 준수 (single-stick + auto-fire + ±50% sensitivity)
+- **Open questions filed:** Metal Slug 베이스 무기 4-way vs 8-way 1차 검증 / Cuphead 대각선 발견 시간 데이터 / Echo 마우스 360° aim 옵션 제공 여부 / Single-stick 모드 auto-fire 발사 조건 / 어시스트 ON speedrun 별도 카테고리.
+- **Constraints**: 4 agent 병렬 + program.md 15 페이지 한도 안에서 6 페이지 작성 (synthesis 1 + concept 3 + source 2). Round 3 신짐 패스 불필요 — Round 2에서 갭 충분 해소. High credibility 출처 우선 (Microsoft Learn / Game Developer / Unity docs / Valve 1차).
+- **Pages updated (meta):** [[index.md]] (Synthesis +1, Tooling/Framework +3, Sources +2), [[log.md]] (이 블록), [[hot.md]] (Active Topic + Top Pages 갱신)
+
 ## [2026-05-10] save | Bot Validation Catalog Summary (14 페이지 단일 진입점)
 
 - **Mode:** main agent · /save · 1 synthesis 페이지 (메타 인덱스)
