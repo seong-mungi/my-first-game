@@ -46,7 +46,8 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Top Pages To Read First
 
-0. [[Bot Validation Catalog Summary]] — **NEW INDEX**. 14 페이지 단일 진입점 + 5 황금률 + 솔로 개발자 로드맵 + 비협상 결정 8종 — **카탈로그 처음 읽으면 여기서 시작**
+0. [[Research 8-Way Aim Usability For Run-and-Gun]] — **NEW LATEST**. 런앤건 8방향 조준 사용성 + Echo Input #1 갱신 권고 6항
+0b. [[Bot Validation Catalog Summary]] — INDEX. 14 페이지 단일 진입점 + 5 황금률 + 솔로 개발자 로드맵 + 비협상 결정 8종
 1. [[AI Assisted Boss Pattern Generation]] — Tier 3. AI 보조 패턴 생성 (LLM + 절차 + RL) + hard constraint + 디자이너 큐레이션
 2. [[Accessibility Mode Bot Validation]] — **NEW Tier 3**. Easy/Hard/Color-blind 모드 매트릭스 자동 + 회귀 검출
 3. [[Speedrun Discovery Via RL Bot]] — **NEW Tier 3**. RL 시간 보상 + 글리치 매트릭스 + Trackmania 모델 + Echo 인프라
