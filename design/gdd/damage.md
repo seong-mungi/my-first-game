@@ -7,8 +7,8 @@
 > **Author**: game-designer + godot-gdscript-specialist
 > **Created**: 2026-05-09
 > **Engine**: Godot 4.6 / GDScript (statically typed)
-> **Depends On (provisional)**: Player Movement #6, Player Shooting #7, Enemy AI #10, Boss Pattern #11, Stage #12 (HitBox/HurtBox 인스턴스화 클라이언트)
-> **Consumed By (provisional)**: State Machine #5 (player_hit_lethal 구독), Time Rewind #9 (i-frame 협조), HUD #13 (보스 phase 시그널 옵션)
+> **Depends On**: Player Movement #6 (Approved 2026-05-11) + Player Shooting #7 *(provisional)* + Enemy AI #10 *(provisional)* + Boss Pattern #11 *(provisional)* + Stage #12 *(provisional)* — HitBox/HurtBox 인스턴스화 클라이언트
+> **Consumed By**: State Machine #5 (Approved — player_hit_lethal 구독) + Time Rewind #9 (Approved — i-frame 협조) + HUD #13 *(provisional)* — 보스 phase 시그널 옵션
 
 ---
 
