@@ -150,11 +150,11 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Cross-Reference Density
 
-- Concepts: **48** (+3: AI Assisted Boss Pattern Generation, Accessibility Mode Bot Validation, Speedrun Discovery Via RL Bot)
+- Concepts: **51** (+3: Aim Lock Modifier Pattern, Analog Stick To 8-Way Quantization, Aim Assist Accessibility Tiers)
 - Reference games: 23
 - Characters / fictional entities: 1
-- Sources catalogued: 21
-- Synthesis pages: **16** (+1: Bot Validation Catalog Summary)
+- Sources catalogued: **23** (+2: Game Developer Thumbstick Deadzones, XAG 107 Aim Assist Guidelines)
+- Synthesis pages: **17** (+1: Research 8-Way Aim Usability For Run-and-Gun)
 - Design baselines: 1 (Solo Contra 2026 Concept v0)
 - Story spines: 1 (Echo Story Spine)
-- Total wiki files: **116** (.md, +15 this session — 봇 검증 14 페이지 + Catalog Summary 단일 진입점)
+- Total wiki files: **122** (.md, +6 this autoresearch — 8-way aim usability)
