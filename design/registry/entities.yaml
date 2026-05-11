@@ -37,7 +37,7 @@
 #   Each entry: name, status, source, referenced_by[], attributes{}, added, revised
 
 version: 1
-last_updated: ""
+last_updated: "2026-05-11 — Session 17 Step 3 backfill: 1 entity (ECHO) + 3 formulas + 26 constants extracted from 5 Approved GDDs (Input #1 / State Machine #5 / Player Movement #6 / Damage #8 / Time Rewind #9) + 3 ADRs (0001 / 0002 with Amendment 1+2 / 0003)"
 
 # ─── ENTITIES ────────────────────────────────────────────────────────────────
 # Named game-world objects: enemies, NPCs, characters, factions, bosses.
@@ -48,7 +48,36 @@ last_updated: ""
 # Attribute fields: any key stats that could appear in another GDD
 #   (health, damage, drops, faction, etc.)
 
-entities: []
+entities:
+  - name: echo
+    status: active
+    source: design/gdd/damage.md
+    referenced_by:
+      - design/gdd/damage.md
+      - design/gdd/player-movement.md
+      - design/gdd/state-machine.md
+      - design/gdd/time-rewind.md
+      - design/gdd/input.md
+      - design/gdd/game-concept.md
+      - docs/architecture/adr-0001-time-rewind-scope.md
+      - docs/architecture/adr-0002-time-rewind-storage-format.md
+      - docs/architecture/adr-0003-determinism-strategy.md
+    entity_id: "echo"
+    classification: player_character
+    health_model: one_hit_die
+    rewind_capable: true
+    state_machines:
+      player_movement_sm:
+        states: [IDLE, RUN, JUMPING, FALLING, REWINDING, DYING]
+        count: 6
+        owner: design/gdd/player-movement.md
+        decision_ref: DEC-PM-1
+      echo_lifecycle_sm:
+        count: 4
+        owner: design/gdd/state-machine.md
+    notes: "ECHO is the player-controlled run-and-gun protagonist (Solo Contra 2026 Concept v0). Single-writer for 7 PlayerSnapshot fields (Amendment 2: Weapon owns 8th `ammo_count`; TRC owns 9th `captured_at_physics_frame`). One-hit die model with token-driven time rewind."
+    added: 2026-05-11
+    revised: ""
 
 # Example (remove when first real entry is added):
 #
@@ -106,7 +135,57 @@ items: []
 #   output_range[min, max], added
 # Optional: expression (the actual formula), notes
 
-formulas: []
+formulas:
+  - name: try_consume_rewind_restore_idx
+    status: active
+    source: docs/architecture/adr-0002-time-rewind-storage-format.md
+    referenced_by:
+      - design/gdd/time-rewind.md
+      - design/gdd/player-movement.md
+      - docs/architecture/adr-0002-time-rewind-storage-format.md
+    variables:
+      - _lethal_hit_head        # int — cached on player_hit_lethal handler (Amendment 1, 2026-05-09)
+      - RESTORE_OFFSET_FRAMES   # 9 (constant)
+      - REWIND_WINDOW_FRAMES    # 90 (constant)
+    output_range: [0, 89]
+    expression: "restore_idx = (_lethal_hit_head - RESTORE_OFFSET_FRAMES + REWIND_WINDOW_FRAMES) % REWIND_WINDOW_FRAMES"
+    notes: "Amendment 1 (2026-05-09) replaces live `_write_head` with cached `_lethal_hit_head` to prevent silent post-death restoration when DYING grace +k frames advance write head past lethal hit. Boot-time assert: RESTORE_OFFSET_FRAMES < REWIND_WINDOW_FRAMES (Round 1 정정 — guard against negative mod)."
+    added: 2026-05-11
+    revised: ""
+
+  - name: jump_height_invariant
+    status: active
+    source: design/gdd/player-movement.md
+    referenced_by:
+      - design/gdd/player-movement.md
+    variables:
+      - jump_velocity_initial   # 480 px/s (Tier 1 default)
+      - gravity_rising          # 800 px/s² (Tier 1 default)
+    output_range: [144, 144]    # locked invariant — fixed peak height
+    expression: "jump_height_max_px = (jump_velocity_initial^2) / (2 * gravity_rising)"
+    notes: "Locked invariant — 480² / (2×800) = 144 px exactly. Tuning either knob MUST preserve 144 px peak (Tier 1 height target). Tier 1 lock (Decision A 2026-05-10) chose g_up = 800 to preserve 144 px target after concept revision."
+    added: 2026-05-11
+    revised: ""
+
+  - name: run_accel_step_size
+    status: active
+    source: design/gdd/player-movement.md
+    referenced_by:
+      - design/gdd/player-movement.md
+    variables:
+      - run_top_speed           # 200 px/s (Tier 1)
+      - run_accel_frames        # 6 frames (Tier 1)
+      - run_decel_frames        # 8 frames (Tier 1)
+      - air_control_coefficient # 0.65 (Tier 1)
+    output_range: [0.0, 50.0]   # px/s/frame — practical range under Tier 1 ranges
+    expression: |
+      step_size_ground_accel = run_top_speed / run_accel_frames    # accel toward non-zero target
+      step_size_ground_decel = run_top_speed / run_decel_frames    # decel to 0 or sign reversal pass-through
+      step_size_air          = (active_step_ground) * air_control_coefficient
+      velocity.x = move_toward(velocity.x, target_vx, active_step)
+    notes: "Frame-count based — NOT delta-accumulator. `move_toward()` caps velocity.x ∈ [-run_top_speed, +run_top_speed] always, preventing unbounded accumulation Phase 4 bug. Tier 1 ground accel = 200/6 ≈ 33.3 px/s/frame; air accel = 33.3 × 0.65 ≈ 21.7 px/s/frame."
+    added: 2026-05-11
+    revised: ""
 
 # Example:
 #
@@ -139,7 +218,331 @@ formulas: []
 #
 # Required fields: name, status, source, referenced_by, value, unit, added
 
-constants: []
+constants:
+  # ─── Time Rewind System ────────────────────────────────────────────────────
+  - name: REWIND_WINDOW_FRAMES
+    status: active
+    source: design/gdd/time-rewind.md
+    referenced_by:
+      - design/gdd/time-rewind.md
+      - design/gdd/player-movement.md
+      - docs/architecture/adr-0002-time-rewind-storage-format.md
+      - docs/registry/architecture.yaml
+    value: 90
+    unit: frames
+    notes: "1.5 s lookback @ 60 Hz physics tick. Ring buffer slot count."
+    added: 2026-05-11
+    revised: ""
+
+  - name: REWIND_WINDOW_SECONDS
+    status: active
+    source: docs/architecture/adr-0002-time-rewind-storage-format.md
+    referenced_by:
+      - design/gdd/time-rewind.md
+      - design/gdd/player-movement.md
+      - docs/architecture/adr-0002-time-rewind-storage-format.md
+    value: 1.5
+    unit: seconds
+    notes: "Derived from REWIND_WINDOW_FRAMES / 60. CONFLICT-1 (2026-05-11) fixed PM line 1118 from `1.0 s` → `1.5 s`."
+    added: 2026-05-11
+    revised: ""
+
+  - name: RESTORE_OFFSET_FRAMES
+    status: active
+    source: docs/architecture/adr-0002-time-rewind-storage-format.md
+    referenced_by:
+      - design/gdd/time-rewind.md
+      - design/gdd/player-movement.md
+      - design/gdd/game-concept.md
+      - docs/architecture/adr-0002-time-rewind-storage-format.md
+    value: 9
+    unit: frames
+    notes: "0.15 s before lethal hit — gives player reaction window after rewind. assert RESTORE_OFFSET_FRAMES < REWIND_WINDOW_FRAMES enforced at boot."
+    added: 2026-05-11
+    revised: ""
+
+  - name: REWIND_SIGNATURE_FRAMES
+    status: active
+    source: design/gdd/time-rewind.md
+    referenced_by:
+      - design/gdd/time-rewind.md
+      - design/gdd/player-movement.md
+      - design/gdd/damage.md
+    value: 30
+    unit: frames
+    notes: "Post-rewind invincibility (i_frame_frames) = 0.5 s @ 60 Hz. Time Rewind GDD Rule 11."
+    added: 2026-05-11
+    revised: ""
+
+  - name: starting_tokens
+    status: active
+    source: design/gdd/time-rewind.md
+    referenced_by:
+      - design/gdd/time-rewind.md
+      - docs/architecture/adr-0002-time-rewind-storage-format.md
+    value: 3
+    unit: tokens
+    notes: "Initial rewind token count at scene start. RewindPolicy.starting_tokens."
+    added: 2026-05-11
+    revised: ""
+
+  - name: max_tokens
+    status: active
+    source: design/gdd/time-rewind.md
+    referenced_by:
+      - design/gdd/time-rewind.md
+      - docs/architecture/adr-0002-time-rewind-storage-format.md
+    value: 5
+    unit: tokens
+    notes: "Maximum rewind token cap. grant_token() clamps via `min(_tokens + 1, max_tokens)` (Round 1 정정)."
+    added: 2026-05-11
+    revised: ""
+
+  # ─── PlayerSnapshot Schema ─────────────────────────────────────────────────
+  - name: PlayerSnapshot_N_fields_resource
+    status: active
+    source: docs/architecture/adr-0002-time-rewind-storage-format.md
+    referenced_by:
+      - design/gdd/time-rewind.md
+      - design/gdd/player-movement.md
+      - docs/architecture/adr-0002-time-rewind-storage-format.md
+      - docs/registry/architecture.yaml
+    value: 9
+    unit: fields
+    notes: "Total Resource fields per Amendment 2 (2026-05-11): 7 PM-owned + 1 Weapon-owned (`ammo_count`) + 1 TRC-internal (`captured_at_physics_frame` from Amendment 1)."
+    added: 2026-05-11
+    revised: ""
+
+  - name: PlayerSnapshot_N_fields_pm_noted
+    status: active
+    source: docs/architecture/adr-0002-time-rewind-storage-format.md
+    referenced_by:
+      - design/gdd/time-rewind.md
+      - design/gdd/player-movement.md
+      - docs/architecture/adr-0002-time-rewind-storage-format.md
+    value: 8
+    unit: fields
+    notes: "PM-noted (PM-readable) field count: 7 PM-owned + 1 Weapon-owned. Excludes TRC-internal `captured_at_physics_frame`. PM.restore_from_snapshot ignores `ammo_count` (Weapon owns write)."
+    added: 2026-05-11
+    revised: ""
+
+  # ─── Player Movement (Tier 1 defaults) ─────────────────────────────────────
+  - name: jump_velocity_initial
+    status: active
+    source: design/gdd/player-movement.md
+    referenced_by:
+      - design/gdd/player-movement.md
+    value: 480
+    unit: px/s
+    notes: "Tier 1 default — upward magnitude on JumpState.enter(). Range 420–560. Locked with gravity_rising = 800 to preserve 144 px peak invariant (Decision A 2026-05-10)."
+    added: 2026-05-11
+    revised: ""
+
+  - name: gravity_rising
+    status: active
+    source: design/gdd/player-movement.md
+    referenced_by:
+      - design/gdd/player-movement.md
+    value: 800
+    unit: px/s²
+    notes: "Tier 1 default — applies during velocity.y < 0 (rising phase). Range 700–1100. Locked at 800 (down from 900) to preserve 144 px jump height invariant per Decision A 2026-05-10."
+    added: 2026-05-11
+    revised: ""
+
+  - name: jump_height_max_px
+    status: active
+    source: design/gdd/player-movement.md
+    referenced_by:
+      - design/gdd/player-movement.md
+    value: 144
+    unit: px
+    notes: "Derived invariant: jump_velocity_initial² / (2 × gravity_rising) = 480² / 1600 = 144 px. See formula `jump_height_invariant`."
+    added: 2026-05-11
+    revised: ""
+
+  - name: coyote_frames
+    status: active
+    source: design/gdd/player-movement.md
+    referenced_by:
+      - design/gdd/player-movement.md
+    value: 6
+    unit: frames
+    notes: "Tier 1 default — post-leave-ground jump grace window (0.1 s @ 60 Hz). Predicate uses `_grounded_history_valid` bool active-flag pattern (B1 fix 2026-05-11)."
+    added: 2026-05-11
+    revised: ""
+
+  - name: jump_buffer_frames
+    status: active
+    source: design/gdd/player-movement.md
+    referenced_by:
+      - design/gdd/player-movement.md
+    value: 6
+    unit: frames
+    notes: "Tier 1 default — pre-land jump input buffer window (0.1 s @ 60 Hz). Predicate uses `_jump_buffer_active` bool active-flag pattern (B1 fix 2026-05-11)."
+    added: 2026-05-11
+    revised: ""
+
+  - name: facing_threshold_outside_enter
+    status: active
+    source: design/gdd/player-movement.md
+    referenced_by:
+      - design/gdd/player-movement.md
+    value: 0.2
+    unit: stick_axis_magnitude
+    notes: "Schmitt trigger ENTER threshold for 8-way facing commit (B10 fix 2026-05-11). Per-axis dual flags `_facing_{x,y}_{pos,neg}_active`. Must be strictly > facing_threshold_outside_exit per INV-8."
+    added: 2026-05-11
+    revised: ""
+
+  - name: facing_threshold_outside_exit
+    status: active
+    source: design/gdd/player-movement.md
+    referenced_by:
+      - design/gdd/player-movement.md
+    value: 0.15
+    unit: stick_axis_magnitude
+    notes: "Schmitt trigger EXIT threshold (B10 fix 2026-05-11). Below this magnitude releases axis commitment. Steam Deck stick drift ~±0.18 no longer oscillates facing thanks to [0.15, 0.20) protected band."
+    added: 2026-05-11
+    revised: ""
+
+  # ─── Damage / Hazard Grace ─────────────────────────────────────────────────
+  - name: hazard_grace_frames
+    status: active
+    source: design/gdd/damage.md
+    referenced_by:
+      - design/gdd/damage.md
+      - design/gdd/time-rewind.md
+      - design/gdd/player-movement.md
+    value: 12
+    unit: frames
+    notes: "DYING grace window (0.2 s @ 60 Hz). damage.md DEC-6 / G.1. Effective rewind-eligible window = 13 frames per B-R4-1 (frame N + frames N+1..N+12). PM AC-H6-06 fixture validates first-encounter reachability at scripted-input N+12 PASS / N+13 FAIL."
+    added: 2026-05-11
+    revised: ""
+
+  # ─── Input (Gamepad) ───────────────────────────────────────────────────────
+  - name: gamepad_stick_deadzone
+    status: active
+    source: design/gdd/input.md
+    referenced_by:
+      - design/gdd/input.md
+      - design/gdd/player-movement.md
+    value: 0.2
+    unit: stick_axis_magnitude
+    notes: "Inner deadzone — analog stick magnitudes below this are zeroed at Input layer. input.md G.1.1 / C.1.3. Equal to facing_threshold_outside_enter by design (single floor)."
+    added: 2026-05-11
+    revised: ""
+
+  - name: GAMEPAD_DETECTION_THRESHOLD
+    status: active
+    source: design/gdd/input.md
+    referenced_by:
+      - design/gdd/input.md
+    value: 0.3
+    unit: stick_axis_magnitude
+    notes: "Active gamepad detection threshold — stick deflection > 0.3 marks gamepad as active input profile. input.md G.1.3. Strictly > gamepad_stick_deadzone (0.2) to prevent profile thrash."
+    added: 2026-05-11
+    revised: ""
+
+  # ─── Process Order (ADR-0003 priorities) ───────────────────────────────────
+  - name: process_physics_priority_player
+    status: active
+    source: docs/architecture/adr-0003-determinism-strategy.md
+    referenced_by:
+      - design/gdd/player-movement.md
+      - design/gdd/state-machine.md
+      - design/gdd/time-rewind.md
+      - design/gdd/damage.md
+      - docs/architecture/adr-0003-determinism-strategy.md
+    value: 0
+    unit: priority_index
+    notes: "PlayerMovement runs FIRST in `_physics_process` per ADR-0003. Lower priority = earlier execution. TRC (=1) captures immediately after Phase 6c completes."
+    added: 2026-05-11
+    revised: ""
+
+  - name: process_physics_priority_trc
+    status: active
+    source: docs/architecture/adr-0003-determinism-strategy.md
+    referenced_by:
+      - design/gdd/time-rewind.md
+      - design/gdd/player-movement.md
+      - docs/architecture/adr-0003-determinism-strategy.md
+    value: 1
+    unit: priority_index
+    notes: "TimeRewindController runs immediately after PlayerMovement — captures authoritative PM state in same tick."
+    added: 2026-05-11
+    revised: ""
+
+  - name: process_physics_priority_damage
+    status: active
+    source: design/gdd/damage.md
+    referenced_by:
+      - design/gdd/damage.md
+      - docs/architecture/adr-0003-determinism-strategy.md
+    value: 2
+    unit: priority_index
+    notes: "Damage system processes after PM + TRC have committed state. damage.md C.6.4 / ADR-0003."
+    added: 2026-05-11
+    revised: ""
+
+  - name: process_physics_priority_enemies
+    status: active
+    source: docs/architecture/adr-0003-determinism-strategy.md
+    referenced_by:
+      - docs/architecture/adr-0003-determinism-strategy.md
+    value: 10
+    unit: priority_index
+    notes: "Enemy AI runs after player/TRC/damage settle. Gap from damage (2) to enemies (10) reserves intermediate slots for future systems."
+    added: 2026-05-11
+    revised: ""
+
+  - name: process_physics_priority_projectiles
+    status: active
+    source: docs/architecture/adr-0003-determinism-strategy.md
+    referenced_by:
+      - docs/architecture/adr-0003-determinism-strategy.md
+    value: 20
+    unit: priority_index
+    notes: "Projectiles process last per tick. Allows projectile collision against post-movement enemy/player positions."
+    added: 2026-05-11
+    revised: ""
+
+  # ─── State Catalogs (counts) ───────────────────────────────────────────────
+  - name: PlayerMovementSM_state_count
+    status: active
+    source: design/gdd/player-movement.md
+    referenced_by:
+      - design/gdd/player-movement.md
+      - design/gdd/state-machine.md
+    value: 6
+    unit: states
+    notes: "PlayerMovementSM states (DEC-PM-1): IDLE / RUN / JUMPING / FALLING / REWINDING / DYING. 17-row transition table in PM C.2."
+    added: 2026-05-11
+    revised: ""
+
+  - name: EchoLifecycleSM_state_count
+    status: active
+    source: design/gdd/state-machine.md
+    referenced_by:
+      - design/gdd/state-machine.md
+      - design/gdd/time-rewind.md
+      - design/gdd/damage.md
+    value: 4
+    unit: states
+    notes: "EchoLifecycleSM — state-machine.md owns. Includes RewindingState (handles rewind orchestration per `EchoLifecycleSM.RewindingState._physics_update()`)."
+    added: 2026-05-11
+    revised: ""
+
+  - name: input_actions_count
+    status: active
+    source: design/gdd/input.md
+    referenced_by:
+      - design/gdd/input.md
+      - design/gdd/player-movement.md
+      - design/gdd/state-machine.md
+    value: 9
+    unit: actions
+    notes: "Input action catalog (input.md C.1.1). Includes `aim_lock` (KB+M=F, Gamepad=RB) and `rewind_consume` (Shift / LT). Session 12 locked 9-action catalog."
+    added: 2026-05-11
+    revised: ""
 
 # Example:
 #

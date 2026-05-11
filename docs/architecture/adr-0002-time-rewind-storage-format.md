@@ -134,7 +134,7 @@ R-T1이 ECHO 단일 객체 되감기로 락인된 후, 1.5초 윈도우의 ECHO 
 
 ### Constraints
 
-- **ADR-0001 정합 필수**: PlayerSnapshot Resource 스키마(7 필드)가 이미 정의됨. 이 스키마와 충돌하는 결정은 ADR-0001 supersede가 필요.
+- **ADR-0001 정합 필수**: PlayerSnapshot Resource 스키마(7 PM + 1 TRC Amendment 1 + 1 Weapon `ammo_count` Amendment 2 = 9 필드 Resource)가 이미 정의됨. 이 스키마와 충돌하는 결정은 ADR-0001 supersede가 필요.
 - **Pillar 2 결정론**: 1000 회 되감기 시 100% 동일 결과 검증 가능해야 함.
 - **Pillar 5 솔로 budget**: 두 스토리지 시스템 동시 유지(Hybrid) 회피.
 - **Performance**: 60fps × 16.6ms / 1.5GB 메모리 ceiling. 매 physics tick 작업이 budget 내.
@@ -154,7 +154,7 @@ R-T1이 ECHO 단일 객체 되감기로 락인된 후, 1.5초 윈도우의 ECHO 
 
 1. **Storage**: TimeRewindController 노드 내부 ring buffer — 90개 PlayerSnapshot Resource pre-allocated 인스턴스
 2. **Frequency**: 매 `_physics_process` tick (60Hz)에 1 PlayerSnapshot 갱신 (write-into-place, 새 인스턴스 생성 없음)
-3. **Format**: typed Resource subclass `PlayerSnapshot extends Resource` with `@export` 필드 (ADR-0001 7 필드 그대로)
+3. **Format**: typed Resource subclass `PlayerSnapshot extends Resource` with `@export` 필드 (ADR-0001 7 PM 필드 + Amendment 1 (1 TRC `captured_at_physics_frame`) + Amendment 2 (1 Weapon-owned `ammo_count`) = 9-필드 Resource)
 4. **Restoration**: 되감기 트리거 시 ring buffer에서 (현재 frame - 9) 위치의 snapshot을 PlayerMovement에 복원. 즉, "사망 0.15초 전" 시점.
 
 핵심 알고리즘:
@@ -255,7 +255,7 @@ func grant_token() -> void:  # called on boss_defeated subscriber path
 
 ### Key Interfaces
 
-**`PlayerSnapshot` Resource** (ADR-0001 7 필드 그대로 락인):
+**`PlayerSnapshot` Resource** (ADR-0001 7 PM 필드 + Amendment 1 + Amendment 2 = 9-필드 Resource 락인):
 
 ```gdscript
 class_name PlayerSnapshot extends Resource
@@ -351,7 +351,7 @@ func restore_from_snapshot(snap: PlayerSnapshot) -> void:
   - **Mitigation**: VERSION.md 4.5 note "duplicate_deep() 4.5+ added" 주의. Tier 1 PlayerSnapshot은 primitive 필드만 → duplicate() 안전. 향후 nested Resource 도입 시 duplicate_deep() 사용 필수
 - **R3**: ring buffer 인덱스 계산 오프바이원 — `(write_head - 9 + 90) % 90` 음수 처리 누락 → 잘못된 frame 복원
   - **Mitigation**: TimeRewindController prototype에 ring buffer 인덱스 unit test 강제 (Pillar 2 자동 테스트 룰 — coding-standards.md)
-- **R4**: PlayerSnapshot 7 필드 중 누락 발견 (예: weapon ammo, aim direction) → Tier 1 prototype 후에야 발견
+- **R4**: PlayerSnapshot 필드 누락 발견 (예: aim direction 등) → Tier 1 prototype 후에야 발견 (Amendment 2 2026-05-11이 `ammo_count` 추가로 R4 일부 해소; 남은 위험 최소 — Tier 2+ ability fields는 Amendment 3 패턴 사용 예정)
   - **Mitigation**: Time Rewind GDD Acceptance Criteria에 "되감기 후 player가 fully functional" 검증 항목 강제. GDD 작성 시 art-bible UI 섹션과 cross-check.
 
 ## GDD Requirements Addressed
@@ -363,11 +363,11 @@ func restore_from_snapshot(snap: PlayerSnapshot) -> void:
 | systems-index.md | System #9 Time Rewind System | TimeRewindController 노드 + PlayerSnapshot Resource 두 entity로 구조 명시 |
 | systems-index.md | System #14 HUD System | HUD는 `token_consumed` / `token_replenished` 시그널 구독 — direct state polling 금지 (registry forbidden pattern 후보) |
 | systems-index.md | System #21 Save / Settings Persistence (Tier 2) | PlayerSnapshot Resource는 Save system에서 직접 직렬화 재사용 — 추가 포맷 정의 불필요 |
-| ADR-0001 | PlayerSnapshot 7 필드 사양 | 그대로 reuse, 1 필드도 추가 없음 |
+| ADR-0001 | PlayerSnapshot 7 필드 사양 | 7 PM 필드 + Amendment 1 (1 TRC `captured_at_physics_frame`) + Amendment 2 (1 Weapon-owned `ammo_count`) = 9-필드 Resource |
 
 ## Performance Implications
 
-- **CPU (capture)**: 매 physics tick = 1 struct copy (8 fields, 32 bytes). ~50ns × 60Hz = 3μs/sec. 16.6ms frame budget의 0.018%.
+- **CPU (capture)**: 매 physics tick = 1 struct copy (9 fields per Amendment 2; ~196 B/slot Resource overhead — current numbers는 Amendment 2 Performance impact subsection 참조; legacy figure "32 bytes raw"는 7-field pre-Amendment-1 값). ~300 ns × 9 fields × 60 ticks ≈ 0.18 ms/sec. 16.6ms frame budget의 ~0.001%.
 - **CPU (restore)**: 1 struct read + AnimationPlayer.seek + 7 field assignment ≈ 200μs 1회. 60fps frame budget의 1.2% — 단일 frame 내 처리.
 - **Memory**: 5KB ring buffer (90 × ~50 bytes Resource overhead 포함). 1.5GB ceiling의 0.0003%.
 - **Memory pressure**: 0 — pre-allocated, write-into-place. GC pressure 없음.
@@ -386,7 +386,7 @@ func restore_from_snapshot(snap: PlayerSnapshot) -> void:
 2. **결정성 1000회 테스트**: scripted input 시퀀스 + 90 tick 후 sequential 되감기 1000 회 실행. 매 회 동일 PlayerSnapshot 값 (bit-identical) PASS = Pillar 2 결정성 검증.
 3. **메모리 leak 0**: 1000 회 되감기 후 Godot Profiler에서 PlayerSnapshot 인스턴스 수 == 90 (시작 시 동일). FAIL이면 ring buffer 누적 버그.
 4. **Restore latency < 200μs**: 단일 되감기 발동의 capture-to-restore 시간을 Profiler로 측정. 200μs 초과 시 frame drop 위험.
-5. **Save system 검증** (Tier 2): PlayerSnapshot.tres 파일로 직렬화 → 게임 재시작 → 재로드 시 모든 7 필드 bit-identical 복원.
+5. **Save system 검증** (Tier 2): PlayerSnapshot.tres 파일로 직렬화 → 게임 재시작 → 재로드 시 모든 8 PM-노출 필드 (PM-owned 7 + Weapon-owned `ammo_count`) bit-identical 복원 — Resource 9-필드 total.
 
 5/5 PASS = R-T2 검증 완료. 1-2개 FAIL이면 ADR 재검토.
 

@@ -1,9 +1,9 @@
 # Player Movement
 
-> **Status**: In Design
+> **Status**: Approved (re-review APPROVED 2026-05-11 lean mode — all 10 prior BLOCKING resolved; see A.1 Locked Decisions B1-B10 rows)
 > **Author**: user + game-designer + godot-gdscript-specialist + systems-designer (planned consultations)
 > **Created**: 2026-05-10
-> **Last Updated**: 2026-05-10
+> **Last Updated**: 2026-05-11
 > **Implements Pillar**: Pillar 2 (결정론적 패턴) primary; Pillar 1 (시간 되감기 = 학습 도구) via clean `restore_from_snapshot()` single-writer; Pillar 5 (출시 가능 우선) via 6-state Tier 1 floor (DEC-PM-1).
 > **Engine**: Godot 4.6 / GDScript / 2D / `CharacterBody2D`
 > **System #**: 6 (Core / Gameplay)
@@ -231,7 +231,7 @@ PlayerMovementSM은 `extends StateMachine` 으로 framework의 transition queue 
 
 #### C.3.1 Phase ordering (PM priority=0, 16.6ms frame budget)
 
-`PlayerMovement._physics_process(delta: float)`은 프레임마다 다음 7 Phase를 *동기 순차*로 실행한다. TRC가 priority=1로 PM 직후 실행되므로 Phase 6c 종료 시점에 7-필드 PlayerSnapshot은 *권위 있는* state여야 한다 (TRC가 같은 tick에서 `_capture_to_ring()` 호출).
+`PlayerMovement._physics_process(delta: float)`은 프레임마다 다음 7 Phase를 *동기 순차*로 실행한다. TRC가 priority=1로 PM 직후 실행되므로 Phase 6c 종료 시점에 PlayerSnapshot의 PM-owned 7-필드 subset은 *권위 있는* state여야 한다 (TRC가 같은 tick에서 `_capture_to_ring()` 호출). Amendment 2 (2026-05-11) 기준: 나머지 1 Weapon-owned 필드(`ammo_count`)는 Weapon이, 1 TRC-internal 필드(`captured_at_physics_frame`)는 TRC가 별도 own — 9-필드 Resource total.
 
 | Phase | 작업 | 핵심 행동 |
 |---|---|---|
@@ -731,16 +731,16 @@ Scenario B (buffer): 착지 3 frames 전에 jump
               post-fire: _jump_buffer_active = FALSE (buffer 소비 — C.3.3 post-fire 패턴)
 
 Scenario C (active-flag reset — B1 fix 2026-05-11): Dead 진입 후 buffer 클리어
-  Frame N (Dead 진입):
+  Frame N (Dead 진입 — clear at DeadState.enter()):
     _jump_buffer_active     = false
     _jump_buffer_frame      = 0
     _grounded_history_valid = false   (Dead 시점에서 grounded 정보 무효화)
     _last_grounded_frame    = 0
-  Frame N+10 (restore_from_snapshot, snap.is_grounded=true):
-    _jump_buffer_active     = false   (idempotent re-clear)
-    _grounded_history_valid = true
-    _last_grounded_frame    = N+10    (Engine.get_physics_frames())
-  Frame N+11 post-restore (no fresh jump_pressed):
+  Frame N+10 (restore_from_snapshot fires inside this tick; snap.is_grounded=true):
+    _jump_buffer_active     = false   (idempotent re-clear; restore preserves cleared state)
+    _grounded_history_valid = true    (grounded 복원)
+    _last_grounded_frame    = N+10    (Engine.get_physics_frames() returns N+10 at this tick)
+  Frame N+11 (first tick AFTER restore; predicate evaluation, no fresh jump_pressed):
     jump_buffered = (_jump_buffer_active=false AND ...) → FALSE short-circuit
                    ↑ math 평가 skip; (N+11 - 0) 빼기 자체가 실행되지 않음
                    → 어떤 frame counter 값에서도 phantom jump 발화 불가능 by construction.
@@ -907,16 +907,23 @@ Frame 5:   move_axis=(-0.21, 0.0); _x_pos_active=true → -0.21 < 0.15 exit? TRU
            (Deliberate large stick flip — hysteresis allows intentional change.)
 
 Pre-B10 oscillation case the fix blocks:
-   Pre-B10 single threshold 0.2; Steam Deck rest with mild perturbation.
-   Frame 1: (0.25, 0.0) → facing=E
-   Frame 2: (0.18, 0.0) → below 0.2 → preserve E
-   Frame 3: (-0.21, 0.0) → -0.21 ≤ -0.2 → flip facing=W  ← UNINTENDED on drift
-   Frame 4: (0.25, 0.0) → flip back to E                  ← UNINTENDED
-   → Visual: facing oscillates E↔W on stick-rest drift noise.
+   Pre-B10 single threshold = 0.2 = `gamepad_deadzone` (input.md C.1.3).
+   Steam Deck stick drift envelope ~±0.18 with occasional tails to ±0.21.
+   
+   Pre-B10 behavior on drift tail crossings:
+   Frame 1: (0.21, 0.0) → 0.21 ≥ 0.2 → commit facing=E
+   Frame 2: (0.18, 0.0) → 0.18 < 0.2 → preserve E (in-band drift OK)
+   Frame 3: (-0.21, 0.0) → -0.21 ≤ -0.2 → flip facing=W  ← UNINTENDED on drift tail
+   Frame 4: (0.21, 0.0) → 0.21 ≥ 0.2 → flip back to E    ← UNINTENDED on drift tail
+   → Pre-B10 visual: facing oscillates E↔W on every drift-tail crossing of 0.2.
 
-   Post-B10 with hysteresis (above scenarios) — frame 3 type (-0.18) doesn't
-   release & doesn't activate -x; frame 3 type (-0.21) DOES release +x but
-   needs to also satisfy -0.21 ≤ -0.2 to activate -x. Drift between -0.15
+   Post-B10 protection via [0.15, 0.20) "protected band" (showcased in 5-frame
+   trace above): the EXIT threshold 0.15 sits BELOW the typical drift envelope
+   ±0.18, so an active sign stays committed under in-band drift. The fix
+   narrows the unintended-flip zone from "any crossing of 0.2" to "deliberate
+   stick flip — release first via |x| < 0.15, then commit via ≥ 0.20 in
+   opposite direction". Drift staying within ±0.18 cannot achieve this
+   sequence; only deliberate user input can. Drift between -0.15
    and -0.2 is in the "neither" zone — facing preserved at whatever was last
    locked. ✓ stable facing under drift.
 ```
@@ -1200,6 +1207,12 @@ ADR 신규 발행 *불필요* — 위 항목은 모두 `damage.md` AC-21 precede
 ---
 
 ## H. Acceptance Criteria
+
+> **Section Totals (post-revision 2026-05-11)**: **36 AC = 30 BLOCKING + 6 ADVISORY**.
+> Per-fix delta: B3 +1 (AC-H1-07 boot invariant), B6 +1 (AC-H6-06 reachability fixture);
+> B5 obsoletes-and-replaces AC-H1-05 → AC-H1-05-v2 (count neutral); B2+B4+B7+B8+B9+B10
+> rewire existing AC bodies (count neutral). Per-row per-subsection tallies appear in
+> each H.1–H.7 preamble below; final tally also locked in A.1 Locked Decisions.
 
 ### H.1 Snapshot Restoration (TR contract)
 
