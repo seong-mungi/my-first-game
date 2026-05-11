@@ -206,3 +206,151 @@ All 11 cumulative prior items verified at HEAD:
 - **Verdict at end of session**: All 6 items fixed inline. **Status remains "Designed (pending re-review)"** in systems-index Row #2 — per inline-fix-then-reverify preference, user chose to perform a 4th fresh-session `/clear` + independent `/design-review` re-review before promoting to Approved (BLOCKING fix introduced new debug flag + AC change; independent eye warranted).
 - **Prior verdict resolved**: Yes — re-review #2's 4 items + re-review #1's 7 items (11 cumulative) all verified intact at HEAD; this re-review surfaced 6 additional items that were missed in the prior two passes (debug flag contradiction was a latent spec defect; C.3.3 pattern gap predates re-review #1; AC-H14 PANIC entry coverage gap introduced by re-review #2's PANIC enum addition; G.4 vs D.4 scope tension surfaced from re-review #1's D.4 bootloader paragraph addition; AC-H5 grep too broad; F.3 line refs).
 - **Next**: Fresh `/clear` session + `/design-review design/gdd/scene-manager.md --depth lean` for re-review #4 independent verdict. Only after PASS, promote to **Approved** and apply Phase 5d batch + housekeeping batch.
+
+---
+
+## Review — 2026-05-11 (fourth pass, same day) — Verdict: NEEDS REVISION (resolved inline this session)
+
+**Mode**: `/design-review design/gdd/scene-manager.md --depth lean` (re-review #4 — independent fresh-session verification of prior NEEDS REVISION #3 closures)
+**Scope signal**: L (unchanged — multi-system integration; 5 cross-doc reciprocals + Phase 5d batch + housekeeping batch queued)
+**Specialists**: None (lean mode — single-session analysis)
+**Re-review of prior verdict**: Yes — re-review #3 same day was NEEDS REVISION with 6 inline fixes reported applied.
+
+### Prior closure verification (17 cumulative items from R1+R2+R3)
+
+All 17 cumulative prior items verified intact at HEAD via re-review #3's verification table + spot-checks this session:
+
+| # | Prior item (source) | HEAD evidence |
+|---|---|---|
+| RR3-1..6 | All 6 items from re-review #3 (debug_simulate_load_failure split, C.3.3 PANIC + phase guards, AC-H14 PANIC entry, G.4 vs D.4, AC-H5 grep tightening, F.3 line refs) | ✅ Verified — `debug_simulate_budget_overrun` flag separate in G.3; `Pattern scope note` block present after C.3.3 GDScript pattern; AC-H14 asserts `_boundary_state == BoundaryState.PANIC`; G.4 cold-boot bullet excludes engine bootloader; AC-H5 sub-check #2 grep targets `.connect(...)` syntax; F.3 uses section refs |
+| RR2-1..4 | All 4 items from re-review #2 (registry path drift, AC tally, PANIC recovery, K notation) | ✅ Verified via re-review #3 table |
+| RR1-1..7 | All 7 items from re-review #1 (PANIC enum, boss_defeated count 17, AC-H1/H23 test scope, C.3.3 priority-ladder rephrase, F.1 breadcrumb, D.4 bootloader, A.4 guardrail) | ✅ Verified via re-review #3 table |
+
+No regressions from prior 17 fixes.
+
+### Findings (this re-review #4)
+
+| Severity | Count | Items |
+|---|---|---|
+| **BLOCKING** | 2 | TransitionIntent enum API contradiction + missing declaration · `src/autoload/scene_manager.gd` path likely wrong (PM B2 / Input B7 trap recurrence) |
+| **RECOMMENDED** | 3 | `tree_changed` POST-LOAD entry trigger lacks filter mechanism · No AC validates `change_scene_to_packed` call cardinality · PM F.4.2 reciprocal annotation drift carries into HEAD |
+| **Nice-to-Have** | 1 | AC-H1 / AC-H17 mock-shim harness reuse cross-reference |
+
+#### BLOCKING — fixed inline
+
+1. **TransitionIntent enum API contradiction + missing declaration** — Rule 14 (line 136) + AC-H12 (line 983) + AC-H13 (line 995) used `change_scene_to_packed(packed, is_checkpoint_restart: bool)` API; C.2.3 (line 211) + C.3.3 GDScript pattern (lines 287, 297) used `_trigger_transition(packed, intent: TransitionIntent)` with `TransitionIntent.STAGE_CLEAR / CHECKPOINT_RESTART`. The `TransitionIntent` enum was **never declared** — only `enum Phase` appeared at line 207. Two-API ambiguity: programmer cannot determine bool vs enum, full enum value set, or whether Rule 14's no-op guard applies to internal `_trigger_transition` calls.
+   - **Fix (Option A — Enum only, chosen by user)**: Added `enum TransitionIntent { COLD_BOOT, CHECKPOINT_RESTART, STAGE_CLEAR }` declaration in C.2.3 (after `enum Phase`); added **"API 단일 출처 정책"** paragraph specifying enum-only external + internal API + Rule 14 guard scope (`SceneManager.change_scene_to_packed` external entry point, not `_trigger_transition` internal); rewrote Rule 14 to use `intent: TransitionIntent` with `CHECKPOINT_RESTART` pass-through; rewrote C.3.2 same-PackedScene reload semantics to use enum; rewrote AC-H12 (uses `STAGE_CLEAR` non-restart variant + COLD_BOOT cross-check) + AC-H13 (uses `CHECKPOINT_RESTART`). Post-fix grep at HEAD: `is_checkpoint_restart` = 0 matches; `TransitionIntent` = 5+ matches across C.2.3/Rule 14/C.3.2/C.3.3/AC-H12/AC-H13.
+
+2. **`src/autoload/scene_manager.gd` path likely wrong — PM B2 / Input B7 trap recurrence** — AC-H4/H5/H6/H7/H24 (5 BLOCKING grep ACs) all cited `src/autoload/scene_manager.gd`. Verified against project: `find src -type d` shows `src/{ui,tools,core,networking,ai,gameplay}` only — **no `src/autoload/` subdirectory exists**. `.claude/docs/directory-structure.md` enumerates `src/` subdirs as `core/gameplay/ai/networking/ui/tools`. Sibling conventions: input.md uses `src/input/` (Input B7), state-machine.md uses `src/core/state_machine/`. If canonical path differs, all 5 grep gates silently pass against a non-existent file — exact PM B2 / Input B7 trap.
+   - **Fix (Option A — `src/core/scene_manager/`, chosen by user)**: `replace_all src/autoload/scene_manager.gd → src/core/scene_manager/scene_manager.gd` (11 sites — 5 ACs × multiple sub-checks within each). Post-fix grep at HEAD: `src/autoload` = 0 matches; `src/core/scene_manager` = 11 matches. Matches state-machine.md `src/core/state_machine/` Foundation precedent.
+
+#### RECOMMENDED — fixed inline
+
+3. **`tree_changed` signal as POST-LOAD entry trigger lacks filter mechanism** — C.2.1 POST-LOAD row 173 + C.3.2 T+M+K row 252 + A.3 reference relied on SM `tree_changed` to detect "new scene `_ready()` chain complete → POST-LOAD entry". Godot 4.6 `SceneTree.tree_changed` fires on every child add/move/rename — many times during a single scene swap. GDD did not specify filter logic. Risk: naive `tree_changed.connect()` triggers `_register_checkpoint_anchor()` mid-swap → race with `_ready()` chain.
+   - **Fix (Option A — `process_frame.connect(..., CONNECT_ONE_SHOT)`, chosen by user)**: Switched POST-LOAD entry trigger to `get_tree().process_frame.connect(_on_post_load, CONNECT_ONE_SHOT)` — signal-based one-shot pattern (NOT coroutine — preserves Rule 9 비협상 "코루틴 금지"). Initial attempt with `await get_tree().process_frame` was reverted after realising `await` is a coroutine yield that violates Rule 9. Updated C.2.1 POST-LOAD row, C.3.2 T+M+K row, A.3 Godot 4.6 SceneTree API reference (3 sites). Post-fix grep at HEAD: `tree_changed` = 0 matches; `process_frame` = 3 matches.
+
+4. **No AC validates `change_scene_to_packed` call cardinality is exactly 1 per transition** — D.6 covered `scene_will_change` emit cardinality (AC-H8) but the symmetric "exactly one `SceneTree.change_scene_to_packed` call per transition" was untested. Combined with finding #1 (multiple API entry points), an internal bug could trigger a double scene swap.
+   - **Fix**: Added new **AC-H27** (Logic — BLOCKING) `test_change_scene_to_packed_cardinality_one_per_transition` covering Rule 4 + D.6 swap-call face. Tests all 3 entry paths (DEAD signal, boss_killed, cold-boot first input) with mock SceneTree counter. Updated H.0 preamble (Total ACs 28→29; Logic 15→16; BLOCKING 26→27; enumeration line adds AC-H27); H.5 AC-H27 row inserted; H.5 Rule 4 + D.6 coverage rows updated to cite AC-H27 (swap-call cardinality symmetric to emit cardinality).
+
+5. **PM F.4.2 reciprocal annotation drift carries into HEAD** — Per C.3.5 Phase 5d obligation, `player-movement.md` F.1 row #2 should drop `*(provisional)*` annotations. Verified at HEAD: PM F.1 row line 978 still `*(provisional re #2 Not Started)*`; PM F.4.2 row line 531 still `*(provisional)*` + `TBD` wiring. GDD acknowledged the obligation in C.3.5 but the gate semantics weren't explicit — promotion could slip past stale reciprocals.
+   - **Fix**: Added **"⚠️ Approved promotion gate (BLOCKING)"** note at the end of F.4.1 explicitly making Phase 5d batch a BLOCKING gate for Designed → Approved promotion. Note cites HEAD evidence of stale PM reciprocals and notes that the 17-site `boss_defeated → boss_killed` housekeeping batch is NOT part of the BLOCKING gate (damage.md single-source authority covers it).
+
+#### Nice-to-Have — fixed inline
+
+6. **AC-H1 / AC-H17 mock-shim harness reuse opportunity** — Both ACs construct deterministic mock `change_scene_to_packed` shims (AC-H1: M-tick normal; AC-H17: M+K+1 > 60 via `debug_simulate_budget_overrun`). One-line cross-ref aids implementer.
+   - **Fix**: Appended **"Harness reuse note"** to AC-H17 Test mechanism specifying that AC-H1 and AC-H17 share the same mock infrastructure parameterized by `latency_ticks: int` (AC-H1 default = M; AC-H17 = M+K+2 to force overrun).
+
+### Verification
+
+- F1: `grep -c is_checkpoint_restart` → 0 (was 5); `grep enum TransitionIntent` → line 208 declared; `grep TransitionIntent.STAGE_CLEAR\|.CHECKPOINT_RESTART\|.COLD_BOOT` → 8 matches across C.2.3/Rule 14/C.3.2/C.3.3/AC-H12/AC-H13.
+- F2: `grep -c src/autoload` → 0 (was 11 across 5 ACs); `grep -c src/core/scene_manager` → 11.
+- F3: `grep -c tree_changed` → 0 (was 3); `grep -c process_frame` → 3.
+- F4: AC-H27 present (5 references — H.0 enum line, AC body, H.5 row, Rule 4 row, D.6 row); AC enumerated count = 29 (was 28); H.0 math reconciles (16 Logic + 11 Integration BLOCKING + 2 ADVISORY = 29).
+- F5: "Approved promotion gate" note present at F.4.1 end.
+- F6: "Harness reuse note" present in AC-H17 Test mechanism.
+- Line count delta: 1368 → 1386 (+18 lines; all from inline additions — no section-skeleton changes).
+
+### Outcome
+
+- **Verdict at start**: NEEDS REVISION (2 BLOCKING + 3 RECOMMENDED + 1 Nice-to-Have)
+- **Verdict at end of session**: All 6 items fixed inline. **Status remains "Designed (pending re-review)"** in systems-index Row #2 — per inline-fix-then-reverify preference, user chose to perform fresh-session `/clear` + independent `/design-review` re-review #5 before promoting to Approved (BLOCKING #1 introduced new enum + API single-source policy; BLOCKING #2 changed canonical source-file path affecting 5 BLOCKING grep ACs; independent eye warranted).
+- **Prior verdict resolved**: Yes — re-review #3's 6 items + re-review #2's 4 items + re-review #1's 7 items (17 cumulative) all verified intact at HEAD; this re-review surfaced 6 additional items the prior three passes missed (TransitionIntent contradiction was a latent spec defect spanning Rule 14 + C.2.3 + C.3.3 + AC-H12/H13 — surfaced only by reading the four sections together; path drift surfaced by `find src -type d` validation prior reviews did not run; `tree_changed` signal-semantics issue required Godot 4.6 API knowledge that lean review caught on adversarial pass).
+- **Next**: Fresh `/clear` session + `/design-review design/gdd/scene-manager.md --depth lean` for re-review #5 independent verdict. Only after PASS, promote to **Approved** and apply Phase 5d batch + housekeeping batch.
+
+---
+
+## Review — 2026-05-11 (fifth pass, same day) — Verdict: NEEDS REVISION (resolved inline this session)
+
+**Mode**: `/design-review design/gdd/scene-manager.md --depth lean` (re-review #5 — independent fresh-session verification of prior NEEDS REVISION #4 closures)
+**Scope signal**: L (unchanged — multi-system integration; 5 cross-doc reciprocals + Phase 5d batch + housekeeping batch queued)
+**Specialists**: None (lean mode — single-session analysis)
+**Re-review of prior verdict**: Yes — re-review #4 same day was NEEDS REVISION with 6 inline fixes reported applied (TransitionIntent enum + API single-source policy, `src/core/scene_manager/` path, `process_frame` one-shot pattern, AC-H27 + H.0 reconciliation, Approved promotion gate, AC-H1/H17 harness reuse note).
+
+### Prior closure verification (23 cumulative items from R1+R2+R3+R4)
+
+All 23 cumulative prior items verified intact at HEAD via targeted grep evidence:
+
+| # | Prior item (source) | HEAD evidence |
+|---|---|---|
+| RR4-1 | BLOCKING — TransitionIntent enum + API single-source | ✅ Line 208 `enum TransitionIntent { COLD_BOOT, CHECKPOINT_RESTART, STAGE_CLEAR }`; `is_checkpoint_restart` 0 matches; `TransitionIntent` 10 matches across C.2.3/Rule 14/C.3.2/C.3.3/AC-H12/AC-H13 |
+| RR4-2 | BLOCKING — `src/core/scene_manager/` path | ✅ `src/autoload` 0 matches; `src/core/scene_manager` 11 matches |
+| RR4-3 | RECOMMENDED — `process_frame` one-shot pattern | ✅ `tree_changed` 0 matches; `process_frame` 3 matches at C.2.1/C.3.2/A.3 |
+| RR4-4 | RECOMMENDED — AC-H27 + H.0 reconciliation | ✅ AC-H27 at line 1168; H.0 Total ACs=29 |
+| RR4-5 | RECOMMENDED — Approved promotion gate | ✅ Line 695 "⚠️ Approved promotion gate (BLOCKING)" present |
+| RR4-6 | Nice-to-Have — AC-H1/AC-H17 harness reuse note | ✅ Line 1055 present |
+| RR3-1..6 | All 6 items (debug flag split, C.3.3 pattern scope note, AC-H14 PANIC entry, G.4 bootloader, AC-H5 grep tightening, F.3 section refs) | ✅ All intact (debug_simulate_budget_overrun separate flag in G.3; Pattern scope note at line 303; AC-H14 4th post-condition; G.4 excludes engine bootloader; AC-H5 `.connect(...)` pattern; F.3 section refs) |
+| RR2-1..4 | All 4 items (registry path drift, H.0 AC tally, PANIC recovery, K notation) | ✅ All intact (3 sites `design/registry/entities.yaml`; H.0 reconciled; AC-H26 + E.1 terminality; K notation with `K < M` gloss) |
+| RR1-1..7 | All 7 items (PANIC enum, boss_defeated count 17, AC-H1/H23 test scope, C.3.3 priority rephrase, F.1 breadcrumb, D.4 bootloader, A.4 guardrail) | ✅ All intact; `boss_defeated` HEAD count: TR=13 + SM=4 = 17 still queued for housekeeping batch (not BLOCKING per RR4-5) |
+
+No regressions across 23 prior fixes.
+
+### Findings (this re-review #5)
+
+| Severity | Count | Items |
+|---|---|---|
+| **BLOCKING** | 2 | `enum BoundaryState` declaration missing in C.2.3 (latent spec defect — same pattern as RR4-1 TransitionIntent gap) · F.1 omits #1 Input System as downstream dependent (dependency graph hole) |
+| **RECOMMENDED** | 2 | C.2.3 `_boundary_state` / `_respawn_position` / `_current_scene_packed` / `_stage_1_packed` / `_victory_screen_packed` member declarations missing · D.3 N=0 "panic state" wording contradicts E.2 / AC-H10 fallback semantics |
+| **Nice-to-Have** | 2 | C.3.5/F.4.1 damage.md "*(미작성)*" obligation stale at HEAD (annotation already absent) · A.4/A.6 historical "25 ACs" count outdated (current = 29 post-RR2/RR3/RR4 additions) |
+
+#### BLOCKING — fixed inline
+
+1. **`enum BoundaryState` declaration missing in C.2.3** — C.2.3 declared `enum Phase` and `enum TransitionIntent` (RR4-1) but `enum BoundaryState` was never declared, despite `BoundaryState.{BOOT_INTRO, ACTIVE, RESTART_PENDING, CLEAR_PENDING, PANIC}` being referenced 11+ times across the GDD (D.5 line 522, C.3.3 GDScript pattern lines 289–300, E.1 line 606, AC-H14 line 1013, AC-H26 line 1162, Pattern scope note line 303). Same latent-spec-defect pattern as RR4-1 TransitionIntent gap — a programmer copying C.2.3's enum block would write only `enum Phase` + `enum TransitionIntent`, then fail on `BoundaryState.CLEAR_PENDING` references throughout C.3.3 and AC tests.
+   - **Fix**: Added `enum BoundaryState { BOOT_INTRO, ACTIVE, RESTART_PENDING, CLEAR_PENDING, PANIC }` declaration in C.2.3 immediately after `enum TransitionIntent` (line 209). Inline comment ties back to D.5 5-value enum range. Post-fix grep at HEAD: `enum BoundaryState` 1 match; `BoundaryState.` 15 usages now resolve.
+
+2. **F.1 omits #1 Input System as downstream dependent** — F.1 enumerated 11 downstream dependents (#3, #4, #5, #6, #8, #9, #12, #13, #15, #17, #18) but did not include #1 Input System even though E.6 line 619 + E.7 line 623 explicitly state input.md C.5 router calls `SM.change_scene_to_packed(stage_1_packed)` on cold-boot first input. F.3 line 677 already had reciprocal row for input.md with status ✅ Present — but F.3 is titled "Bidirectional Verification — F.1 reciprocals already in Approved GDDs", which presupposes F.1 source row exists. Structural inconsistency + dependency graph hole.
+   - **Fix**: Added F.1 row for `#1 Input System | Approved | input.md C.5 router calls SM.change_scene_to_packed(stage_1_packed, TransitionIntent.COLD_BOOT) on first cold-boot input (E.6 / E.7) | Hard | Cold-boot trigger source (Pillar 4 5분 룰 critical path)...` (inserted before #3 Camera). Hard classification rationale: cold-boot path is broken without input.md C.5 router (Pillar 4 비협상).
+
+#### RECOMMENDED — fixed inline
+
+3. **C.2.3 member variable declarations missing** — C.2.3 declared `var _phase: Phase = Phase.IDLE` but did not declare `_boundary_state`, `_respawn_position`, `_current_scene_packed`, `_stage_1_packed`, `_victory_screen_packed` despite their use throughout C.3.3 pattern, D.3, D.5, AC-H3b, AC-H10, and Rule 14 same-PackedScene guard logic.
+   - **Fix**: Added 5 member variable declarations at C.2.3 (lines 212–217). Initial values: `_boundary_state = BoundaryState.BOOT_INTRO` (per C.2.2 cold-boot slot); `_respawn_position = Vector2.ZERO`; `_current_scene_packed: PackedScene = null`. `@export var _stage_1_packed` / `@export var _victory_screen_packed` use `@export` per G.2 designer-tunable knob policy. Inline comments cross-reference C.2.2 / D.3 / AC-H3b/H10 / Rule 14.
+
+4. **D.3 N=0 "panic state" wording contradicts E.2 / AC-H10 fallback semantics** — D.3 (named expression line 434, variable result row line 445, Edge note line 460) said "N = 0 → SM panic state". But E.2 line 609 explicitly sets `_respawn_position = current_player_position` (fallback) + `push_error` + debug `assert(false)` — does NOT set `_boundary_state = BoundaryState.PANIC`. AC-H10 line 965 verifies the fallback (`SM._respawn_position == player.global_position`) — not PANIC entry. Only E.1 (null PackedScene) sets PANIC (terminal per RR2-3 fix). D.3 wording was misleading — N=0 is a *fallback* (lifecycle continues), not E.1 PANIC terminality (lifecycle blocked).
+   - **Fix**: Rewrote 3 D.3 sites — named expression (line 442) uses `respawn_position = player.global_position (E.2 fallback)  (if N = 0; push_error + assert in debug — NOT BoundaryState.PANIC)`; result row (line 453) changed type from `Vector2 | panic` to `Vector2` with explicit "not BoundaryState.PANIC" note; Edge note (line 468) rewritten to explicitly distinguish from E.1 terminality and cite AC-H10 as the verification gate.
+
+#### Nice-to-Have — fixed inline
+
+5. **C.3.5 / F.4.1 damage.md *(미작성)* obligation stale at HEAD** — C.3.5 line 328 + F.4.1 line 687 listed "damage.md F.4 row `boss_killed` — *(미작성)* annotation 제거" as Phase 5d obligation. HEAD verification: `grep "미작성" design/gdd/damage.md` returns 0 matches near line 832 (the `boss_killed` row). Annotation either was removed at an earlier point or never existed — obligation already complete.
+   - **Fix**: Annotated C.3.5 line 336 row with "annotation 이미 부재 (verified at HEAD 2026-05-11 RR5...); **obligation closed (no edit needed)**". Strike-through F.4.1 line 696 with "✅ **Closed at RR5 2026-05-11**: annotation verified absent at HEAD; no edit needed." Phase 5d batch list now accurately reflects HEAD state.
+
+6. **A.4 / A.6 historical "25 ACs" count outdated** — A.4 qa-lead row line 1363 and A.6 Last Updated narrative line 1385 both cited "25 ACs (23 BLOCKING / 2 ADVISORY)" — qa-lead's original Session 19 draft figure. Current HEAD state after RR2/RR3/RR4 additions: 29 ACs / 27 BLOCKING / 2 ADVISORY. Top-to-bottom readers encountering "25 ACs" then H.0's "29 ACs" would experience confusion.
+   - **Fix**: Annotated A.4 qa-lead row (line 1372) with "Original Session 19 draft: 25 ACs ... **Post-RR cumulative HEAD state (canonical — see H.0 preamble)**: 29 ACs / 27 BLOCKING / 2 ADVISORY — additions: AC-H26 PANIC terminality (RR2), AC-H14 PANIC entry post-condition (RR3 enhancement, not new AC), AC-H27 swap-call cardinality (RR4)." Same cumulative annotation applied to A.6 Last Updated narrative (line 1394).
+
+### Verification
+
+- B1: `grep -n "enum BoundaryState" design/gdd/scene-manager.md` → line 209 declared; `grep -c "BoundaryState\."` → 15 (was 11; +4 from new declarations and reference cross-checks).
+- B2: F.1 row line 659 `| **#1** | Input System | Approved | input.md C.5 router calls...` present.
+- R1: 5 new declarations at lines 212–217; `var _boundary_state` / `var _respawn_position` / `var _current_scene_packed` / `@export var _stage_1_packed` / `@export var _victory_screen_packed` all present.
+- R2: D.3 sites line 442 / 453 / 468 all use "(E.2 fallback)" or "**not** `BoundaryState.PANIC`" wording; old "panic state" wording for N=0 gone.
+- N1: Line 336 (C.3.5) + line 696 (F.4.1) both annotated as obligation closed; cross-verified `grep "미작성" damage.md` → 0 matches.
+- N2: Line 1372 (A.4) + line 1394 (A.6) both have "Post-RR cumulative HEAD state: 29 ACs / 27 BLOCKING / 2 ADVISORY" annotation.
+- Line count delta: 1386 → 1395 (+9 lines; all from inline additions — no section-skeleton changes).
+- AC count unchanged at 29 (H.0 preamble line 802 "Total ACs: 29" intact; H.5 coverage table enumerates 29 rows).
+
+### Outcome
+
+- **Verdict at start**: NEEDS REVISION (2 BLOCKING + 2 RECOMMENDED + 2 Nice-to-Have)
+- **Verdict at end of session**: All 6 items fixed inline. **Status remains "Designed (pending re-review)"** in systems-index Row #2 — per inline-fix-then-reverify preference, user chose to perform fresh-session `/clear` + independent `/design-review` re-review #6 before promoting to Approved (BLOCKING fixes are small declarations but match the latent-spec-defect family from RR4-1; independent eye recommended even at diminishing returns).
+- **Prior verdict resolved**: Yes — re-review #4's 6 items + re-review #3's 6 items + re-review #2's 4 items + re-review #1's 7 items (23 cumulative) all verified intact at HEAD; this re-review surfaced 6 additional items prior four passes missed (BoundaryState enum declaration gap = same pattern as RR4-1 TransitionIntent — emerged because RR4 added TransitionIntent but didn't audit for sibling missing enums; F.1 #1 input.md omission surfaced via dependency-graph audit that prior reviews did not run; D.3 N=0 wording surfaced by reading D.3 + E.2 + AC-H10 together for the first time).
+- **Cumulative review tally**: 5 passes, 29 items closed total (RR1×7 + RR2×4 + RR3×6 + RR4×6 + RR5×6). Pattern shows diminishing complexity — RR5 BLOCKING items are minimal-edit declarations (1 enum line + 1 F.1 row), suggesting RR6 may converge to PASS.
+- **Next**: Fresh `/clear` session + `/design-review design/gdd/scene-manager.md --depth lean` for re-review #6 independent verdict. Only after PASS, promote to **Approved** and apply Phase 5d batch + housekeeping batch (housekeeping NOT in Approved BLOCKING gate per RR4-5 F.4.1 note).
