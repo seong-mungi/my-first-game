@@ -195,6 +195,7 @@
   },
   "active": "069d84cd14959ebb",
   "lastOpenFiles": [
+    "concepts/Aim Assist Accessibility Tiers.md",
     "concepts/Analog Stick To 8-Way Quantization.md",
     "concepts/Aim Lock Modifier Pattern.md",
     "questions/Research 8-Way Aim Usability For Run-and-Gun.md",
@@ -220,7 +221,6 @@
     "concepts/Hit Rate Grading System.md",
     "concepts/Contra Per Entry Mechanic Matrix.md",
     "entities/Contra Rogue Corps.md",
-    "entities/Hard Corps Uprising.md",
     "wiki/questions/zhc-cosmetics-execution-plan-presentation.html",
     "wiki/questions/zhc-cosmetics-proposal-2026-04-28.html",
     "bin/setup-vault.sh",
