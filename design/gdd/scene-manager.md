@@ -211,10 +211,10 @@ enum BoundaryState { BOOT_INTRO, ACTIVE, RESTART_PENDING, CLEAR_PENDING, PANIC }
 var _phase: Phase = Phase.IDLE
 var _boundary_state: BoundaryState = BoundaryState.BOOT_INTRO  # C.2.2 cold-boot initial slot
 var _respawn_position: Vector2 = Vector2.ZERO                  # D.3 selection result; AC-H3b/AC-H10
-var _current_scene_packed: PackedScene = null                  # Rule 14 same-PackedScene guard tracking
+var current_scene_packed: PackedScene = null                   # Rule 14 same-PackedScene guard tracking (no `_` prefix — matches walkthroughs C.3.2/C.3.3 + AC-H18; RR6 rename)
 
-@export var _stage_1_packed: PackedScene       # G.2 designer-tunable (default `preload("res://scenes/stage_1.tscn")`)
-@export var _victory_screen_packed: PackedScene # G.2 designer-tunable (default `preload("res://scenes/victory_screen.tscn")`)
+@export var stage_1_packed: PackedScene        # G.2 designer-tunable (default `preload("res://scenes/stage_1.tscn")`). `@export` field — `_` prefix convention reserved for private vars; inspector-public field uses bare name (RR6 rename matching G.2 / walkthroughs)
+@export var victory_screen_packed: PackedScene # G.2 designer-tunable (default `preload("res://scenes/victory_screen.tscn")`). `@export` field — bare name per inspector-public convention (RR6 rename)
 ```
 
 상태 진입/이탈은 `_trigger_transition(packed: PackedScene, intent: TransitionIntent)` 함수의 동기적 단계 진행으로 처리된다 (코루틴 금지 — Rule 9 비협상). state-machine.md 프레임워크는 ECHO / 적 / 보스의 멀티-엔티티 동시 리액티브 머신을 타깃하며, SceneManager는 단일 인스턴스 선형 lifecycle이므로 프레임워크 오버헤드를 정당화하지 못한다.
@@ -225,6 +225,8 @@ var _current_scene_packed: PackedScene = null                  # Rule 14 same-Pa
 
 - **SM이 소유**: 씬 경계, transition lifecycle (5 phases), `scene_will_change` emit, checkpoint anchor 등록, `boss_killed` 구독, 4-state boundary diagram (BOOT_INTRO / ACTIVE / RESTART_PENDING / CLEAR_PENDING).
 - **SM이 소유하지 않음**: 스테이지 내 encounter flow (Stage #12), 적 스폰 (Stage #12), 보스 phase advance (damage.md D.2.1), 토큰 economy (TR #9 — Rule 7 보존 의무만), HUD 갱신 (HUD #13 — TR/Damage 시그널 직접 구독).
+
+**Tier 1 boundary state evolution (RR6 surfaced)**: C.2.2 says `ACTIVE` 진입은 Stage #12이 소유 (Tier 1 deferred). 결과적으로 **Tier 1 production에서 `_boundary_state`는 ACTIVE에 도달하지 않는다** — 진화 경로는 BOOT_INTRO → (cold-boot transition close 후 BOOT_INTRO 유지) → RESTART_PENDING (첫 DEAD 후 영구) → CLEAR_PENDING (boss_killed 후). `_on_state_changed(_, &"alive")` 핸들러는 `_phase = READY`만 설정하고 `_boundary_state`는 그대로 둔다 (C.3.3 pattern). 이는 contract bug가 아니라 *incomplete state machine* — Stage #12 도입 시 ACTIVE 슬롯 owner가 채워지며 진화 경로가 BOOT_INTRO → ACTIVE → RESTART_PENDING/CLEAR_PENDING → ACTIVE로 정상화된다. Tier 1 AC들 (특히 AC-H18)은 핸들러의 state-agnostic 성질에 의존하여 mock으로 ACTIVE 상태를 생성하지 않고도 contract를 검증한다 — AC-H11과 AC-H18 모두 Given을 "SM is IDLE" 로만 요구한다.
 
 ### C.3 Interactions with Other Systems
 
@@ -295,7 +297,7 @@ End-to-end tick-by-tick 표:
 ```gdscript
 func _on_boss_killed(boss_id: StringName) -> void:
     _boundary_state = BoundaryState.CLEAR_PENDING
-    _trigger_transition(_victory_screen_packed, TransitionIntent.STAGE_CLEAR)
+    _trigger_transition(victory_screen_packed, TransitionIntent.STAGE_CLEAR)
 
 func _on_state_changed(from: StringName, to: StringName) -> void:
     if to == &"dead" and _boundary_state == BoundaryState.CLEAR_PENDING:
@@ -305,7 +307,7 @@ func _on_state_changed(from: StringName, to: StringName) -> void:
         return
     if to == &"dead":
         _boundary_state = BoundaryState.RESTART_PENDING
-        _trigger_transition(_current_scene_packed, TransitionIntent.CHECKPOINT_RESTART)
+        _trigger_transition(current_scene_packed, TransitionIntent.CHECKPOINT_RESTART)
 ```
 
 > **Pattern scope note**: 위 snippet은 same-tick CLEAR vs RESTART 우선순위 로직만 보여준다 — 본 GDD가 spec하는 다른 진입 가드는 별도로 production 핸들러에 포함되어야 한다: (a) **panic-state 가드** `if _boundary_state == BoundaryState.PANIC: return` (E.1 terminality + AC-H26); (b) **`_phase != Phase.IDLE` 가드** `if _phase != Phase.IDLE: push_warning(...); return` (E.4 `boss_killed` during transition + E.5 `dead` during transition + AC-H19/AC-H20). 두 핸들러 모두 함수 본문 *최상단*에 두 가드를 배치한다 (precedence: panic > phase ≠ idle > 동일-틱 우선순위).
@@ -333,7 +335,6 @@ C.2.1 POST-LOAD phase는 현재 SM-internal로 외부에 시그널을 노출하�
 | `state-machine.md` | C.2.2 O6 — Scene Manager provisional contract → confirmed; signal `scene_will_change()` (0 args) 락인 | C.2.2 row O6 |
 | `state-machine.md` | F.3 row #2 (Scene / Stage Manager — `scene_will_change()` 구독자) — provisional → confirmed | F.3 row #2 |
 | `state-machine.md` | OQ-SM-2 → resolved (SM이 `EchoLifecycleSM.boot()` 호출하지 않음; 씬 트리 자연 부트 per state-machine.md C.2.1 lock-in) | Section Z OQ table |
-| `damage.md` | F.4 row `boss_killed` "#2 Scene Manager (스테이지 클리어 트리거)" — annotation 이미 부재 (verified at HEAD 2026-05-11 RR5 `grep "미작성" damage.md` 0 matches near line 832); **obligation closed (no edit needed)** | F.4 row (verified) |
 | `player-movement.md` | F.4.2 row #2 (Scene Manager) — OQ-PM-1 closure: PM은 `scene_will_change` 직접 구독 안 함; EchoLifecycleSM cascade를 통한 `_clear_ephemeral_state()` 호출이 단일 경로 | F.4.2 row #2 |
 | `docs/registry/architecture.yaml` | 새 항목 4종: `interfaces.scene_lifecycle` (signal `scene_will_change()` producer=scene-manager, consumers=[trc, echo-lifecycle-sm]); `state_ownership.scene_phase` (owner=scene-manager autoload); `api_decisions.scene_manager_group_name = "scene_manager"`; `api_decisions.checkpoint_anchor_group_name = "checkpoint_anchor"` | new entries |
 | `design/registry/entities.yaml` | 새 constants 2종: `restart_window_max_frames = 60` (= 1.000 s @ 60 Hz Pillar 1 비협상 — Rule 9 contract); `cold_boot_max_seconds = 300` (Pillar 4 5분 룰 — Rule 13 contract) | constants section |
@@ -1061,7 +1062,7 @@ These three ACs fulfil the Section B "각 invariant는 Section H AC에 testable 
 - **When** a checkpoint restart is triggered
 - **Then** `push_warning` fires with message containing "Restart budget exceeded" and game continues (READY phase is eventually reached, no hard freeze)
 
-**Test mechanism**: GUT integration test `test_budget_exceeded_warns_and_continues` — set `debug_simulate_budget_overrun = true`, trigger restart, advance frames past 60, assert warning fired and READY eventually reached. **Flag scope note**: `debug_simulate_budget_overrun` (this AC) and `debug_simulate_load_failure` (AC-H14 panic path) are mutually exclusive debug paths — see G.3. **Harness reuse note**: AC-H1 (contract-level mock shim, M-tick normal path) and this AC share the same mock `SceneTree.change_scene_to_packed` infrastructure parameterized by `latency_ticks: int` (AC-H1 default = M; this AC = M+K+2 to force overrun). Consolidating reduces test rig duplication.
+**Test mechanism**: GUT integration test `test_budget_exceeded_warns_and_continues` — set `debug_simulate_budget_overrun = true`, trigger restart, advance frames past 60, assert warning fired and READY eventually reached. **Flag scope note**: `debug_simulate_budget_overrun` (this AC) and `debug_simulate_load_failure` (AC-H14 panic path) are mutually exclusive debug paths — see G.3. **Harness reuse note**: AC-H1 (contract-level mock shim, M-tick normal path) and this AC share the same mock `SceneTree.change_scene_to_packed` infrastructure parameterized by `latency_ticks: int` (AC-H1 default = M; this AC = **61**, chosen M/K-independent to guarantee `latency_ticks + K + 1 > 60` regardless of actual Godot 4.6 M/K values — `M+K+2` was rejected in RR6 as it yields 57 ticks at worked-example M=30/K=12, below the 60-tick ceiling). Consolidating reduces test rig duplication.
 
 ---
 
@@ -1069,7 +1070,7 @@ These three ACs fulfil the Section B "각 invariant는 Section H AC에 testable 
 **Classification**: Integration — BLOCKING
 **Covers**: Rule 12 · C.3.3
 
-- **Given** SM is IDLE in ACTIVE boundary state
+- **Given** SM is IDLE (mirror AC-H11 — handler is state-agnostic; `_on_boss_killed` unconditionally sets `_boundary_state = CLEAR_PENDING` per C.3.3 pattern regardless of prior boundary state. RR6 dropped earlier "in ACTIVE boundary state" qualifier — Tier 1 never enters ACTIVE without Stage #12 per C.2.2; see C.2.4 Tier 1 boundary state evolution note)
 - **When** `boss_killed(&"boss_0")` signal fires
 - **Then** `SM._boundary_state == CLEAR_PENDING` AND lifecycle proceeds through PRE_EMIT → `change_scene_to_packed(victory_screen_packed)` → SWAPPING
 

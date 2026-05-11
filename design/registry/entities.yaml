@@ -544,6 +544,31 @@ constants:
     added: 2026-05-11
     revised: ""
 
+  - name: restart_window_max_frames
+    status: active
+    source: design/gdd/scene-manager.md
+    referenced_by:
+      - design/gdd/scene-manager.md      # C.1 Rule 9 + D.1 budget invariant + G.1 locked constant + AC-H1 / AC-H17 / AC-H23
+      - design/gdd/game-concept.md       # Pillar 1 비협상 (학습 도구 — < 1초 재시작 절대 양보 X)
+      - design/gdd/time-rewind.md        # F.1 row #2 — TRC `_buffer_invalidate()` happens within this window
+    value: 60
+    unit: frames
+    notes: "Checkpoint restart lifecycle budget ceiling (= 1.000 s @ 60 Hz). Pillar 1 비협상 — `M + K + 1 ≤ 60` where M = SWAPPING ticks (Godot `change_scene_to_packed` engine-internal) + K = POST-LOAD ticks (`_ready()` chain + checkpoint_anchor 등록) + 1 = READY confirmation tick. Locked by scene-manager.md C.1 Rule 9 + D.1 invariant; modification gate = game-concept revision (Pillar 1 change). Phase 5d batch entry added 2026-05-11 via Scene Manager #2 Approved RR7."
+    added: 2026-05-11
+    revised: ""
+
+  - name: cold_boot_max_seconds
+    status: active
+    source: design/gdd/scene-manager.md
+    referenced_by:
+      - design/gdd/scene-manager.md      # C.1 Rule 13 + D.4 budget invariant + G.1 locked constant + AC-H2a / AC-H2b / AC-H22
+      - design/gdd/game-concept.md       # Pillar 4 5분 룰 (no Press-any-key gate)
+    value: 300.0
+    unit: seconds
+    notes: "Cold boot (game launch) to first actionable input budget ceiling — `cold_boot_elapsed_s = (t_first_input_ms - t_process_start_ms) / 1000.0 ≤ 300.0`. Pillar 4 5분 룰 — Press-any-key gate 금지 (Anti-Pillar #6 input remapping exclusion enables intro options menu gate removal). `t_process_start_ms` captured at `SceneManager._ready()` entry (engine bootloader gap excluded; advisory escalation to OS stopwatch if Steam Deck 1세대 AC-H2b approaches ceiling). Tier 1 measured estimate ≪ 10 s; 300 s ceiling guards extreme asset-streaming design. Phase 5d batch entry added 2026-05-11 via Scene Manager #2 Approved RR7."
+    added: 2026-05-11
+    revised: ""
+
 # Example:
 #
 # constants:

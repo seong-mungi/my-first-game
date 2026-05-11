@@ -131,6 +131,21 @@ state_ownership:
     revised: ""
     notes: "9-action catalog locked Tier 1; Tier 2 zero additions (Difficulty Toggle #20 changes RewindPolicy data only, never InputMap); Tier 3 #23 Input Remapping permits player-bound chord (default mapping table unchanged — 'default_only' interpretation, OQ-15 closure). KB+M defaults: A/D/W/S move, Space jump, F aim_lock (NOT Shift — Shift conflict resolved to rewind_consume), LMB shoot, Shift rewind_consume, Escape pause. Gamepad defaults (Xbox labels; Steam Deck inherits verbatim): Left Stick move, A jump, RB aim_lock, RT shoot, LT(threshold 0.5) rewind_consume, Start pause. PauseHandler autoload (api_decisions.pause_handler_autoload) handles pause toggle via _unhandled_input on PROCESS_MODE_ALWAYS path. ActiveProfileTracker autoload (api_decisions.active_profile_tracker) tracks KB+M/GAMEPAD profile for first-death prompt label (D.1 formula, HYSTERESIS_FRAMES=180)."
 
+  - state: scene_phase
+    status: active
+    owner_system: scene-manager
+    adr: design/gdd/scene-manager.md
+    interface: "SceneManager autoload owns 5-phase linear lifecycle (IDLE / PRE_EMIT / SWAPPING / POST_LOAD / READY) + 4-state boundary diagram (BOOT_INTRO / ACTIVE / RESTART_PENDING / CLEAR_PENDING) + PANIC terminal state. External callers use `SceneManager.change_scene_to_packed(packed: PackedScene, intent: TransitionIntent)` single entry point; internal `_trigger_transition()` handles synchronous phase progression (no coroutines — Rule 9 비협상 — preserving < 1.000 s checkpoint restart contract)."
+    write_access: scene-manager-only
+    referenced_by:
+      - design/gdd/scene-manager.md        # C.2.3 enum declarations + C.2.4 ownership boundary
+      - design/gdd/state-machine.md        # C.2.2 O6 — EchoLifecycleSM subscribes to scene_will_change emitted in PRE_EMIT phase
+      - design/gdd/time-rewind.md          # F.1 row #2 — TRC subscribes to scene_will_change for ring buffer invalidation
+      - design/gdd/player-movement.md      # F.4.2 row #2 — PM ephemeral state cleared via EchoLifecycleSM O6 cascade (PM does not directly subscribe — Rule 5)
+    added: 2026-05-11
+    revised: ""
+    notes: "Foundation/Infrastructure state owner. SM is autoload singleton with no `_physics_process` / `_process` override (Rule 2) — phase advancement is signal-reactive, not per-tick polling. Pillar 1 비협상 < 1초 restart and Pillar 4 5분 룰 cold-boot ceiling locked as entities.yaml constants (restart_window_max_frames=60, cold_boot_max_seconds=300). Tier 1 = single stage slice; multi-stage + async load + collage texture memory release deferred to Tier 2 gate (C.1 Rule 3 + Rule 11)."
+
 # Example:
 #
 # state_ownership:
@@ -297,6 +312,24 @@ interfaces:
     added: 2026-05-11
     revised: ""
     notes: "Foundation/Infrastructure contract — Input doesn't own any gameplay state, but the cascade invariant it provides is load-bearing for every higher invariant (PM jump_buffer / SM rewind window / TRC snapshot capture). Violations are detectable via tools/ci/_input_purity.py (callback purity static check) + tools/ci/input_action_static_check.sh (StringName const usage). Both scripts are AC-IN-04/05 deliverables — meta-runner tools/ci/run_static_checks.sh asserts script existence (PM B2 vaccine)."
+
+  - contract: scene_lifecycle
+    status: active
+    pattern: signal
+    producer: scene-manager
+    consumers:
+      - time-rewind-controller       # TRC subscribes for ring buffer invalidation (`_buffer_invalidate()`); preserves _tokens
+      - echo-lifecycle-sm            # EchoLifecycleSM subscribes for O6 cascade (latch + input buffer + O8 counter + PM `_clear_ephemeral_state()` call)
+    adr: design/gdd/scene-manager.md
+    signal_signature: "scene_will_change()"
+    referenced_by:
+      - design/gdd/scene-manager.md        # C.1 Rule 4 (sole producer) + Rule 5 (sole subscribers) + Rule 6 (ring buffer untouched) + Rule 7 (token preservation) + D.6 emit cardinality invariant
+      - design/gdd/time-rewind.md          # F.1 row #2 + E-16 + Rule 13-bis buffer-primed guard
+      - design/gdd/state-machine.md        # C.2.2 O6 + F.2 #2 Scene Manager subscriber row
+      - design/gdd/player-movement.md      # F.1 row #2 + F.4.2 row #2 — PM does NOT subscribe directly (Rule 5); cleared via EchoLifecycleSM O6 cascade
+    added: 2026-05-11
+    revised: ""
+    notes: "Zero-arg signal emitted by SceneManager autoload exactly once per transition (D.6 cardinality), synchronously emitted in PRE_EMIT phase within the same physics tick T as the subsequent `change_scene_to_packed` call (Rule 4 co-tick). PlayerMovement is explicitly forbidden from direct subscription (Rule 5 single-layer cascade design) — PM ephemeral state (8-var: 4 coyote/buffer + 4 facing Schmitt) is cleared via EchoLifecycleSM O6 cascade calling PM `_clear_ephemeral_state()`. Symmetric cardinality on the swap-call face is also invariant (AC-H27 — exactly one `SceneTree.change_scene_to_packed` per transition). Scene Manager #2 Approved RR7 2026-05-11 — Phase 5d batch entry."
 
 # Example:
 #
@@ -486,6 +519,31 @@ api_decisions:
       - design/gdd/time-rewind.md      # T1 DYING grace window aligns with prompt display duration
     added: 2026-05-11
     revised: ""
+
+  - purpose: scene_manager_group_name
+    status: active
+    api: '`add_to_group(&"scene_manager")` called as the **first executable statement** of `SceneManager._ready()` (autoload).'
+    not: "Direct autoload reference by name (`SceneManager.foo()` lookup) is allowed but discovery for cross-system access uses `get_first_node_in_group(&\"scene_manager\")`."
+    adr: design/gdd/scene-manager.md
+    reason: "EchoLifecycleSM `_ready()` (state-machine.md C.2.1 line 322) discovers SceneManager via `get_first_node_in_group(&\"scene_manager\")`. Autoloads instantiate before scene tree, so the group registration is guaranteed available before any `_ready()` chain in the loaded scene runs. First-line ordering invariant (Rule 1) ensures the group is populated before any other SM initialization that might block or fail. Pillar 2 결정론 — discovery must never return null mid-`_ready()` chain."
+    referenced_by:
+      - design/gdd/scene-manager.md        # C.1 Rule 1 (first-line ordering) + G.1 locked constant + AC-H6 (presence grep)
+      - design/gdd/state-machine.md        # C.2.1 line 322 (discovery call site)
+    added: 2026-05-11
+    revised: ""
+    notes: "Locked group name (G.1). Modification requires cross-doc batch revision (5+ files: scene-manager.md, state-machine.md, any future system discovering SM via group). Phase 5d batch entry 2026-05-11 — Scene Manager #2 Approved RR7."
+
+  - purpose: checkpoint_anchor_group_name
+    status: active
+    api: 'Level designers tag respawn anchor nodes with `add_to_group(&"checkpoint_anchor")` in the scene `.tscn`. SceneManager registers `anchors[].global_position` via `get_tree().get_nodes_in_group(&"checkpoint_anchor")` after the scene `_ready()` chain completes (POST-LOAD phase). Last-registered anchor wins on N>1; N=0 triggers `push_error` + fallback to `player.global_position` (E.2; NOT BoundaryState.PANIC).'
+    not: "Per-scene hard-coded anchor Vector2 in SceneManager source (level data leak). Multiple anchor groups (e.g., `checkpoint_a` + `checkpoint_b`) — Tier 1 single-anchor-per-scene convention; multi-anchor warning threshold via G.2 `multiple_anchors_warning_n` knob."
+    adr: design/gdd/scene-manager.md
+    reason: "Single source of respawn position selection — Rule 8 + D.3. Deterministic via Godot scene-tree top-down order (`.tscn` serialization deterministic; no runtime sort). Pillar 1 < 1초 restart + Pillar 2 결정론 jointly require the respawn coordinate be available within K POST-LOAD ticks (D.1 budget) with zero RNG."
+    referenced_by:
+      - design/gdd/scene-manager.md        # C.1 Rule 8 + D.3 selection rule + G.1 locked constant + AC-H3b / AC-H9 / AC-H10
+    added: 2026-05-11
+    revised: ""
+    notes: "Locked group name (G.1). Tier 2 mid-stage checkpoint pattern may warrant `multiple_anchors_warning_n` knob upgrade (G.4 — threshold raise to 3+ to suppress legitimate multi-anchor warnings). Phase 5d batch entry 2026-05-11 — Scene Manager #2 Approved RR7."
 
 # Example:
 #

@@ -354,3 +354,135 @@ No regressions across 23 prior fixes.
 - **Prior verdict resolved**: Yes — re-review #4's 6 items + re-review #3's 6 items + re-review #2's 4 items + re-review #1's 7 items (23 cumulative) all verified intact at HEAD; this re-review surfaced 6 additional items prior four passes missed (BoundaryState enum declaration gap = same pattern as RR4-1 TransitionIntent — emerged because RR4 added TransitionIntent but didn't audit for sibling missing enums; F.1 #1 input.md omission surfaced via dependency-graph audit that prior reviews did not run; D.3 N=0 wording surfaced by reading D.3 + E.2 + AC-H10 together for the first time).
 - **Cumulative review tally**: 5 passes, 29 items closed total (RR1×7 + RR2×4 + RR3×6 + RR4×6 + RR5×6). Pattern shows diminishing complexity — RR5 BLOCKING items are minimal-edit declarations (1 enum line + 1 F.1 row), suggesting RR6 may converge to PASS.
 - **Next**: Fresh `/clear` session + `/design-review design/gdd/scene-manager.md --depth lean` for re-review #6 independent verdict. Only after PASS, promote to **Approved** and apply Phase 5d batch + housekeeping batch (housekeeping NOT in Approved BLOCKING gate per RR4-5 F.4.1 note).
+
+---
+
+## Review — 2026-05-11 (sixth pass, same day) — Verdict: NEEDS REVISION (resolved inline this session)
+
+**Mode**: `/design-review design/gdd/scene-manager.md --depth lean` (re-review #6 — independent fresh-session verification of prior NEEDS REVISION #5 closures)
+**Scope signal**: L (unchanged — multi-system integration; 5 cross-doc reciprocals + Phase 5d batch + housekeeping batch queued)
+**Specialists**: None (lean mode — single-session analysis)
+**Re-review of prior verdict**: Yes — re-review #5 same day was NEEDS REVISION with 6 inline fixes reported applied (BoundaryState enum declaration, F.1 #1 Input row, member var declarations in C.2.3, D.3 N=0 wording, damage.md *(미작성)* closure annotation, A.4/A.6 25-AC count annotation).
+
+### Prior closure verification (29 cumulative items from R1+R2+R3+R4+R5)
+
+All 29 cumulative prior items verified intact at HEAD via targeted greps:
+
+| # | Prior item (source) | HEAD evidence |
+|---|---|---|
+| RR5-1 | BLOCKING — `enum BoundaryState` declaration in C.2.3 | ✅ Line 210 `enum BoundaryState { BOOT_INTRO, ACTIVE, RESTART_PENDING, CLEAR_PENDING, PANIC }` |
+| RR5-2 | BLOCKING — F.1 #1 Input System row | ✅ Line 659 `**#1**` row present with Hard classification |
+| RR5-3 | RECOMMENDED — C.2.3 member var declarations | ✅ Lines 212–217 — 5 declarations present (boundary_state, respawn_position, current_scene_packed, stage_1_packed, victory_screen_packed) |
+| RR5-4 | RECOMMENDED — D.3 N=0 wording (E.2 fallback, not PANIC) | ✅ Lines 442/453/468 use "(E.2 fallback)" + "**not** BoundaryState.PANIC" |
+| RR5-5 | Nice-to-Have — C.3.5/F.4.1 damage.md *(미작성)* closure annotation | ✅ F.4.1 line 697 strikethrough + "Closed at RR5"; (C.3.5 row removed entirely this RR6 — see NH-4) |
+| RR5-6 | Nice-to-Have — A.4/A.6 historical 25-AC count annotation | ✅ Lines 1373/1395 carry "Post-RR cumulative HEAD state: 29 ACs / 27 BLOCKING / 2 ADVISORY" |
+| RR4-1..6 | All 6 items (TransitionIntent enum + single-source API, src/core/scene_manager/ path, process_frame one-shot, AC-H27 + H.0 reconciliation, Approved promotion gate, harness reuse note) | ✅ Verified — `is_checkpoint_restart` 0 matches; `TransitionIntent` declared at L208; `src/autoload` 0 matches; `tree_changed` 0 matches; AC-H27 + Approved gate note + harness reuse note all intact |
+| RR3-1..6 | All 6 items (debug_simulate_load_failure split, C.3.3 PANIC + phase guards, AC-H14 PANIC entry, G.4 bootloader, AC-H5 grep tightening, F.3 section refs) | ✅ All intact |
+| RR2-1..4 | All 4 items (registry path drift, H.0 AC tally, PANIC recovery, K notation) | ✅ All intact |
+| RR1-1..7 | All 7 items (PANIC enum, boss_defeated count 17, AC-H1/H23 test scope, C.3.3 priority rephrase, F.1 breadcrumb, D.4 bootloader, A.4 guardrail) | ✅ All intact; `boss_defeated` housekeeping batch still queued (NOT in Approved gate) |
+
+No regressions across 29 prior fixes.
+
+### Findings (this re-review #6)
+
+| Severity | Count | Items |
+|---|---|---|
+| **BLOCKING** | 1 | C.2.3 `_underscore`-prefixed member-var declarations vs walkthroughs/AC-H18 referencing bare names — 4+ sites of mismatch (latent-spec-defect family of RR4-1 TransitionIntent + RR5-1 BoundaryState enum) |
+| **RECOMMENDED** | 2 | AC-H17 harness reuse note math `latency_ticks = M+K+2` does not actually force budget overrun (57 < 60 at worked-example values) · AC-H18 Given "in ACTIVE boundary state" requires a state Tier 1 production never enters (Stage #12 owns ACTIVE entry; Stage #12 deferred) |
+| **Nice-to-Have** | 1 | C.3.5 damage.md *(미작성)* "obligation closed" row is now hygiene clutter — F.4.1 strikethrough is canonical closure record |
+
+#### BLOCKING — fixed inline
+
+1. **Member-var naming inconsistency between C.2.3 declarations and walkthroughs/AC-H18** — C.2.3 (RR5-3 additions) declared `_current_scene_packed`, `_stage_1_packed`, `_victory_screen_packed` with `_` prefix. But C.3.2 tick T+0 walkthrough (L260), C.3.3 stage-clear walkthrough (L280), and AC-H18 Then clause (L1074) all reference these fields WITHOUT the `_` prefix. C.3.3 GDScript pattern (L298/L308) used `_` prefix correctly — so the pattern and the surrounding tables diverged. A programmer translating walkthrough pseudocode into `scene_manager.gd` would write `change_scene_to_packed(current_scene_packed)` and hit NameError vs C.2.3's `_current_scene_packed`. This is the same latent-spec-defect family as RR4-1 (TransitionIntent enum missing) and RR5-1 (BoundaryState enum missing) — each time a declaration block is added to C.2.3, downstream walkthroughs need an audit pass.
+   - **Fix (Option A — Drop `_` from C.2.3 declarations, user choice)**: Renamed all three C.2.3 member vars to bare names: `_current_scene_packed → current_scene_packed`, `_stage_1_packed → stage_1_packed`, `_victory_screen_packed → victory_screen_packed`. Rationale: Godot `@export` fields are inspector-public and conventionally use bare names (`_` prefix is reserved for private vars). Updated 2 C.3.3 GDScript pattern sites (L298, L308) to match. Walkthroughs at L260/L268/L280, AC-H18 Then clause at L1074, G.2 knob name column (L740/741), and presentation tables (L785/786/1074) all already used bare names — no edit needed for those. Inline comments added to declarations explaining the convention: "`@export` field — `_` prefix convention reserved for private vars; inspector-public field uses bare name (RR6 rename matching G.2 / walkthroughs)".
+   - **Post-fix grep**: `_current_scene_packed` = 0 matches; `_stage_1_packed` = 0 matches; `_victory_screen_packed` = 0 matches. Declarations now match walkthrough convention.
+
+#### RECOMMENDED — fixed inline
+
+2. **AC-H17 harness reuse note math does not actually force budget overrun** — RR4 NH-6 added the harness reuse note saying "this AC = M+K+2 to force overrun". With D.1 worked-example values (M=30 ticks SWAPPING, K=12 ticks POST-LOAD), the resulting total is `(M+K+2) + K + 1 = M + 2K + 3 = 30 + 24 + 3 = 57 ticks` — **57 < 60**, so the budget is *not* exceeded. AC-H17's overrun test would still fire `push_warning` via `debug_simulate_budget_overrun=true` (which directly triggers the warning path regardless of tick count), but the harness math itself is misleading and would confuse a test author into thinking the math drives the overrun.
+   - **Fix (Option A — `latency_ticks = 61`, user choice)**: Changed harness reuse note to specify `latency_ticks = 61` — M/K-independent. Guarantees `latency_ticks + K + 1 > 60` regardless of actual Godot 4.6 M/K values. Note text updated to explain the rejection: "`M+K+2` was rejected in RR6 as it yields 57 ticks at worked-example M=30/K=12, below the 60-tick ceiling".
+
+3. **AC-H18 Given "SM is IDLE in ACTIVE boundary state" implies Tier 1 reaches ACTIVE — but C.2.2 says Stage #12 (deferred) owns ACTIVE entry** — C.2.2 boundary table explicitly says ACTIVE owner = "Stage #12 (Tier 1 deferred)". Tier 1 production never enters ACTIVE. Mock tests can force it, so AC-H18 is testable, but the Given clause is misleading about runtime reachability. AC-H11 (which tests the same handler) correctly says "Given SM is IDLE" without claiming ACTIVE.
+   - **Fix (Option A — mirror AC-H11, user choice)**: AC-H18 Given rewritten to "**Given** SM is IDLE (mirror AC-H11 — handler is state-agnostic; `_on_boss_killed` unconditionally sets `_boundary_state = CLEAR_PENDING` per C.3.3 pattern regardless of prior boundary state. RR6 dropped earlier "in ACTIVE boundary state" qualifier — Tier 1 never enters ACTIVE without Stage #12 per C.2.2; see C.2.4 Tier 1 boundary state evolution note)". Also added new paragraph to **C.2.4 Ownership Boundary Note** explicitly documenting Tier 1 boundary state evolution path: `BOOT_INTRO → (cold-boot close: stays BOOT_INTRO) → RESTART_PENDING (first DEAD, permanent) → CLEAR_PENDING (boss_killed)`. Notes that ALIVE arrival only sets `_phase = READY`, not `_boundary_state`. Reframes the gap as *incomplete state machine awaiting Stage #12*, not a contract bug.
+
+#### Nice-to-Have — fixed inline
+
+4. **C.3.5 damage.md *(미작성)* "obligation closed" row is hygiene clutter** — RR5 added an explicit closure annotation to the C.3.5 Phase 5d obligations table for damage.md saying "obligation closed (no edit needed)". F.4.1 already shows the strikethrough version (line 697) which is the proper place for historical closure records. Leaving an "obligation closed" row in the *obligations* table conflates active obligations with closed ones.
+   - **Fix**: Removed the damage.md row from C.3.5 entirely. F.4.1 line 697 strikethrough annotation remains as canonical historical record. F.3 line 685 also remains intact as a status pointer. Removal does not lose audit-trail information.
+
+### Verification
+
+- B1: `_current_scene_packed` 0 matches (was 1+); `_stage_1_packed` 0 matches (was 1); `_victory_screen_packed` 0 matches (was 1); declarations at L214/216/217 + GDScript pattern at L300/310 all use bare names; explanatory comments added to declarations.
+- R2: AC-H17 harness reuse note at L1065 specifies `latency_ticks = 61` with rejection rationale; `M+K+2` form removed.
+- R3: AC-H18 Given at L1073 "Given SM is IDLE" + 1-line explanation; C.2.4 boundary state evolution paragraph added at L229.
+- NH-4: C.3.5 damage.md *(미작성)* row removed; F.4.1 strikethrough annotation at L697 + F.3 status pointer at L685 remain as historical record.
+- Line count delta: 1395 → ~1397 (+2; Fix 3 added C.2.4 paragraph + AC-H18 Given explanatory line; Fix 4 removed 1 row → net +2).
+- AC count unchanged at 29.
+
+### Outcome
+
+- **Verdict at start**: NEEDS REVISION (1 BLOCKING + 2 RECOMMENDED + 1 Nice-to-Have)
+- **Verdict at end of session**: All 4 items fixed inline. **Status remains "Designed (pending re-review)"** in systems-index Row #2 — per inline-fix-then-reverify preference, user may opt for fresh-session `/clear` + independent `/design-review` re-review #7 before promoting to Approved (BLOCKING fix is a 5-site rename touching declarations + GDScript pattern; impact is limited but family pattern recommends independent eye even at diminishing returns).
+- **Prior verdict resolved**: Yes — re-review #5's 6 items + re-review #4's 6 items + re-review #3's 6 items + re-review #2's 4 items + re-review #1's 7 items (29 cumulative) all verified intact at HEAD; this re-review surfaced 4 additional items prior five passes missed (member-var naming inconsistency was latent since RR5-3 added the declarations; AC-H17 harness math error has been latent since RR4 NH-6 added the note; AC-H18 ACTIVE qualifier predates all RR passes — discovered via C.2.2 Tier 1 ownership audit; C.3.5 row hygiene is consequence of RR5's closure annotation).
+- **Cumulative review tally**: 6 passes, 33 items closed total (RR1×7 + RR2×4 + RR3×6 + RR4×6 + RR5×6 + RR6×4). Pattern shows continued diminishing complexity — RR6 BLOCKING is 5-site rename (smaller than RR5's enum+row, smaller than RR4's enum+path rename). **RR7 likely converges to PASS** if rename does not introduce new spec.
+- **Next**: Fresh `/clear` session + `/design-review design/gdd/scene-manager.md --depth lean` for re-review #7 independent verdict. Only after PASS, promote to **Approved** and apply Phase 5d batch + housekeeping batch (housekeeping NOT in Approved BLOCKING gate per RR4-5 F.4.1 note).
+
+---
+
+## Review — 2026-05-11 (seventh pass, same day) — Verdict: APPROVED
+
+**Mode**: `/design-review design/gdd/scene-manager.md --depth lean` (re-review #7 — independent fresh-session verification of prior NEEDS REVISION #6 closures)
+**Scope signal**: L (unchanged — multi-system integration; 5 cross-doc reciprocals + Phase 5d batch + housekeeping batch queued)
+**Specialists**: None (lean mode — single-session analysis; 6 prior re-review passes have effectively functioned as the adversarial role per inline-fix-then-reverify protocol)
+**Re-review of prior verdict**: Yes — re-review #6 same day was NEEDS REVISION with 4 inline fixes reported applied (bare-name rename of `_current_scene_packed` / `_stage_1_packed` / `_victory_screen_packed` member declarations + 2 C.3.3 GDScript pattern sites; AC-H17 harness `latency_ticks = 61` M/K-independent constant; AC-H18 Given mirrors AC-H11 "SM is IDLE" + new C.2.4 boundary state evolution paragraph; C.3.5 damage.md row removal).
+
+### Prior closure verification (33 cumulative items from R1+R2+R3+R4+R5+R6)
+
+All 33 cumulative prior items verified intact at HEAD via targeted grep evidence:
+
+| # | Prior item (source) | HEAD evidence |
+|---|---|---|
+| RR6-1 | BLOCKING — Member-var bare-name rename (no `_` prefix) | ✅ `_current_scene_packed` 0 matches; `_stage_1_packed` 0 matches; `_victory_screen_packed` 0 matches; declarations at L214/216/217 use bare names with explanatory inline comments; GDScript pattern at L298/308 also uses bare names |
+| RR6-2 | RECOMMENDED — AC-H17 harness `latency_ticks = 61` | ✅ AC-H17 Test mechanism at L1065 specifies `latency_ticks = 61` M/K-independent; `M+K+2` rejection rationale cited inline |
+| RR6-3 | RECOMMENDED — AC-H18 Given mirrors AC-H11 + C.2.4 evolution paragraph | ✅ AC-H18 Given at L1073 "Given SM is IDLE (mirror AC-H11 — handler is state-agnostic..."; C.2.4 Tier 1 boundary state evolution paragraph at L229 documents `BOOT_INTRO → RESTART_PENDING / CLEAR_PENDING` path with ACTIVE deferred to Stage #12 |
+| RR6-4 | Nice-to-Have — C.3.5 damage.md row removed (hygiene) | ✅ C.3.5 table no longer contains damage.md `*(미작성)*` row; F.4.1 strikethrough at L697 + F.3 status pointer at L685 remain as historical record |
+| RR5-1..6 | All 6 items (BoundaryState enum, F.1 #1 Input, C.2.3 member vars, D.3 N=0 wording, damage closure, A.4/A.6 25-AC annotation) | ✅ All intact (`enum BoundaryState` at L209; F.1 #1 row at L660; 5 member declarations at L212–217; D.3 sites use "(E.2 fallback) — NOT BoundaryState.PANIC"; A.4/A.6 cumulative 29-AC annotation) |
+| RR4-1..6 | All 6 items (TransitionIntent + API single-source, src/core/scene_manager/, process_frame, AC-H27, Approved promotion gate, harness reuse note) | ✅ All intact (`is_checkpoint_restart` 0 matches; `src/autoload` 0 matches; `tree_changed` 0 matches; AC-H27 present; Approved gate note at F.4.1; harness reuse note in AC-H17) |
+| RR3-1..6 | All 6 items (debug flag split, C.3.3 pattern scope note, AC-H14 PANIC entry, G.4 bootloader, AC-H5 grep, F.3 section refs) | ✅ All intact |
+| RR2-1..4 | All 4 items (registry path drift, H.0 AC tally, PANIC recovery, K notation) | ✅ All intact (3 sites `design/registry/entities.yaml`; H.0 Total ACs 29 / 27 BLOCKING / 2 ADVISORY; AC-H26 + E.1 terminality clause; K notation with `K < M` gloss) |
+| RR1-1..7 | All 7 items (PANIC enum, boss_defeated count 17, AC-H1/H23 test scope, C.3.3 priority rephrase, F.1 breadcrumb, D.4 bootloader, A.4 guardrail) | ✅ All intact; `boss_defeated` HEAD count TR=13 + SM=4 = 17 still queued for housekeeping batch (NOT in Approved BLOCKING gate per RR4-5) |
+
+**No regressions across 33 prior fixes.**
+
+### Findings (this re-review #7)
+
+| Severity | Count | Items |
+|---|---|---|
+| **BLOCKING** | 0 | — |
+| **RECOMMENDED** | 0 | — |
+| **Nice-to-Have** | 1 | `current_scene_packed` assignment site unspecified in lifecycle |
+
+#### Nice-to-Have — surfaced (no inline fix this pass; optional follow-up)
+
+1. **`current_scene_packed` assignment site unspecified in lifecycle** — C.2.3 (L214) declares `var current_scene_packed: PackedScene = null` with comment "Rule 14 same-PackedScene guard tracking", but neither C.2.3 nor C.3.2 tick-by-tick walkthrough nor C.3.3 GDScript pattern specifies *when* in the lifecycle this field is updated to track the newly loaded scene. Implicit semantics: after `change_scene_to_packed(packed)` returns (POST-LOAD entry or SWAPPING exit), the field must be assigned to `packed` so Rule 14's guard against subsequent same-scene non-restart calls works correctly. A careful implementer infers this from context; AC-H12/H13 testability does not depend on the exact assignment site (both Givens explicitly set `current_scene_packed = S`). Not BLOCKING — `_trigger_transition()` body is left to implementation by design per C.2.3, and the spec is internally consistent if interpreted as "assignment happens during the lifecycle wherever the implementer chooses, before the next call".
+   - *Optional fix (not applied this pass)*: One-line spec note to add to C.2.1 POST-LOAD row body or C.2.3 below member declarations: "POST-LOAD phase entry sets `current_scene_packed := packed` so that Rule 14's same-scene guard reflects the most recently loaded scene on subsequent transitions."
+   - *Rationale for deferral*: The pattern of 6 prior re-reviews has scrubbed every spec ambiguity with implementability impact. This Nice-to-Have is genuinely advisory — implementer discretion is the established convention for internal helper function bodies. Closing inline would invite the 8th re-review cycle for diminishing returns.
+
+### Verification
+
+- B1 (no BLOCKING): N/A — none surfaced.
+- R1 (no RECOMMENDED): N/A — none surfaced.
+- NH-1: Verified via grep — `current_scene_packed` 6 matches across declarations (L214) + walkthroughs (L260/268/280) + GDScript pattern (L308) + AC-H18 Then clause (L1074); no explicit assignment site shown in lifecycle phases. Implicit per design — does not block implementation.
+- AC count unchanged at 29 (H.0 preamble line 803 "Total ACs: 29" intact; H.5 coverage table enumerates 29 rows; H.0 math reconciles 16 Logic + 11 Integration BLOCKING + 2 ADVISORY = 29).
+- Line count: 1396 (unchanged from RR6 close — no inline edits this pass).
+- Dependency graph clean — all 5 cross-doc reciprocal GDDs (time-rewind / state-machine / damage / player-movement / input) exist on disk; all 3 ADRs exist; both registry files exist (`design/registry/entities.yaml` + `docs/registry/architecture.yaml`).
+- Cross-doc reciprocals (Phase 5d batch): still queued for application as Approved promotion gate commit follow-up.
+- `boss_defeated → boss_killed` housekeeping batch: still queued for separate non-blocking commit.
+
+### Outcome
+
+- **Verdict at start**: APPROVED — 0 BLOCKING / 0 RECOMMENDED / 1 Nice-to-Have surfaced (deferred as advisory).
+- **Verdict at end of session**: **APPROVED**. **Status promoted Designed (pending re-review) → Approved (RR7 PASS)** in systems-index Row #2 per user's choice of "Promote to Approved + Phase 5d note". Progress Tracker updated: Approved 5→6, Designed pending 1→0.
+- **Prior verdict resolved**: Yes — re-review #6's 4 items + re-review #5's 6 items + re-review #4's 6 items + re-review #3's 6 items + re-review #2's 4 items + re-review #1's 7 items (33 cumulative) all verified intact at HEAD; this re-review surfaced 0 BLOCKING / 0 RECOMMENDED items, confirming RR6 closing prediction "RR7 likely converges to PASS if rename does not introduce new spec" — RR6 bare-name rename did not introduce new spec; the only surfaced item is a Nice-to-Have implementer ambiguity that does not block implementation.
+- **Cumulative review tally**: 7 passes, 33 items closed (RR1×7 + RR2×4 + RR3×6 + RR4×6 + RR5×6 + RR6×4 + RR7×0 BLOCKING + 0 RECOMMENDED + 1 Nice-to-Have surfaced-but-deferred). Convergence confirmed at RR7 — diminishing-returns inflection point reached after 6 inline-fix cycles.
+- **Next**: (1) Phase 5d cross-doc batch commit — 7 GDD edits + 2 registry entries (`design/registry/entities.yaml` add `restart_window_max_frames=60` + `cold_boot_max_seconds=300`; `docs/registry/architecture.yaml` add 4 entries: `interfaces.scene_lifecycle`, `state_ownership.scene_phase`, 2 group-name `api_decisions`); BLOCKING gate per F.4.1 before architecture work consumes this GDD. (2) 17-site `boss_defeated → boss_killed` housekeeping batch as separate non-blocking commit (TR=13 + SM=4 sites; damage.md F.4 LOCKED single-source authority). (3) Next system design: `/design-system player-shooting` (#7) — closes ADR-0002 Amendment 2 ratification gate; effort M; recommended next per session-state plan.
