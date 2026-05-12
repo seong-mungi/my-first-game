@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "concepts/Bullet Heaven Survivors-like Dev Pattern.md",
+                "file": "log.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Bullet Heaven Survivors-like Dev Pattern"
+              "title": "log"
             }
           }
         ]
@@ -195,7 +195,9 @@
   },
   "active": "069d84cd14959ebb",
   "lastOpenFiles": [
+    "concepts/Steam Indie Genre Revenue Matrix 2024-2025.md",
     "log.md",
+    "concepts/Bullet Heaven Survivors-like Dev Pattern.md",
     "concepts/Steam Genre Competition Density Matrix.md",
     "concepts/Job Simulator Blue Collar Genre Pattern.md",
     "concepts/Boss Rush Godot Implementation Pattern.md",
@@ -206,9 +208,7 @@
     "concepts/Chaotic Co-op Sub-genre Pattern.md",
     "sources/Research Steam Indie Short Dev Genre Landscape.md",
     "concepts/Co-op Social Horror Genre Pattern.md",
-    "concepts/Steam Indie Genre Revenue Matrix 2024-2025.md",
     "concepts/CCGS Team Orchestration Skills.md",
-    "concepts/Bullet Heaven Survivors-like Dev Pattern.md",
     "sources/CCGS Workflow Guide.md",
     "concepts/CCGS Story Lifecycle.md",
     "concepts/CCGS 7-Phase Development Pipeline.md",
