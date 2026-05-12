@@ -25,6 +25,7 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[Research Cross-Genre Systems For Run and Gun]] — **NEW** 5대 cross-장르 시스템 이식 후보 + Echo 적용 권고 (2026-05-10)
 - [[AI Playtest Bot For Boss Validation]] — **NEW** 결정론 게임에서 봇으로 보스 난이도 검증 (4 봇 아키타입 + 메트릭 + Echo Tier 1-3 전략) (2026-05-10)
 - [[Bot Validation Pipeline Architecture]] — **NEW** B+C+D 통합 파이프라인: Godot↔Python RL 브릿지 + Dashboard CI 게이트 + GDD 피드백 루프 (2026-05-10)
+- [[Research Steam Indie Short Dev Genre Landscape]] — **NEW** Steam 인디 단기 개발 장르 매트릭스: Co-op 공포·단편 공포·Bullet Heaven·아이들 개발기간+수익 종합 (2026-05-12)
 
 ## Concepts
 
