@@ -71,6 +71,7 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[Steam Genre Competition Density Matrix]] — **NEW** 출시 밀도 데이터 (플랫포머 1900 vs 4X 160) + Gap Score 자가 분석 의사결정 트리 (2026-05-12)
 - [[Chaotic Co-op Sub-genre Pattern]] — **NEW** R.E.P.O./Peak 정의 서브장르: 카오스+협동, TikTok 바이럴 공식 (2026-05-12)
 - [[Boss Rush Niche Genre Opportunity]] — **NEW** 저경쟁 실험 니치, 솔로 4-8개월, Echo 보스 설계 직접 적용 가능 (2026-05-12)
+- [[Boss Rush Godot Implementation Pattern]] — **NEW** FSM/BT/AnimationTree 3가지 접근법 + LimboAI + 구현 체크리스트 (2026-05-12)
 
 ### Cross-Genre Mechanic Transplants (런앤건 외부 메카닉 이식)
 - [[Time Manipulation Run and Gun]] — **NEW** PoP/Braid/Katana Zero 3 시간 모델 + Echo 선택 가이드
