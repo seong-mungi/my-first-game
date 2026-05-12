@@ -20,8 +20,33 @@
               "icon": "lucide-file",
               "title": "Boss Rush Jam 2025"
             }
+          },
+          {
+            "id": "10742fc42d00afcd",
+            "type": "leaf",
+            "state": {
+              "type": "thino_view",
+              "state": {},
+              "icon": "Memos",
+              "title": "Thino"
+            }
+          },
+          {
+            "id": "2762ca55ab8c1903",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "questions/Research Run and Gun Development Base.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Research Run and Gun Development Base"
+            }
           }
-        ]
+        ],
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -193,8 +218,13 @@
       "obsidian-memos:Thino Super": false
     }
   },
-  "active": "069d84cd14959ebb",
+  "active": "2762ca55ab8c1903",
   "lastOpenFiles": [
+    "log.md",
+    "2026-05-12.md",
+    "Furi (The Game Bakers).md",
+    "무제.base",
+    "sources/Boss Rush Jam 2025.md",
     "sources/Run and Gun Dev Community Resources.md",
     "sources/Godot 4 Run and Gun Tutorial Resources.md",
     "sources/Godot 4 Run and Gun GitHub Repos.md",
@@ -203,15 +233,12 @@
     "concepts/Run and Gun Player Character Architecture.md",
     "concepts/Run and Gun Enemy AI Archetypes.md",
     "questions/Research Run and Gun Development Base.md",
-    "log.md",
     "concepts/Boss Rush Design Fundamentals.md",
     "questions/Research Boss Rush Development Base.md",
     "sources/Research Boss Rush GitHub Baseline Repos.md",
     "concepts/Boss Rush Content Sizing.md",
-    "sources/Boss Rush Jam 2025.md",
     "sources/Godot 4 Boss Tutorial Resources.md",
     "sources/GDC Boss Battle Design Talks.md",
-    "Furi (The Game Bakers).md",
     "entities/Cuphead.md",
     "concepts/Shmup Boss Design Factors.md",
     "concepts/Boss Identity Framework.md",
@@ -220,7 +247,6 @@
     "concepts/Steam Genre Competition Density Matrix.md",
     "concepts/Job Simulator Blue Collar Genre Pattern.md",
     "concepts/Boss Rush Godot Implementation Pattern.md",
-    "sources/Research Steam 2026 Genre Competition Update.md",
     "wiki/questions/zhc-cosmetics-execution-plan-presentation.html",
     "wiki/questions/zhc-cosmetics-proposal-2026-04-28.html",
     "bin/setup-vault.sh",
@@ -230,7 +256,6 @@
     "skills/wiki-query-workspace/iteration-4/eval-q1/with_skill/run-1/timing.json",
     "skills/wiki-query-workspace/iteration-4/eval-q1/with_skill/run-1/outputs",
     "skills/wiki-query-workspace/iteration-4/eval-q1/with_skill/run-1/grading.json",
-    "skills/wiki-query-workspace/iteration-4/eval-q1/with_skill/run-1",
     "무제.canvas",
     "wiki/meta/claude-obsidian-cover.gif",
     "wiki/meta/image-example-wiki-map-view.png",
