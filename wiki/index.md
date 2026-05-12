@@ -96,6 +96,9 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[CCGS Scaffolder Scope Boundary]] — **NEW** CCGS가 하는 것 vs 안 하는 것 명확한 경계 정의 (프로세스 레이어 vs 구현 툴체인)
 - [[CCGS Chinese Localization Forks]] — **NEW** 중국어 현지화 fork 3종 (phantacix-CN ⭐9, kada7-Zh ⭐4, Pickers-CN ⭐3) 분석
 - [[CCGS Codex Port Pattern]] — **NEW** CCGS → OpenAI Codex 포팅 패턴 (pa4uslf ⭐3, eiichimo ⭐2) + AGENTS.md 어댑터 구조
+- [[CCGS 7-Phase Development Pipeline]] — **NEW** 7단계 개발 파이프라인 + 페이즈별 게이트 요건 (Concept→Release)
+- [[CCGS Story Lifecycle]] — **NEW** Phase 5 스토리 사이클: story-readiness → 구현 → story-done 8단계 리뷰
+- [[CCGS Team Orchestration Skills]] — **NEW** 9개 팀 스킬 6단계 파이프라인 (team-combat · team-polish · team-release 등)
 - [[Godot CI CD Pipeline Pattern]] — **NEW** GitHub Actions 두 단계 패턴 (import warm-up → test run) + GODOT_DISABLE_LEAK_CHECKS + GUT/GdUnit4 비교
 - [[Godot Analytics Stack]] — **NEW** Talo (개발 중) + GameAnalytics (론치 후) 권고 스택 + Amplitude A/B 테스트
 - [[Godot Audio Middleware Decision]] — **NEW** Godot 내장 vs FMOD(856⭐) vs Wwise(407⭐) 결정 트리 + Echo 시간 되감기 오디오 특이점
