@@ -9,6 +9,13 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Active Research Topic
 
+**Boss Rush GitHub 베이스라인 레포** (2026-05-12). 3라운드 · 8회 웹검색. Godot 4 보스러시 오픈소스 카탈로그 + 구현 패턴. 2 페이지 생성.
+
+→ **Synthesis**: [[Research Boss Rush GitHub Baseline Repos]] — 레포 7종 카탈로그 + Boss Rush Jam 생태계 + Echo 적용 우선순위
+→ **Concept**: [[Boss Rush Godot Implementation Pattern]] — LimboAI/FSM/AnimationTree 3가지 접근법 + 체크리스트 + 시간 되감기 호환성 주의
+
+## 이전 활성 (2026 Steam 저/중경쟁 장르 — 2026-05-12)
+
 **2026 Steam 저경쟁/중경쟁 인디 장르 업데이트** (2026-05-12). 3라운드 · 8회 웹검색. 2026 최신 데이터로 경쟁강도 갱신. 3 페이지 생성.
 
 → **Synthesis**: [[Research Steam 2026 Genre Competition Update]] — 2026 장르 매트릭스 (Boss Rush 신규 저경쟁, Extraction Shooter 고경쟁 진입)
