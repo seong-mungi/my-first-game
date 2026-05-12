@@ -211,7 +211,7 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - **#arcade**: Metal Slug, Contra, Gunstar Heroes, Arcade Difficulty Design, SNK
 - **#neo-geo**: Metal Slug, SNK
 - **#indie-revival**: Cuphead, Run and Gun Extension Systems
-- **#boss-rush**: Cuphead, Run and Gun Extension Systems
+- **#boss-rush**: Cuphead, Run and Gun Extension Systems, Boss Rush Niche Genre Opportunity, Boss Rush Godot Implementation Pattern, Boss Rush Design Fundamentals, Boss Identity Framework, Shmup Boss Design Factors, Boss Rush Content Sizing, Research Boss Rush Development Base, Research Boss Rush GitHub Baseline Repos
 - **#one-hit-kill**: Contra, Run and Gun Base Systems, Arcade Difficulty Design
 - **#coin-op**: Arcade Difficulty Design, SNK, Contra
 - **#weapon-system**: Weapon Letter Pickup System, Metal Slug, Gunstar Heroes
