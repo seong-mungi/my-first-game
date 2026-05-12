@@ -60,6 +60,11 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[Hit Rate Grading System]] — **NEW** Shattered Soldier 0-100% 그레이딩 + S랭크 트루엔딩 게이트
 - [[Pink Parry System]] — **NEW** Cuphead 핑크 객체 패리 + 슈퍼미터 충전 색채 어포던스
 
+### Steam Indie Market (장르·수익·개발기간 분석)
+- [[Co-op Social Horror Genre Pattern]] — **NEW** R.E.P.O./Peak 성공 공식, Co-op 6%출시→36%수익 (2026-05-12)
+- [[Bullet Heaven Survivors-like Dev Pattern]] — **NEW** Vampire Survivors-like 개발 패턴 + 2024년 포화 경고 (2026-05-12)
+- [[Steam Indie Genre Revenue Matrix 2024-2025]] — **NEW** 장르별 개발기간·수익·경쟁강도 매트릭스 + 2025 Top 5 (2026-05-12)
+
 ### Cross-Genre Mechanic Transplants (런앤건 외부 메카닉 이식)
 - [[Time Manipulation Run and Gun]] — **NEW** PoP/Braid/Katana Zero 3 시간 모델 + Echo 선택 가이드
 - [[Roguelite Metaprogression For Run and Gun]] — **NEW** Dead Cells/Hades/Hard Corps Uprising/Galuga slider-vs-gate 규칙
