@@ -95,6 +95,8 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[CCGS Context Bloat Remediation]] — **NEW** CCGS GDD 비대화 진단 (Echo 52KB systems-index) + 5 황금률 + Tier 1-4 처방 — 모든 CCGS 프로젝트 적용 가능 (활성/이력 분리, Status enum 룰, frontmatter dashboard)
 - [[Bot Validation Catalog Summary]] — **NEW** Echo 봇 검증 카탈로그 14 페이지 단일 진입점 + 5 황금률 + 솔로 개발자 로드맵 + 비협상 결정 8종 인덱스
 - [[Research 8-Way Aim Usability For Run-and-Gun]] — **NEW** 런앤건 8방향 조준 사용성 (gamepad + KB+M + 접근성) — Echo 입력 시스템 검증/조정 권고 (FACING_THRESHOLD 0.10→0.15, 각도 hysteresis ±4°, aim_lock 컨벤션 정합)
+- [[Research CCGS Implementation Gap Full Stack]] — **NEW** CCGS scaffolder 갭 전체 매트릭스: 아트/오디오/CI/애널리틱스/퍼블리싱/커뮤니티 레이어별 필요 툴 (2026-05-12)
+- [[Research Godot 4.6 Ecosystem Toolchain]] — **NEW** Godot 4.6 에코시스템 툴 카탈로그: Aseprite·GUT·FMOD·Talo·GameAnalytics·GitHub Actions (2026-05-12)
 
 ## Entities
 

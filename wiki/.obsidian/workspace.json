@@ -195,6 +195,7 @@
   },
   "active": "069d84cd14959ebb",
   "lastOpenFiles": [
+    "concepts/Indie Game Community Platform Stack.md",
     "concepts/Indie Game Publishing Pipeline.md",
     "concepts/Godot Art Pipeline Tools.md",
     "concepts/Godot Audio Middleware Decision.md",
@@ -220,7 +221,6 @@
     "concepts/Determinism Verification Replay Diff.md",
     "concepts/Bot Human Validation Reconciliation.md",
     "concepts/RL Reward Shaping For Deterministic Boss.md",
-    "concepts/GDD Bot Acceptance Criteria Template.md",
     "wiki/questions/zhc-cosmetics-execution-plan-presentation.html",
     "wiki/questions/zhc-cosmetics-proposal-2026-04-28.html",
     "bin/setup-vault.sh",
