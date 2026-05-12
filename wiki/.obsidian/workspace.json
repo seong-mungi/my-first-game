@@ -220,6 +220,7 @@
   },
   "active": "2762ca55ab8c1903",
   "lastOpenFiles": [
+    "meta/dashboard.md",
     "meta/lint-report-2026-05-12.md",
     "meta",
     "log.md",
@@ -247,7 +248,6 @@
     "concepts/Steam Indie Genre Revenue Matrix 2024-2025.md",
     "concepts/Bullet Heaven Survivors-like Dev Pattern.md",
     "concepts/Steam Genre Competition Density Matrix.md",
-    "concepts/Job Simulator Blue Collar Genre Pattern.md",
     "wiki/questions/zhc-cosmetics-execution-plan-presentation.html",
     "wiki/questions/zhc-cosmetics-proposal-2026-04-28.html",
     "bin/setup-vault.sh",
