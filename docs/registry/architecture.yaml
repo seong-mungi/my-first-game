@@ -333,18 +333,22 @@ interfaces:
     pattern: signal
     producer: scene-manager
     consumers:
-      - time-rewind-controller       # TRC subscribes for ring buffer invalidation (`_buffer_invalidate()`); preserves _tokens
-      - echo-lifecycle-sm            # EchoLifecycleSM subscribes for O6 cascade (latch + input buffer + O8 counter + PM `_clear_ephemeral_state()` call)
+      - time-rewind-controller       # TRC subscribes scene_will_change for ring buffer invalidation (`_buffer_invalidate()`); preserves _tokens
+      - echo-lifecycle-sm            # EchoLifecycleSM subscribes scene_will_change for O6 cascade (latch + input buffer + O8 counter + PM `_clear_ephemeral_state()` call)
+      - camera-system                # Camera subscribes scene_post_loaded for snap-to-anchor + stage limit set on checkpoint restart / cold-boot / stage clear (camera.md R-C1-10 + R-C1-12 — first-use of scene_post_loaded per Camera #3 Approved 2026-05-12 RR1 PASS)
     adr: design/gdd/scene-manager.md
-    signal_signature: "scene_will_change()"
+    signal_signature: |
+      scene_will_change()                                           # PRE-EMIT phase, sole producer (Rule 4)
+      scene_post_loaded(anchor: Vector2, limits: Rect2)             # POST-LOAD phase, Camera #3 first-use trigger 2026-05-12; limits.size > 0 invariant (E-CAM-7 boot assert)
     referenced_by:
-      - design/gdd/scene-manager.md        # C.1 Rule 4 (sole producer) + Rule 5 (sole subscribers) + Rule 6 (ring buffer untouched) + Rule 7 (token preservation) + D.6 emit cardinality invariant
+      - design/gdd/scene-manager.md        # C.1 Rule 4 (sole producer) + Rule 5 (sole subscribers) + Rule 6 (ring buffer untouched) + Rule 7 (token preservation) + D.6 emit cardinality invariant + C.2.1 POST-LOAD scene_post_loaded emit + C.3.4 Q2 closure
       - design/gdd/time-rewind.md          # F.1 row #2 + E-16 + Rule 13-bis buffer-primed guard
       - design/gdd/state-machine.md        # C.2.2 O6 + F.2 #2 Scene Manager subscriber row
       - design/gdd/player-movement.md      # F.1 row #2 + F.4.2 row #2 — PM does NOT subscribe directly (Rule 5); cleared via EchoLifecycleSM O6 cascade
+      - design/gdd/camera.md               # F.1 row #1 (HARD) + R-C1-10 handler + R-C1-12 single-source limits + AC-CAM-H5-01/02 (snap correctness + 60-tick budget compliance)
     added: 2026-05-11
-    revised: ""
-    notes: "Zero-arg signal emitted by SceneManager autoload exactly once per transition (D.6 cardinality), synchronously emitted in PRE_EMIT phase within the same physics tick T as the subsequent `change_scene_to_packed` call (Rule 4 co-tick). PlayerMovement is explicitly forbidden from direct subscription (Rule 5 single-layer cascade design) — PM ephemeral state (8-var: 4 coyote/buffer + 4 facing Schmitt) is cleared via EchoLifecycleSM O6 cascade calling PM `_clear_ephemeral_state()`. Symmetric cardinality on the swap-call face is also invariant (AC-H27 — exactly one `SceneTree.change_scene_to_packed` per transition). Scene Manager #2 Approved RR7 2026-05-11 — Phase 5d batch entry."
+    revised: "2026-05-12 — Camera #3 Approved RR1 PASS: scene_post_loaded(anchor, limits) signal added to multi-signal contract (C.3.4 Q2 closure first-use trigger). Camera consumer added; signature converted single→multi-line YAML."
+    notes: "Multi-signal scene lifecycle contract: (1) scene_will_change() — zero-arg signal emitted by SceneManager autoload exactly once per transition (D.6 cardinality), synchronously emitted in PRE_EMIT phase within the same physics tick T as the subsequent `change_scene_to_packed` call (Rule 4 co-tick). PlayerMovement is explicitly forbidden from direct subscription (Rule 5 single-layer cascade design) — PM ephemeral state (8-var: 4 coyote/buffer + 4 facing Schmitt) is cleared via EchoLifecycleSM O6 cascade calling PM `_clear_ephemeral_state()`. Symmetric cardinality on the swap-call face is also invariant (AC-H27 — exactly one `SceneTree.change_scene_to_packed` per transition). (2) scene_post_loaded(anchor: Vector2, limits: Rect2) — added 2026-05-12 via Camera #3 GDD Approved RR1 PASS first-use (Q2 deferral closure per scene-manager.md C.3.4 + DEC-SM-9 status flip). Emitted in POST-LOAD phase synchronously after checkpoint_anchor registration (Rule 8). limits.size.x > 0 AND limits.size.y > 0 boot-time assert (E-CAM-7) prevents zero-size Rect2 from configuring meaningless Camera2D limit_* setters. Camera handler R-C1-10 cost ≤ 1 tick (single position assignment + 4 limit setters + reset_smoothing); fits in SM 60-tick restart budget (M + K + 1 ≤ 60) without additional accounting."
 
   - contract: weapon_slot_signals
     status: active
@@ -368,6 +372,25 @@ interfaces:
     added: 2026-05-11
     revised: ""
     notes: "Three-signal contract emitted exclusively by WeaponSlot (Player Shooting #7). Boot emit uses call_deferred to guarantee subscriber wiring order independence (C.2.3 lock + AC PS-H6-04 positive/negative path). weapon_fallback_activated is semantically distinct from weapon_equipped — fallback identification possible for downstream cues; emitted only on invalid set_active call with NO state mutation (Rule 11 step 1 early return). Tier 1 single-weapon: weapon_fallback_activated is unreachable (no Pickup site); Tier 2+ Pickup #19 becomes first active emit site. Sustained-fire SFX/VFX patterns are downstream consumer decisions (Audio #4 / VFX #14 GDDs), not contracted here."
+
+  - contract: camera_shake_events
+    status: active
+    pattern: signal
+    producer: multi  # Player Shooting #7 (shot_fired) + Damage #8 (player_hit_lethal, boss_killed) — Camera consumes from both producer GDDs
+    consumers:
+      - camera-system  # Camera adds per-event timer-pool ShakeEvent: shot_fired → 2 px / 6 frames; player_hit_lethal → 6 px / 12 frames; boss_killed → 10 px / 18 frames (camera.md R-C1-5/6 + F.1 rows #4 #6 + G.1.2 tuning knobs)
+    adr: design/gdd/camera.md
+    signal_signature: |
+      shot_fired(direction: int)               # producer: weapon-slot (Player Shooting #7); see interfaces.weapon_slot_signals for canonical signature
+      player_hit_lethal(cause: StringName)     # producer: damage (Damage #8); see interfaces.damage_signals
+      boss_killed(boss_id: StringName)         # producer: damage (Damage #8); see interfaces.damage_signals
+    referenced_by:
+      - design/gdd/camera.md             # C.3.1 signal subscribe matrix (6 signals total) + R-C1-5 per-event timer pool + R-C1-6 sum-clamp (MAX_SHAKE_PX=12 px) + R-C1-7 RNG determinism + F.1 upstream deps + G.1.2 shake knobs
+      - design/gdd/player-shooting.md    # F.4.2 row #5 Camera #3 obligation (registered Round 2 2026-05-11 — closed by Camera #3 Approved RR1 PASS 2026-05-12)
+      - design/gdd/damage.md             # F.2 Downstream Consumers Camera #3 row (added 2026-05-12 Phase 5 batch)
+    added: 2026-05-12
+    revised: ""
+    notes: "Logical grouping of three independently-emitted signals consumed by Camera as shake source events. Camera does NOT receive a single contract from a single producer — it consumes shot_fired from WeaponSlot (Player Shooting #7) per interfaces.weapon_slot_signals, and player_hit_lethal/boss_killed from Damage (#8) per interfaces.damage_signals. This entry exists to make the camera-as-multi-source-consumer relationship grep-able (e.g., /architecture-review camera_shake_events surfaces all 3 signals at once). Per-event amplitudes (2/6/10 px) and durations (6/12/18 frames) are owned by camera.md G.1.2 shake knobs; producers do NOT specify shake parameters. Camera applies vector-sum + length-clamp (MAX_SHAKE_PX=12 px) on multi-event ticks; INV-CAM-1 ensures shot_fired duration < FIRE_COOLDOWN_FRAMES so micro-shake cannot accumulate. ADR-0003 R-RT3-02 strict determinism: per-event RNG seeded by (Engine.get_physics_frames() × 1_000_003) XOR event_seed (R-C1-7); cosmetic exemption explicitly NOT taken (Camera #3 first-use locks this stricter contract for Tier 2+ replay/share feature compatibility)."
 
 # Example:
 #
@@ -713,6 +736,17 @@ forbidden_patterns:
       - design/gdd/input.md            # C.1.2 Rule 5 + C.1.3 + AC-IN-08
       - design/gdd/player-movement.md  # E-PM-9 + PM B10 cross-ref
     added: 2026-05-11
+
+  - pattern: camera_state_in_player_snapshot
+    status: active
+    description: "PlayerSnapshot Resource (interfaces.player_movement_snapshot — 9-field schema locked by ADR-0002 Amendment 2) MUST NOT include any Camera2D state field (`camera.global_position`, `camera.offset`, `look_offset`, `shake_offset`, `is_rewind_frozen`, `active_events`, etc.). Camera state is structurally excluded from rewind-restore flow. Patterns like `snap.camera_position = camera.global_position` or expanding ADR-0002 schema beyond 9 fields to include camera-related state are banned."
+    why: "ADR-0002 Amendment 2 locks PlayerSnapshot at 9 fields (8 PM-noted + 1 TRC-internal) for memory budget compliance (Tier 1 ring buffer = 17.64 KB at 90-frame depth). Camera state inclusion would (1) inflate snapshot size and threaten 1.5 GB memory ceiling under Tier 2+ multi-stage scenarios, (2) re-introduce camera as a rewind subject (contradicts ADR-0001 player-only scope decision and Pillar 1 'cameras don't rewind' player fantasy headline DEC-CAM-B1), (3) destroy the architectural source of camera.md Section B Player Fantasy ('카메라는 잊지 않는다' = 'cameras don't forget' — derived from camera-state-not-in-snapshot decision A.1 DEC-CAM-A2). Camera handles rewind via rewind_completed signal: clear shake events + reset_smoothing + recompute position from restored player position (camera.md R-C1-9). Detection: future tools/ci/snapshot_field_audit.sh grep gate (deferred — boot-time snapshot.field_count == 9 assert serves as primary enforcement)."
+    adr: design/gdd/camera.md
+    referenced_by:
+      - design/gdd/camera.md            # A.1 DEC-CAM-A2 + B.4 DEC-CAM-B1 + F.1 row #8 (negative dependency to ADR-0002) + F.5 ADR-0002 closure row
+      - design/gdd/time-rewind.md       # F6 (b) variant — DEC-PM-3 v2 / B5 Pillar 1 resolution; PlayerSnapshot 9-field lock owns scope boundary
+      - docs/architecture/adr-0002-time-rewind-storage-format.md  # Amendment 2 9-field lock (8 PM-noted + 1 TRC-internal)
+    added: 2026-05-12
 
 # Example:
 #

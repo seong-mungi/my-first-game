@@ -993,6 +993,7 @@ Pre-B10 oscillation case the fix blocks:
 | **#11** | Boss Pattern | 보스가 PM `global_position` + `velocity` read (예측 사격) | Read-only | **Soft** |
 | **#13** | HUD | (Tier 1 없음) — HUD는 토큰 카운트 / 보스 phase만; PM state 직접 노출 X | — | — |
 | **#14** | VFX | dust trail / landing puff 등 PM 자식 method-track 트리거 (`_on_anim_emit_dust_vfx`) | anim method-track emit | **Soft** |
+| **#3** | [Camera System](camera.md) | Camera가 매 tick PM `target.global_position` *read만* (follow base) | Read-only `target.global_position: Vector2` per tick. Camera는 PM 시그널을 구독하지 않음 (state read는 EchoLifecycleSM/PlayerMovementSM 경유). camera.md F.1 row #2 reciprocal — Camera #3 Approved 2026-05-12 RR1 PASS. | **Soft** *(read-only)* |
 | **engine** | rendering | `facing_direction` → `Sprite2D.flip_h` or anim 분기 | TBD (Visual/Audio 섹션 결정) | — |
 
 ### F.3 Signal Catalog (owned by Player Movement)

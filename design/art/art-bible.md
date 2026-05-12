@@ -415,6 +415,37 @@ NEXUS의 모든 건물은 ARCA가 설계한 효율 최적화 구조물이다 —
 - 체크포인트 위치에 시안 발광 균열 → "REWIND Core가 여기서 방전됐다가 재충전됨" 서사
 - 보스 격파 후 해당 공간에 시안 에너지 파편 남김
 
+### 카메라 뷰포트 컨트랙트 (Camera Viewport Contract — Camera System #3 2026-05-12)
+
+본 서브섹션은 카메라 시스템(Camera System #3)이 NEXUS 메가시티 환경 디자인에 부과하는 시각 컨트랙트를 명시한다. art-bible Approved → Camera #3 Approved RR1 PASS 양방향 정합 (Camera #3 GDD VA.6 + F.1 row #9 reciprocal).
+
+**스크린쉐이크 변위 모델 (uniform displacement):**
+- 카메라 쉐이크는 `camera.offset` (post-smoothing 채널)로 viewport 전체를 uniform 이동시킨다 — Base photo / Mid line-art / Top collage-detail 3-레이어가 모두 같은 vector로 함께 이동하므로 torn-paper edge 사이 distance가 0 픽셀 변화한다.
+- 결과: 흔들려도 콜라주 합성은 분해되지 않는다 (Principle A 명확성 우선 콜라주 정합).
+- 구현 측: per-element 독립 움직임 패턴 (예: 각 레이어가 독립 parallax 또는 wobble shader 추가)은 본 컨트랙트와 양립 불가 — 채택 시 Camera #3 GDD revision 필요.
+
+**Readable Third (가독 영역):**
+- Tier 1 viewport 1280×720 기준 **수평 중심 ±213 px** (= viewport_width / 6) 영역을 "readable third"로 정의.
+- Camera 최대 쉐이크 변위는 `MAX_SHAKE_PX = 12` (글로벌 length clamp; camera.md G.1.2). 12 px ≪ 213 px (~17× 안쪽 마진)이므로 boss silhouette 등 게임플레이 핵심 요소가 readable third 안에 머무는 한 쉐이크 피크에서도 가독성 보장.
+- **소품 배치 룰**: 게임플레이상 *중요한* 콜라주 요소 (보스 실루엣, 도약 위협 hazard, REWIND Core 잔재 같은 서사적 큐)는 12 px MAX_SHAKE_PX 변위 가정 하에 readable third 외부에 *단독 배치되어서는 안 된다*. 외부 배치 자체는 가능하나 readable third 내부에 paired hint 또는 alternative read path가 함께 있어야 한다.
+
+**버티컬 lookahead 비율 (asymmetric):**
+- Camera는 점프 시 ECHO 머리 위 20 px 미리보기, 낙하 시 아래 52 px 미리보기 (2.6× 비대칭 — 착지 위협이 점프 정점 위협보다 빈번한 run-and-gun 페이싱 정합).
+- **환경 디자인 의무**: 착지 지점 hazard (스파이크, 바닥 적, 추락 트랩)는 ECHO 발 위치 기준 viewport 하단 52 px 영역 안에서 시각적으로 식별 가능해야 한다 (Pillar 2 — "운으로 죽지 않음" 정합). hazard sprite의 silhouette gap (Section 3 shape-language)이 콜라주 배경과 충분한 contrast를 유지하도록 prop density (D.4 prop density rules)와 조율.
+
+**Tier 2 zoom 범위 (deferred, art-direction intent locked now):**
+- Tier 1: zoom = 1.0 고정 (DEC-CAM-A4).
+- Tier 2 boss arena 도입 시 활성화 — `0.85..1.25×` 범위 사전 lock (camera.md VA.2):
+  - **0.85× min** (boss arena pull-out): ECHO 48 px sprite × 0.85 = 41 px apparent (Section 3 ≥32 px floor 통과)
+  - **1.25× max** (boss face push-in): STRIDER 192 px sprite × 1.25 = viewport 18.75% — readable third 안쪽
+- **Hard floor invariant** (Tier 2 도입 시 Camera #3 GDD에 새 INV로 등록): "any Tier 2 zoom level에서 ECHO 렌더된 픽셀 높이 ≥ 32 px apparent" (Section 3 thumbnail test 정합 — 720p Steam Deck native 검증).
+- **Zoom transition 곡선**: 하드 cut 금지 — tween 사용 (Pillar 3 — 콜라주 합성이 새 frame에 "숨을 쉬며" 진입; 정확한 곡선/속도는 Tier 2 Boss Pattern #11 GDD revision 시 결정).
+
+**Cross-doc 참조**:
+- camera.md VA.6 (Cross-doc Art-Bible Reciprocal — 본 amendment의 source spec)
+- camera.md F.1 row #9 (art-bible.md SOFT dependency — Pillar 3 콜라주 시그너처 보존)
+- camera.md F.5 art-bible reciprocal row (Phase 5 cross-doc 배치)
+
 ---
 
 ## 7. UI/HUD Visual Direction

@@ -170,7 +170,7 @@ Scene Manager는 두 개의 state machine을 보유한다: (a) **transition life
 | **IDLE** | steady-state | (default) | 단일 씬 로드 완료, 전환 트리거 대기. 작업 없음. |
 | **PRE-EMIT** | 틱 T (SWAPPING과 **co-tick**) | DEAD enter / `boss_killed` / cold-boot 첫 입력 | (a) `scene_will_change()` emit (Rule 4); (b) 동일 틱 내 핸들러 완료 대기 (TRC `_buffer_invalidate()`, EchoLifecycleSM `_on_scene_will_change()` cascade); (c) 동일 틱 T 내 SWAPPING으로 진행 |
 | **SWAPPING** | M 틱 (Godot SceneTree 내부 — Section H AC 검증) | PRE-EMIT 완료 (동일 틱 T) | `SceneTree.change_scene_to_packed(packed)` 동기 호출. SM은 호출 내부의 per-tick 진행 관측 불가. |
-| **POST-LOAD** | `K` 틱 (design guidance: `K < M`; D.1 binding constraint는 sum) | `change_scene_to_packed` 반환 | 새 씬 `_ready()` 체인 실행; SM이 `get_tree().process_frame.connect(_on_post_load, CONNECT_ONE_SHOT)` 패턴으로 다음 프레임 콜백을 1회 등록하여 `_ready()` cascade 완료 시점을 결정론적으로 포착 (코루틴 미사용 — Rule 9 비협상 준수; 시그널-콜백 기반); 콜백 본문이 `checkpoint_anchor` 등록 (Rule 8) + READY phase 전이. **SM-internal: 본 phase는 외부로 시그널 노출 없음** (Q2 deferral — C.3에서 Camera #3 / Stage #12 의무로 기록). |
+| **POST-LOAD** | `K` 틱 (design guidance: `K < M`; D.1 binding constraint는 sum) | `change_scene_to_packed` 반환 | 새 씬 `_ready()` 체인 실행; SM이 `get_tree().process_frame.connect(_on_post_load, CONNECT_ONE_SHOT)` 패턴으로 다음 프레임 콜백을 1회 등록하여 `_ready()` cascade 완료 시점을 결정론적으로 포착 (코루틴 미사용 — Rule 9 비협상 준수; 시그널-콜백 기반); 콜백 본문이 (1) `checkpoint_anchor` 등록 (Rule 8); (2) **stage root에서 `stage_camera_limits: Rect2` query 후 boot-time assert `assert(limits.size.x > 0 and limits.size.y > 0)` (E-CAM-7 — invalid Rect2가 Camera2D `limit_*` setter를 무의미한 값으로 설정해 player가 visible world 밖으로 escape하는 시나리오 차단)**; (3) **`scene_post_loaded(anchor: Vector2, limits: Rect2)` 시그널 emit** (Camera #3 first-use 적용 2026-05-12 — Q2 closure; camera.md R-C1-10 + R-C1-12 핸들러 호출); (4) READY phase 전이. |
 | **READY** | steady-state | EchoLifecycleSM이 `state_changed(_, &"alive")` emit | 입력 수락; SM IDLE-effective 복귀. |
 
 **Budget formula** (Rule 9 비협상 계약):
@@ -232,11 +232,12 @@ var current_scene_packed: PackedScene = null                   # Rule 14 same-Pa
 
 #### C.3.1 SM 시그널 emit / subscribe matrix
 
-**SM emits (1 signal — sole producer)**:
+**SM emits (2 signals — sole producer for both)**:
 
 | Signal | Signature | Subscribers | Emit guard |
 |---|---|---|---|
 | `scene_will_change` | `()` (zero args) | TRC (`_buffer_invalidate()`) · EchoLifecycleSM (`_on_scene_will_change()` cascade — `_lethal_hit_latched` + 입력 버퍼 + O8 counter + PM 8-var via PM `_clear_ephemeral_state()` 호출) | Single-emit per transition (Rule 4); SM은 sole producer (Rule 4) |
+| `scene_post_loaded` | `(anchor: Vector2, limits: Rect2)` | Camera #3 (`_on_scene_post_loaded` → snap-to-anchor + stage limit set + `reset_smoothing()`; camera.md R-C1-10 + R-C1-12) | POST-LOAD phase 안에서 `checkpoint_anchor` 등록 직후 + boot-time assert `limits.size > 0` (E-CAM-7) 통과 후 single-emit. Camera #3 first-use 2026-05-12 (Q2 closure — DEC-SM-9 status flip). Tier 2 진입 시 Stage #12 / HUD #13 추가 구독 가능. |
 
 **SM subscribes (3 signals)**:
 
@@ -312,17 +313,17 @@ func _on_state_changed(from: StringName, to: StringName) -> void:
 
 > **Pattern scope note**: 위 snippet은 same-tick CLEAR vs RESTART 우선순위 로직만 보여준다 — 본 GDD가 spec하는 다른 진입 가드는 별도로 production 핸들러에 포함되어야 한다: (a) **panic-state 가드** `if _boundary_state == BoundaryState.PANIC: return` (E.1 terminality + AC-H26); (b) **`_phase != Phase.IDLE` 가드** `if _phase != Phase.IDLE: push_warning(...); return` (E.4 `boss_killed` during transition + E.5 `dead` during transition + AC-H19/AC-H20). 두 핸들러 모두 함수 본문 *최상단*에 두 가드를 배치한다 (precedence: panic > phase ≠ idle > 동일-틱 우선순위).
 
-#### C.3.4 Q2 Deferred Obligation — POST-LOAD 시그널 노출
+#### C.3.4 Q2 Resolved — POST-LOAD 시그널 노출 (Camera #3 first-use 적용 2026-05-12)
 
-C.2.1 POST-LOAD phase는 현재 SM-internal로 외부에 시그널을 노출하지 않는다 (예: `scene_post_loaded` 등 미존재). 후속 GDD 작성 시 다음 시스템이 본 phase의 hook을 요구하면 본 GDD 개정으로 시그널 추가:
+C.2.1 POST-LOAD phase는 **`scene_post_loaded(anchor: Vector2, limits: Rect2)` 시그널을 emit한다** — Camera #3 first-use trigger (camera.md C.3.3 batch + F.1 row #1 HARD dependency 정합). 본 시그널은 `checkpoint_anchor` 등록 직후 + boot-time assert `limits.size.x > 0 ∧ limits.size.y > 0` (E-CAM-7) 통과 후 single-emit한다. 시그너처는 architecture.yaml `interfaces.scene_lifecycle.signal_signature`가 단일 출처이며 본 GDD는 그 reference를 보유한다.
 
-| 시스템 | 가능한 hook 필요성 | 트리거 조건 | 권장 시그널 |
+| 시스템 | hook 필요성 | 트리거 조건 | 시그널 / Status |
 |---|---|---|---|
-| Camera #3 | new scene 진입 시 camera snap-to-anchor (체크포인트 재시작에서 컷 없이 즉시 정렬) | POST-LOAD entry → checkpoint_anchor `global_position` 노출 | `scene_post_loaded(anchor: Vector2)` |
-| Stage / Encounter #12 | encounter trigger node wiring 시점 | POST-LOAD에서 anchor 등록 직후 | `scene_post_loaded(anchor: Vector2)` (Camera와 공유 가능) |
-| HUD #13 (Tier 2) | victory screen 전환 시 HUD fade-out timing | POST-LOAD에서 시그널 노출 또는 `state_changed(_, &"dead")` 직접 구독으로 대체 가능 | 미정 |
+| **Camera #3** | new scene 진입 시 camera snap-to-anchor (체크포인트 재시작에서 컷 없이 즉시 정렬) + stage limit 설정 | POST-LOAD entry → checkpoint_anchor `global_position` + stage `Rect2` 노출 | `scene_post_loaded(anchor: Vector2, limits: Rect2)` — **Active 2026-05-12 (Camera #3 Approved RR1 PASS first-use)** |
+| Stage / Encounter #12 | encounter trigger node wiring 시점 | POST-LOAD에서 anchor 등록 직후 (동일 시그널) | 동일 시그널 재사용 (signature 비변경) — Stage #12 GDD 작성 시 구독 추가 |
+| HUD #13 (Tier 2) | victory screen 전환 시 HUD fade-out timing | POST-LOAD에서 시그널 노출 또는 `state_changed(_, &"dead")` 직접 구독으로 대체 가능 | 미정 (Tier 2 HUD GDD 결정) |
 
-**Tier 1 결정**: POST-LOAD를 SM-internal로 유지 — Camera #3 / Stage #12 / HUD #13 모두 Not Started, 현재 dependent 없음. 첫 사용 사례 발생 시 본 GDD를 개정해 `scene_post_loaded(anchor: Vector2)` 시그널을 추가한다 (Session 19 design call). 본 deferral은 F.4.2 (후속 GDD 작성 시 의무)에 등록한다.
+**Tier 1 status (2026-05-12)**: POST-LOAD 시그널 노출 **Active** — Camera #3가 first-use 트리거. signal signature `scene_post_loaded(anchor: Vector2, limits: Rect2)`는 Camera #3 GDD authoring 시점에 Camera 측 R-C1-10 / R-C1-12 + AC-CAM-H5-01/02 의무를 만족하도록 2-arg (`anchor` + `limits`)로 결정됨 (`limits: Rect2`는 stage-by-stage 변동성 흡수 + Tier 2 멀티룸 진입 시 동일 시그널 재사용). 본 closure는 F.4.2 (후속 GDD 작성 시 의무)에서 Camera #3 row 의무 status를 "Active"로 flip하며, OQ-SM-A1 + DEC-SM-9 모두 resolved 처리.
 
 #### C.3.5 Cross-doc Reciprocal Obligations (Phase 5d 일괄 적용)
 
@@ -658,13 +659,13 @@ Bug: _on_state_changed가 한 틱에 두 번 발화 (duplicate signal connect)
 | # | System | Status | Interface | Hard / Soft | Notes |
 |---|---|---|---|---|---|
 | **#1** | Input System | Approved | input.md C.5 router calls `SM.change_scene_to_packed(stage_1_packed, TransitionIntent.COLD_BOOT)` on first cold-boot input (E.6 / E.7) | **Hard** | Cold-boot trigger source (Pillar 4 5분 룰 critical path). input.md C.5 owns router; SM exposes receive API. F.3 reciprocal already present. Added Session 19 RR5 (was structural omission). |
-| **#3** | Camera System | Not Started | `scene_post_loaded(anchor: Vector2)` (Q2 deferred — first-use revision per C.3.4) | **Hard** | Camera snap-to-anchor on checkpoint restart (no cut). Tier 1 deferred. |
+| **#3** | Camera System | Approved (RR1 PASS 2026-05-12) | `scene_post_loaded(anchor: Vector2, limits: Rect2)` (Camera #3 first-use 2026-05-12 — Q2 closure per C.3.4) | **Hard** | Camera snap-to-anchor on checkpoint restart (no cut) + stage limit set. Active in Tier 1. camera.md R-C1-10 + R-C1-12 + AC-CAM-H5-01/02 reciprocal. |
 | **#4** | Audio System | Not Started | `scene_will_change()` (bus reset Tier 2); `boss_killed` (stage clear SFX) | **Soft** | Tier 1 stub-level; bus reset 미적용. |
 | **#5** | State Machine Framework | Approved | `scene_will_change()` → EchoLifecycleSM `_on_scene_will_change()` O6 cascade (state-machine.md C.2.2 O6) | **Hard** | Cascade triggers `_lethal_hit_latched` + 입력 버퍼 + O8 counter clear + PM `_clear_ephemeral_state()` 호출 |
 | **#6** | Player Movement | Approved | (via #5 cascade — PM은 직접 구독 안 함; player-movement.md F.4.2 row #2) | **Hard (via cascade)** | OQ-PM-1 closure: SM emit → EchoLifecycleSM cascade → PM 8-var clear. PM은 SM에 직접 의존하지 않음. |
 | **#8** | Damage / Hit Detection | LOCKED | `boss_killed(boss_id: StringName)` SM이 구독 (damage.md F.4) | **Hard** | Damage emit → SM CLEAR_PENDING → stage clear lifecycle (Rule 12 + C.3.3) |
 | **#9** | Time Rewind System | Approved | `scene_will_change()` → TRC `_buffer_invalidate()` (time-rewind.md F.1 row #2 + E-16) | **Hard** | Ring buffer 무효화 단일 트리거; `_tokens` 보존 |
-| **#12** | Stage / Encounter System | Not Started | `scene_post_loaded(anchor: Vector2)` (Q2 deferred) + `boss_killed` (스테이지 클리어 라우터) | **Hard** | Stage #12 = SM의 1차 downstream client; SM은 boundary, Stage #12는 in-stage encounter flow 소유 |
+| **#12** | Stage / Encounter System | Not Started | `scene_post_loaded(anchor: Vector2, limits: Rect2)` (signature locked 2026-05-12 via Camera #3 first-use; Stage GDD가 stage root에서 `limits: Rect2` 노출 패턴 결정) + `boss_killed` (스테이지 클리어 라우터) | **Hard** | Stage #12 = SM의 1차 downstream client; SM은 boundary, Stage #12는 in-stage encounter flow 소유. F.4.2 Stage #12 row 의무 참조. |
 | **#13** | HUD System | Not Started | (Tier 2 결정) `state_changed(_, &"dead")` 직접 구독 vs `scene_will_change()` 구독 | **Soft** | HUD는 TR / Damage / EchoLifecycleSM 시그널을 독립 구독 |
 | **#15** | Collage Rendering Pipeline | Not Started | (Tier 2+) `scene_will_change()` → 텍스처 캐시 명시 해제 | **Soft (Tier 2)** | Tier 1 단일 스테이지에서는 명시 해제 불필요; Tier 2 진입 시 본 GDD 개정 |
 | **#17** | Story Intro Text System | Not Started | SM은 stage_1 PackedScene 내 intro text 노드 인스턴스화 (씬 자체 wiring); 별도 시그널 없음 | **Soft** | Pillar 4 5분 룰 — intro 5줄 타이프라이터는 자체 완료 후 첫 입력 대기 |
@@ -710,9 +711,9 @@ Detailed table in C.3.5 — 7 GDD edits + 2 registry batch (entities.yaml + arch
 
 | Target GDD | 의무 | Closure trigger |
 |---|---|---|
-| **Camera #3** | (1) `scene_post_loaded(anchor: Vector2)` 시그널 추가 — 본 GDD revision 필요; (2) Camera snap-to-anchor on POST-LOAD entry; (3) AC: 체크포인트 재시작 후 1 tick 내 camera 정렬 완료 | Camera #3 GDD authoring |
+| ~~**Camera #3**~~ ✅ **Closed 2026-05-12 (Camera #3 Approved RR1 PASS)** | ~~(1) `scene_post_loaded(anchor: Vector2)` 시그널 추가 — 본 GDD revision 필요; (2) Camera snap-to-anchor on POST-LOAD entry; (3) AC: 체크포인트 재시작 후 1 tick 내 camera 정렬 완료~~ → **Resolved**: signal signature finalized as `scene_post_loaded(anchor: Vector2, limits: Rect2)` (2-arg — limits added for stage-by-stage variability absorption per camera.md C.3.3 + R-C1-12 single-source). C.2.1 POST-LOAD body now emits the signal after `checkpoint_anchor` registration + boot-time `assert(limits.size > 0)` (E-CAM-7). Camera handler R-C1-10 cost ≤ 1 tick (snap + 4 limit setters + reset_smoothing); fits within SM 60-tick restart budget without additional accounting. Camera AC-CAM-H5-01 (snap correctness) + AC-CAM-H5-02 (60-tick budget) verify the integration. Phase 5 cross-doc batch landed 2026-05-12. | Camera #3 GDD authoring (Closed) |
 | **Audio #4** | (1) `scene_will_change()` → bus reset (Tier 2만); (2) `boss_killed` → stage clear SFX trigger; (3) AC: SFX bus 전환 시 audible crackle 없음 | Audio #4 GDD authoring |
-| **Stage / Encounter #12** | (1) `scene_post_loaded(anchor: Vector2)` 사용 — encounter trigger node wiring; (2) `boss_killed` 다음 PackedScene 라우팅 — Tier 2 진입 시 본 GDD `change_scene_to_packed` 인자 결정 로직 개정; (3) AC: stage 진입 시 모든 encounter trigger 등록 완료 | Stage #12 GDD authoring |
+| **Stage / Encounter #12** | (1) `scene_post_loaded(anchor: Vector2, limits: Rect2)` 2-arg signal 사용 — encounter trigger node wiring + stage root에서 `limits: Rect2` 노출 패턴 결정 (export var `stage_camera_limits: Rect2` 또는 `Marker2D` 자식 노드 query) — signature locked 2026-05-12 via Camera #3 first-use; (2) `boss_killed` 다음 PackedScene 라우팅 — Tier 2 진입 시 본 GDD `change_scene_to_packed` 인자 결정 로직 개정; (3) AC: stage 진입 시 모든 encounter trigger 등록 완료 + `limits.size > 0` boot assert 통과 (E-CAM-7) | Stage #12 GDD authoring |
 | **HUD #13** | (1) `state_changed(_, &"dead")` 직접 구독 vs `scene_will_change()` 구독 결정; (2) AC: stage clear 시 HUD fade-out timing 결정론 | HUD #13 GDD authoring |
 | **VFX #14** | (1) `scene_will_change()` 시 active particle 정리 정책 (즉시 free vs 자연 만료); (2) AC: 씬 전환 시 leftover particle 0 검증 | VFX #14 GDD authoring |
 | **Collage Rendering #15** | Tier 2 진입 시 (1) `scene_will_change()` → 텍스처 캐시 명시 해제; (2) AC: 메모리 1.5 GB ceiling 미위반 + 새 씬 GPU 텍스처 로드 완료 검증 | Collage Rendering #15 GDD authoring (Tier 2 게이트) |
@@ -1302,7 +1303,7 @@ Rule 9 says ≤ 60-tick budget is "비협상" (non-negotiable), but E.10 says a 
 
 | ID | Question | Closure Owner | Closure Trigger | Severity | Tier 1 임시 처리 |
 |---|---|---|---|---|---|
-| **OQ-SM-A1** | POST-LOAD phase 시그널 노출 — `scene_post_loaded(anchor: Vector2)` 시그널 추가 시점 | Camera #3 GDD 또는 Stage #12 GDD (둘 중 먼저 작성되는 쪽) | 첫 사용 사례 발생 시 본 GDD revision | LOW | Tier 1 단일 스테이지에서 dependent 시스템 모두 Not Started — POST-LOAD를 SM-internal로 유지 (C.3.4) |
+| ~~**OQ-SM-A1**~~ ✅ **Resolved 2026-05-12 (Camera #3 first-use)** | ~~POST-LOAD phase 시그널 노출 — `scene_post_loaded(anchor: Vector2)` 시그널 추가 시점~~ → **Resolved**: signal added 2026-05-12 with 2-arg signature `scene_post_loaded(anchor: Vector2, limits: Rect2)` (Camera #3 GDD authoring + Approved RR1 PASS). C.2.1 POST-LOAD body emit + C.3.1 SM emits matrix entry + C.3.4 Q2 closure section. F.4.2 row Camera #3 status: Active. | (Closed) | (Closed) | — | — |
 | **OQ-SM-A2** | 인플레이스 체크포인트 reset 패턴 (씬 교체 없이 적/발사체 리셋) — Tier 2 메모리 효율 향상 시 도입 | Stage / Encounter #12 GDD (Tier 2) | Tier 2 gate 통과 + 메모리 측정 결과 1.5 GB ceiling 압박 시 | MEDIUM (Tier 2) | Tier 1: Rule 11 "씬 교체가 리셋을 처리한다" 가정 유효 — 단일 스테이지 슬라이스 |
 | **OQ-SM-A3** | Async load (`ResourceLoader.load_threaded_request`) 도입 시 D.1 60-tick budget formula 개정 | 본 GDD revision (Tier 2 게이트) | Tier 2 진입 + 비동기 로드 도입 결정 | MEDIUM (Tier 2) | Tier 1: Rule 3 (sync only) 유효; Steam Deck 1세대 실측에서 60-tick 위반 일관 발생 시 조기 이월 |
 | **OQ-SM-A4** | Memory 명시 해제 (`ResourceLoader.load` 캐시 해제) — Tier 3 5 stage × 300MB 콜라주 텍스처 대응 | Collage Rendering #15 GDD (Tier 2 게이트) | Tier 2 진입 + 콜라주 텍스처 메모리 실측 | MEDIUM (Tier 2/3) | Tier 1: 단일 스테이지에서 메모리 명시 해제 불필요 |
@@ -1333,7 +1334,7 @@ Rule 9 says ≤ 60-tick budget is "비협상" (non-negotiable), but E.10 says a 
 | **DEC-SM-6** | `boss_killed` 신호 이름 채택 (`boss_defeated` 거부) | damage.md F.4 LOCKED 9-signal contract + AC-13 BLOCKING이 single-source | C.1 Rule 12 + C.3.5 housekeeping batch |
 | **DEC-SM-7** | 같은-틱 `boss_killed` + `state_changed(_, &"dead")` → **CLEAR_PENDING 우선** | Pillar 1 — Defiant Loop 학습 모델이 same-tick corner case에 흔들리지 않음 | C.3.3 + D.5 |
 | **DEC-SM-8** | 5-phase linear lifecycle (IDLE/PRE-EMIT/SWAPPING/POST-LOAD/READY) 구현은 `enum Phase` + `match` (state-machine.md 프레임워크 미사용) | 단일 인스턴스 autoload + 5-phase 선형 + 동시 리액션 없음 — 프레임워크 오버헤드 미정당 | C.2.3 |
-| **DEC-SM-9** | POST-LOAD 시그널 노출 deferred (Q2) — `scene_post_loaded(anchor)` 첫 사용 사례 발생 시 본 GDD revision | YAGNI — Camera #3 / Stage #12 / HUD #13 모두 Not Started | C.3.4 + OQ-SM-A1 |
+| **DEC-SM-9** | POST-LOAD 시그널 노출 — **resolved 2026-05-12 (Camera #3 first-use)**: `scene_post_loaded(anchor: Vector2, limits: Rect2)` 2-arg signal active, Camera #3 first consumer, signature locked at architecture.yaml `interfaces.scene_lifecycle`. Stage #12 / HUD #13 (Tier 2)는 동일 signal 재사용 (signature 비변경) | Q2 closure via Camera #3 Approved RR1 PASS 2026-05-12 — was YAGNI deferred while all dependents Not Started; Camera #3 became first dependent → revision applied | C.3.4 + OQ-SM-A1 (resolved) |
 | **DEC-SM-10** | Tier 2 revision triggers 사전 등록 — Rule 3 async load, Rule 11 in-place reset, OQ-SM-A2/A3/A4/A5 | Tier 1 commitment 보호 + Tier 2 게이트에 대비된 revision surface 명시 | C.1 Rules 3/11 + OQ section |
 
 ### A.2 Cross-doc Citations

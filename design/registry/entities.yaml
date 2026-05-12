@@ -37,7 +37,7 @@
 #   Each entry: name, status, source, referenced_by[], attributes{}, added, revised
 
 version: 1
-last_updated: "2026-05-11 — Session 20 Phase 5b: Player Shooting #7 GDD Designed (pending re-review) adds 5 new constants (FIRE_COOLDOWN_FRAMES=10, MAGAZINE_SIZE=30, PROJECTILE_CAP=8, PROJECTILE_SPEED_PX_S=600.0, PROJECTILE_LIFETIME_FRAMES=90). Previous (2026-05-11): Session 17 Step 3 backfill: 1 entity (ECHO) + 3 formulas + 26 constants extracted from 5 Approved GDDs (Input #1 / State Machine #5 / Player Movement #6 / Damage #8 / Time Rewind #9) + 3 ADRs (0001 / 0002 with Amendment 1+2 / 0003) + Scene Manager #2 Phase 5d batch (restart_window_max_frames=60, cold_boot_max_seconds=300)."
+last_updated: "2026-05-12 — Session 22 Phase 5b: Camera System #3 GDD Designed (pending re-review) adds 6 new constants (DEADZONE_HALF_X=64, JUMP_LOOKAHEAD_UP_PX=20, FALL_LOOKAHEAD_DOWN_PX=52, LOOKAHEAD_LERP_FRAMES=8, MAX_SHAKE_PX=12, POSITION_SMOOTHING_SPEED=32.0). Previous (2026-05-11): Session 20 Phase 5b: Player Shooting #7 GDD Designed (pending re-review) adds 5 new constants (FIRE_COOLDOWN_FRAMES=10, MAGAZINE_SIZE=30, PROJECTILE_CAP=8, PROJECTILE_SPEED_PX_S=600.0, PROJECTILE_LIFETIME_FRAMES=90). Previous (2026-05-11): Session 17 Step 3 backfill: 1 entity (ECHO) + 3 formulas + 26 constants extracted from 5 Approved GDDs (Input #1 / State Machine #5 / Player Movement #6 / Damage #8 / Time Rewind #9) + 3 ADRs (0001 / 0002 with Amendment 1+2 / 0003) + Scene Manager #2 Phase 5d batch (restart_window_max_frames=60, cold_boot_max_seconds=300)."
 
 # ─── ENTITIES ────────────────────────────────────────────────────────────────
 # Named game-world objects: enemies, NPCs, characters, factions, bosses.
@@ -623,6 +623,73 @@ constants:
     unit: frames
     notes: "Projectile despawn threshold — frame-counter deterministic (NOT VisibleOnScreenNotifier2D, camera-relative violates ADR-0001 + ADR-0003 결정성). Tier 1 default = 1.5 s @ 60 Hz = ~900 px @ default speed. Tuning range 60..120 in assets/data/weapons.tres. Cross-knob invariant cap relationship (G.3 #1)."
     added: 2026-05-11
+    revised: ""
+
+  # ─── Camera System (Tier 1 follow + shake) ────────────────────────────────
+  - name: DEADZONE_HALF_X
+    status: active
+    source: design/gdd/camera.md
+    referenced_by:
+      - design/gdd/camera.md   # C.1 R-C1-3 + D F-CAM-2 + G.1.1 + INV-CAM-3
+    value: 64
+    unit: px
+    notes: "Camera horizontal deadzone half-width — ECHO가 화면 중심 ±64 px 내에서 자유롭게 움직임. Tier 1 default (viewport_width 1280의 5%); 안전 range 32..128. Katana Zero(80) ~ Celeste(32) 사이의 중간점."
+    added: 2026-05-12
+    revised: ""
+
+  - name: JUMP_LOOKAHEAD_UP_PX
+    status: active
+    source: design/gdd/camera.md
+    referenced_by:
+      - design/gdd/camera.md   # C.1 R-C1-4 + D F-CAM-3 + G.1.1
+    value: 20
+    unit: px
+    notes: "Vertical lookahead during JUMPING state (negative direction in Godot 4.6 y-axis). Tier 1 default; 안전 range 12..32. 점프 정점에서 ECHO 머리 위 공간 확보."
+    added: 2026-05-12
+    revised: ""
+
+  - name: FALL_LOOKAHEAD_DOWN_PX
+    status: active
+    source: design/gdd/camera.md
+    referenced_by:
+      - design/gdd/camera.md   # C.1 R-C1-4 + D F-CAM-3 + G.1.1 + INV-CAM-5
+    value: 52
+    unit: px
+    notes: "Vertical lookahead during FALLING state. Tier 1 default; 안전 range 32..72. 2.6× asymmetric vs JUMP_LOOKAHEAD_UP_PX — run-and-gun 착지 위협 (스파이크, 바닥 적) 가독성 핵심."
+    added: 2026-05-12
+    revised: ""
+
+  - name: LOOKAHEAD_LERP_FRAMES
+    status: active
+    source: design/gdd/camera.md
+    referenced_by:
+      - design/gdd/camera.md   # C.1 R-C1-4 + D F-CAM-3 + G.1.1 + INV-CAM-5
+    value: 8
+    unit: frames
+    notes: "Vertical lookahead state lerp duration. Tier 1 default; 안전 range 4..16. INV-CAM-5: `< frames_to_apex (=36)` (= jump_velocity_initial / gravity_rising × 60 = 480/800 × 60)."
+    added: 2026-05-12
+    revised: ""
+
+  - name: MAX_SHAKE_PX
+    status: active
+    source: design/gdd/camera.md
+    referenced_by:
+      - design/gdd/camera.md   # C.1 R-C1-5/6 + D F-CAM-5 + G.1.2 + INV-CAM-2/4
+    value: 12
+    unit: px
+    notes: "Global shake length clamp. Tier 1 default; 안전 range 6..20. INV-CAM-2: `× 6 < viewport_width (=1280)` → ≤ 213 px readable third. INV-CAM-4: 단일 이벤트 peak < MAX_SHAKE_PX (단일은 clamp 미도달)."
+    added: 2026-05-12
+    revised: ""
+
+  - name: POSITION_SMOOTHING_SPEED
+    status: active
+    source: design/gdd/camera.md
+    referenced_by:
+      - design/gdd/camera.md   # C.1 R-C1-11 + D F-CAM-7 + G.1.1 + INV-CAM-3/6
+    value: 32.0
+    unit: exponential_decay_rate
+    notes: "Godot 4.6 Camera2D `position_smoothing_speed` — exponential decay (실제로 `pos = pos.lerp(target, speed * delta)` per-frame, NOT 'points per second' linear). Tier 1 default; 안전 range 16.0..64.0. INV-CAM-3: 64 px step ≤ 5 frame settle; INV-CAM-6: `> 0.0` (lerp lock 방지)."
+    added: 2026-05-12
     revised: ""
 
 # Example:

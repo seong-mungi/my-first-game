@@ -814,6 +814,7 @@ is_invulnerable(echo_hurtbox: HurtBox) := !echo_hurtbox.monitorable
 | **#13** | HUD | `boss_phase_advanced(boss_id, new_phase)` | 페이즈 전이 알림 (텍스트 또는 화면 효과). HP bar 미생성 (Anti-Pillar 일관). |
 | **#14** | VFX | `hurtbox_hit(cause)`, `boss_hit_absorbed(...)`, `boss_phase_advanced(...)` | cause 기반 VFX 차별화 (cause taxonomy D.3 매핑). 보스 페이즈 전이 시 비주얼 layer 변화. |
 | **#4** | Audio | `hurtbox_hit(cause)`, `enemy_killed(...)`, `boss_phase_advanced(...)`, `death_committed(cause)` | cause 기반 SFX 차별화 + 페이즈 전이 스팅 + 사망 음악 변화. |
+| **#3** | [Camera System](camera.md) | `player_hit_lethal(_cause)`, `boss_killed(boss_id)` | Camera가 shake event 시작 — `player_hit_lethal` → 6 px / 12 frames impact shake; `boss_killed` → 10 px / 18 frames catharsis shake (camera.md R-C1-5 + F.1 row #4 reciprocal). cause는 무시 (Camera는 cause taxonomy 미사용 — 시그널 도착 자체가 트리거). Camera #3 Approved 2026-05-12 RR1 PASS. |
 
 ### F.3 시그널 발행 카탈로그 (Damage 시스템 owned, 단일 출처)
 
