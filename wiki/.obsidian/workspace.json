@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "log.md",
+                "file": "sources/Research Boss Rush GitHub Baseline Repos.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "log"
+              "title": "Research Boss Rush GitHub Baseline Repos"
             }
           }
         ]
@@ -195,8 +195,8 @@
   },
   "active": "069d84cd14959ebb",
   "lastOpenFiles": [
-    "concepts/Steam Indie Genre Revenue Matrix 2024-2025.md",
     "log.md",
+    "concepts/Steam Indie Genre Revenue Matrix 2024-2025.md",
     "concepts/Bullet Heaven Survivors-like Dev Pattern.md",
     "concepts/Steam Genre Competition Density Matrix.md",
     "concepts/Job Simulator Blue Collar Genre Pattern.md",
