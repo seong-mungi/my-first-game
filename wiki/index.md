@@ -77,7 +77,11 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[Boss Rush Design Fundamentals]] — **NEW** 보스러시 설계 8원칙: 보스퍼스트·툴킷제약·텔레그래프·8비트구조·시그니처무브 (2026-05-12)
 - [[Boss Identity Framework]] — **NEW** 보스 기억성 5-축 모델 + 공격 패턴 어휘 분류 (2026-05-12)
 - [[Shmup Boss Design Factors]] — **NEW** 슘프 보스 설계 5팩터: 난이도·다양성·길이·보상감·캐릭터성 (2026-05-12)
-- [[Boss Rush Content Sizing]] — **NEW** 스코프-가격 가이드 (MVS 8보스 / $12.99 목표 10-12) + 리트라이 루프 설계 (2026-05-12)
+- [[Boss Rush Content Sizing]] — 스코프-가격 가이드 (MVS 8보스 / $12.99 목표 10-12) + 리트라이 루프 설계 (2026-05-12)
+- [[Run and Gun Enemy AI Archetypes]] — **NEW** 런앤건 적 AI 6종 FSM 설계: 그런트·저격수·순찰경비·포대·비행·도약 + Echo 구현 우선순위 (2026-05-12)
+- [[Run and Gun Player Character Architecture]] — **NEW** 이동+액션 이중 레이어 FSM + 코요테 타임 + 점프 버퍼 + 슈팅 오버레이 AnimationTree (2026-05-12)
+- [[Run and Gun Bullet System Pattern]] — **NEW** BulletServer 풀링 + Marker2D 스폰 + WeaponData Resource 무기 교체 패턴 (2026-05-12)
+- [[Run and Gun Level Design Patterns]] — **NEW** 스크롤 위치 기반 스폰 레코드 + 결정론 AI 패턴 + 페이싱 3원칙 (2026-05-12)
 
 ### Cross-Genre Mechanic Transplants (런앤건 외부 메카닉 이식)
 - [[Time Manipulation Run and Gun]] — **NEW** PoP/Braid/Katana Zero 3 시간 모델 + Echo 선택 가이드
