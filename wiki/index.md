@@ -29,7 +29,8 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[Research Steam Low Competition Genre Analysis]] — **NEW** Steam 저경쟁 장르 분석: 플랫포머 1900종 vs 4X 160종, Gap Score, 직업 시뮬 기회 (2026-05-12)
 - [[Research Steam 2026 Genre Competition Update]] — **NEW** 2026 업데이트: Boss Rush 저경쟁 신규, Extraction Shooter 고경쟁 진입, 내러티브 히트 1위(51개) (2026-05-12)
 - [[Research Boss Rush GitHub Baseline Repos]] — Boss Rush 오픈소스 레포 7종 카탈로그 + Godot 4 적용 추천 + LimboAI 보스 AI (2026-05-12)
-- [[Research Boss Rush Development Base]] — **NEW** 보스러시 설계 이론·성공작 분석·Godot 튜토리얼·커뮤니티 종합 베이스 (2026-05-12)
+- [[Research Boss Rush Development Base]] — 보스러시 설계 이론·성공작 분석·Godot 튜토리얼·커뮤니티 종합 베이스 (2026-05-12)
+- [[Research Run and Gun Development Base]] — **NEW** 런앤건 구현 베이스: 적 AI 6종·플레이어 FSM·불릿 풀링·레벨 스폰·Godot 튜토리얼·GitHub 레포 종합 (2026-05-12)
 
 ## Concepts
 
