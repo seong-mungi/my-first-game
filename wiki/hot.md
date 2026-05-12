@@ -9,6 +9,15 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Active Research Topic
 
+**CCGS Workflow Guide ingest** (2026-05-12). `docs/WORKFLOW-GUIDE.md` → wiki. 7-Phase 파이프라인 + 66개 커맨드 + 12훅 + 리뷰 모드 + 팀 스킬 9개 + 스토리 라이프사이클 문서화. 4 페이지 생성.
+
+→ **Source**: [[CCGS Workflow Guide]] — 7-Phase 마스터 참조 (커맨드 카탈로그 · 리뷰 모드 · 파일 경로)
+→ **Concept**: [[CCGS 7-Phase Development Pipeline]] — Phase 1~7 게이트 요건 + 판정 체계
+→ **Concept**: [[CCGS Story Lifecycle]] — story-readiness → 구현 → story-done 8단계 리뷰
+→ **Concept**: [[CCGS Team Orchestration Skills]] — 9개 팀 스킬 6단계 파이프라인
+
+## 이전 활성 (CCGS fork 생태계 — 2026-05-12)
+
 **CCGS fork 생태계 — Star 순 Top 10** (2026-05-12). GitHub API 직접 조회. 원본 ⭐18,359 / 🍴2,679 대비 1위 fork ⭐50(0.27%). 3패턴 식별: CN 현지화(3개), Codex 포팅(2개), 기능 확장 Technica(1개).
 
 → **Synthesis**: [[Research CCGS Fork Landscape]] — GitHub API 직접 조회 Top 10 + 패턴 분류
