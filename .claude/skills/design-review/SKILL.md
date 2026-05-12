@@ -215,8 +215,31 @@ Never end the revision flow with plain text. Always close with this widget.
 **Second widget — systems index update (always show this separately):**
 
 Use a second `AskUserQuestion`:
-- Prompt: "May I update `design/gdd/systems-index.md` to mark [system] as [In Review / Approved]?"
+- Prompt: "May I update `design/gdd/systems-index.md` Status column for [system] to `<enum> · <YYYY-MM-DD>`?"
+  - Choose enum from the 6 allowed values per `.claude/rules/design-docs.md`:
+    `Not Started` / `In Design` / `Designed` / `Needs Revision` / `Approved` / `LOCKED`
+  - Map verdict → enum:
+    - APPROVED verdict → `Approved · <today>` (or `Approved · <today> · RR<N> PASS` if this is a re-review)
+    - NEEDS REVISION / MAJOR REVISION → `Needs Revision · <today>`
+    - In-progress authoring → `In Design · <today>`
+    - Authoring complete pre-review → `Designed · <today> · pending re-review`
 - Options: `[A] Yes — update it` / `[B] No — leave it as-is`
+
+**Status column format — STRICT (per `.claude/rules/design-docs.md`):**
+- Format: `<enum> · <YYYY-MM-DD>` or `<enum> · <YYYY-MM-DD> · <short modifier ≤30 chars>`
+- Separator is `·` (U+00B7), NOT `|`.
+- **Do NOT append parentheticals, narrative, BLOCKING counts, "Previously:" chains, or
+  multi-paragraph summaries to the Status column.** Other skills match enum values as
+  exact strings and parentheticals break that match. Narrative goes to the review-log
+  widget (third widget below), never to systems-index Status.
+- If the existing Status cell contains narrative from a previous review, overwrite it
+  with enum-only format (the prior narrative is preserved in the review-log file).
+- Status cell ≤ 150 chars. Single line.
+
+**Last Updated header — STRICT:**
+After updating the Status column, also replace the `> **Last Updated**:` header with:
+  `> **Last Updated**: <today YYYY-MM-DD> — see design/gdd/reviews/ for full history.`
+NEVER append cumulative narrative to this header.
 
 **Third widget — review log (always offer):**
 
