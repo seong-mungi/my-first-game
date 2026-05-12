@@ -195,6 +195,7 @@
   },
   "active": "069d84cd14959ebb",
   "lastOpenFiles": [
+    "concepts/Boss Rush Content Sizing.md",
     "concepts/Shmup Boss Design Factors.md",
     "concepts/Boss Identity Framework.md",
     "concepts/Boss Rush Design Fundamentals.md",
@@ -220,7 +221,6 @@
     "concepts/CCGS Scaffolder Scope Boundary.md",
     "concepts/CCGS Codex Port Pattern.md",
     "sources/Research CCGS Fork Landscape.md",
-    "concepts/CCGS Chinese Localization Forks.md",
     "wiki/questions/zhc-cosmetics-execution-plan-presentation.html",
     "wiki/questions/zhc-cosmetics-proposal-2026-04-28.html",
     "bin/setup-vault.sh",
