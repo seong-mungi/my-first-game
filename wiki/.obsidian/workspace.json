@@ -195,6 +195,7 @@
   },
   "active": "069d84cd14959ebb",
   "lastOpenFiles": [
+    "sources/CCGS Workflow Guide.md",
     "concepts/CCGS Codex Port Pattern.md",
     "log.md",
     "sources/Research CCGS Fork Landscape.md",
@@ -220,7 +221,6 @@
     "questions/Bot Validation Catalog Summary.md",
     "concepts/Speedrun Discovery Via RL Bot.md",
     "concepts/Accessibility Mode Bot Validation.md",
-    "concepts/AI Assisted Boss Pattern Generation.md",
     "wiki/questions/zhc-cosmetics-execution-plan-presentation.html",
     "wiki/questions/zhc-cosmetics-proposal-2026-04-28.html",
     "bin/setup-vault.sh",
