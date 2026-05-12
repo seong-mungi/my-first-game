@@ -220,6 +220,7 @@
   },
   "active": "2762ca55ab8c1903",
   "lastOpenFiles": [
+    "meta/lint-report-2026-05-12.md",
     "meta",
     "log.md",
     "2026-05-12.md",
@@ -255,7 +256,6 @@
     "bin",
     "skills/wiki-query-workspace/iteration-4/eval-q1/with_skill/run-1/timing.json",
     "skills/wiki-query-workspace/iteration-4/eval-q1/with_skill/run-1/outputs",
-    "skills/wiki-query-workspace/iteration-4/eval-q1/with_skill/run-1/grading.json",
     "무제.canvas",
     "wiki/meta/claude-obsidian-cover.gif",
     "wiki/meta/image-example-wiki-map-view.png",
