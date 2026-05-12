@@ -9,6 +9,20 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Active Research Topic
 
+**CCGS scaffolder 갭 — 구현까지의 나머지 툴체인** (2026-05-12). 2 parallel agents · ~25 web searches · 9 페이지. CCGS가 제공하는 것(프로세스 레이어)과 제공하지 않는 것(실제 구현 툴) 명확히 분리. 아트·오디오·CI/CD·애널리틱스·퍼블리싱·커뮤니티 6개 레이어별 권고 툴 확정.
+
+→ **Synthesis**: [[Research CCGS Implementation Gap Full Stack]] — CCGS 갭 전체 매트릭스 마스터
+→ **Synthesis**: [[Research Godot 4.6 Ecosystem Toolchain]] — Godot 에코시스템 툴 카탈로그
+→ **Concept**: [[CCGS Scaffolder Scope Boundary]] — IN/OUT SCOPE 경계 정의
+→ **Concept**: [[Godot CI CD Pipeline Pattern]] — GitHub Actions 두 단계 패턴
+→ **Concept**: [[Godot Analytics Stack]] — Talo + GameAnalytics 권고 스택
+→ **Concept**: [[Godot Audio Middleware Decision]] — FMOD vs Wwise vs 내장 결정 트리
+→ **Concept**: [[Godot Art Pipeline Tools]] — Aseprite + godot-4-aseprite-importers
+→ **Concept**: [[Indie Game Publishing Pipeline]] — Steamworks + SteamCMD + itch.io
+→ **Concept**: [[Indie Game Community Platform Stack]] — Discord → Steam → Reddit 3단계
+
+## 이전 활성 (8방향 조준 사용성 — 2026-05-11)
+
 **런앤건 8방향 조준 사용성 (gamepad + KB+M + 접근성)** (2026-05-11). 4 parallel agents · 33 web searches · 6 페이지. Echo 입력 #1 GDD 갱신용 권고 6항 도출 — FACING_THRESHOLD 상향, 각도 hysteresis, aim_lock 컨벤션 정합, XAG 107 준수.
 
 → **Synthesis**: [[Research 8-Way Aim Usability For Run-and-Gun]] — 마스터 통합 (gamepad + KB+M + 접근성 3축)
