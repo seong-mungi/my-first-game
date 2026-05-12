@@ -9,6 +9,14 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Active Research Topic
 
+**2026 Steam 저경쟁/중경쟁 인디 장르 업데이트** (2026-05-12). 3라운드 · 8회 웹검색. 2026 최신 데이터로 경쟁강도 갱신. 3 페이지 생성.
+
+→ **Synthesis**: [[Research Steam 2026 Genre Competition Update]] — 2026 장르 매트릭스 (Boss Rush 신규 저경쟁, Extraction Shooter 고경쟁 진입)
+→ **Concept**: [[Chaotic Co-op Sub-genre Pattern]] — R.E.P.O./Peak 정의 "Chaotic Co-op" 서브장르, 2025 Top 2 인디
+→ **Concept**: [[Boss Rush Niche Genre Opportunity]] — 저경쟁 실험 니치, 4-8개월 솔로 개발, Echo 보스 설계 직접 적용
+
+## 이전 활성 (Steam 저경쟁 인디 장르 — 2026-05-12)
+
 **Steam 저경쟁 인디 장르 분석** (2026-05-12). 3라운드 · 8회 웹검색. 경쟁강도 낮은 장르 식별 + Gap Score 분석. 3 페이지 생성.
 
 → **Synthesis**: [[Research Steam Low Competition Genre Analysis]] — 경쟁밀도·수요 교차 매트릭스 + 저경쟁 전략 권고
