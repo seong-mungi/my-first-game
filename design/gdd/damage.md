@@ -813,7 +813,7 @@ is_invulnerable(echo_hurtbox: HurtBox) := !echo_hurtbox.monitorable
 | **#9** | Time Rewind | `lethal_hit_detected(cause)`, `death_committed(cause)` | TRC가 `_lethal_hit_head` 캐시 (frame N) + `death_committed`에서 buffer cleanup. ADR-0002 Amendment 1 일관. |
 | **#13** | HUD | `boss_phase_advanced(boss_id, new_phase)` | 페이즈 전이 알림 (텍스트 또는 화면 효과). HP bar 미생성 (Anti-Pillar 일관). |
 | **#14** | VFX | `hurtbox_hit(cause)`, `boss_hit_absorbed(...)`, `boss_phase_advanced(...)` | cause 기반 VFX 차별화 (cause taxonomy D.3 매핑). 보스 페이즈 전이 시 비주얼 layer 변화. |
-| **#4** | Audio | `hurtbox_hit(cause)`, `enemy_killed(...)`, `boss_phase_advanced(...)`, `death_committed(cause)` | cause 기반 SFX 차별화 + 페이즈 전이 스팅 + 사망 음악 변화. |
+| **#4** | [Audio System](audio.md) | `boss_killed(boss_id: StringName)`, `player_hit_lethal(cause: StringName)` | `boss_killed` → SFX 풀: `sfx_boss_defeated_sting_01.ogg` 재생 (audio.md Rule 13). `player_hit_lethal` → SFX 풀: `sfx_player_death_01.ogg` 재생 (audio.md Rule 17). Tier 1에서 cause + boss_id 무시. Audio #4 Approved 2026-05-12. |
 | **#3** | [Camera System](camera.md) | `player_hit_lethal(_cause)`, `boss_killed(boss_id)` | Camera가 shake event 시작 — `player_hit_lethal` → 6 px / 12 frames impact shake; `boss_killed` → 10 px / 18 frames catharsis shake (camera.md R-C1-5 + F.1 row #4 reciprocal). cause는 무시 (Camera는 cause taxonomy 미사용 — 시그널 도착 자체가 트리거). Camera #3 Approved 2026-05-12 RR1 PASS. |
 
 ### F.3 시그널 발행 카탈로그 (Damage 시스템 owned, 단일 출처)

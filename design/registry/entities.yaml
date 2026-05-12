@@ -37,7 +37,7 @@
 #   Each entry: name, status, source, referenced_by[], attributes{}, added, revised
 
 version: 1
-last_updated: "2026-05-12 — Session 22 Phase 5b: Camera System #3 GDD Designed (pending re-review) adds 6 new constants (DEADZONE_HALF_X=64, JUMP_LOOKAHEAD_UP_PX=20, FALL_LOOKAHEAD_DOWN_PX=52, LOOKAHEAD_LERP_FRAMES=8, MAX_SHAKE_PX=12, POSITION_SMOOTHING_SPEED=32.0). Previous (2026-05-11): Session 20 Phase 5b: Player Shooting #7 GDD Designed (pending re-review) adds 5 new constants (FIRE_COOLDOWN_FRAMES=10, MAGAZINE_SIZE=30, PROJECTILE_CAP=8, PROJECTILE_SPEED_PX_S=600.0, PROJECTILE_LIFETIME_FRAMES=90). Previous (2026-05-11): Session 17 Step 3 backfill: 1 entity (ECHO) + 3 formulas + 26 constants extracted from 5 Approved GDDs (Input #1 / State Machine #5 / Player Movement #6 / Damage #8 / Time Rewind #9) + 3 ADRs (0001 / 0002 with Amendment 1+2 / 0003) + Scene Manager #2 Phase 5d batch (restart_window_max_frames=60, cold_boot_max_seconds=300)."
+last_updated: "2026-05-12 — Session 25: Fix stale PlayerMovementSM state names in entity echo.player_movement_sm.states + PlayerMovementSM_state_count notes (IDLE/RUN/JUMPING/FALLING/REWINDING/DYING → idle/run/jump/fall/aim_lock/dead per DEC-PM-1). Previous: Session 22 Phase 5b: Camera System #3 GDD Designed (pending re-review) adds 6 new constants (DEADZONE_HALF_X=64, JUMP_LOOKAHEAD_UP_PX=20, FALL_LOOKAHEAD_DOWN_PX=52, LOOKAHEAD_LERP_FRAMES=8, MAX_SHAKE_PX=12, POSITION_SMOOTHING_SPEED=32.0). Previous (2026-05-11): Session 20 Phase 5b: Player Shooting #7 GDD Designed (pending re-review) adds 5 new constants (FIRE_COOLDOWN_FRAMES=10, MAGAZINE_SIZE=30, PROJECTILE_CAP=8, PROJECTILE_SPEED_PX_S=600.0, PROJECTILE_LIFETIME_FRAMES=90). Previous (2026-05-11): Session 17 Step 3 backfill: 1 entity (ECHO) + 3 formulas + 26 constants extracted from 5 Approved GDDs (Input #1 / State Machine #5 / Player Movement #6 / Damage #8 / Time Rewind #9) + 3 ADRs (0001 / 0002 with Amendment 1+2 / 0003) + Scene Manager #2 Phase 5d batch (restart_window_max_frames=60, cold_boot_max_seconds=300)."
 
 # ─── ENTITIES ────────────────────────────────────────────────────────────────
 # Named game-world objects: enemies, NPCs, characters, factions, bosses.
@@ -68,7 +68,7 @@ entities:
     rewind_capable: true
     state_machines:
       player_movement_sm:
-        states: [IDLE, RUN, JUMPING, FALLING, REWINDING, DYING]
+        states: [idle, run, jump, fall, aim_lock, dead]
         count: 6
         owner: design/gdd/player-movement.md
         decision_ref: DEC-PM-1
@@ -268,6 +268,7 @@ constants:
       - design/gdd/time-rewind.md
       - design/gdd/player-movement.md
       - design/gdd/damage.md
+      - design/gdd/audio.md               # D.1 duck tween hold phase + G.2 cross-knob invariant
     value: 30
     unit: frames
     notes: "Post-rewind invincibility (i_frame_frames) = 0.5 s @ 60 Hz. Time Rewind GDD Rule 11."
@@ -514,7 +515,7 @@ constants:
       - design/gdd/state-machine.md
     value: 6
     unit: states
-    notes: "PlayerMovementSM states (DEC-PM-1): IDLE / RUN / JUMPING / FALLING / REWINDING / DYING. 17-row transition table in PM C.2."
+    notes: "PlayerMovementSM states (DEC-PM-1): idle / run / jump / fall / aim_lock / dead. 17-row transition table in PM C.2."
     added: 2026-05-11
     revised: ""
 
@@ -575,6 +576,7 @@ constants:
     source: design/gdd/player-shooting.md
     referenced_by:
       - design/gdd/player-shooting.md   # C.1 Rule 1 + D.1 + D.2 + G.1.1
+      - design/gdd/audio.md             # D.3 SFX pool utilization invariant (min_period_frames for gunfire)
     value: 10
     unit: frames
     notes: "Fire cooldown gate — 6 rps @ 60 Hz physics tick. Tier 1 default; tuning range 6..20 (3..10 rps) in assets/data/weapons.tres. Contra III / Hard Corps baseline. G.3 invariant: must be < REWIND_WINDOW_FRAMES (=90) for E-PS-5 natural cooldown elapsed contract."

@@ -1,6 +1,6 @@
 # Camera System
 
-> **Status**: Approved · 2026-05-12 · RR1 PASS — see design/gdd/reviews/camera-review-log.md for full history.
+> **Status**: Approved · 2026-05-12 · RR2 PASS — see design/gdd/reviews/camera-review-log.md for full history.
 > **System**: #3 — Core layer, MVP priority
 > **Author**: solo dev + game-designer / ux-designer / gameplay-programmer / systems-designer / qa-lead / art-director / creative-director (inline consults)
 > **Last Updated**: 2026-05-12 — see design/gdd/reviews/camera-review-log.md for full history.

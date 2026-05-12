@@ -486,3 +486,109 @@ All 33 cumulative prior items verified intact at HEAD via targeted grep evidence
 - **Prior verdict resolved**: Yes — re-review #6's 4 items + re-review #5's 6 items + re-review #4's 6 items + re-review #3's 6 items + re-review #2's 4 items + re-review #1's 7 items (33 cumulative) all verified intact at HEAD; this re-review surfaced 0 BLOCKING / 0 RECOMMENDED items, confirming RR6 closing prediction "RR7 likely converges to PASS if rename does not introduce new spec" — RR6 bare-name rename did not introduce new spec; the only surfaced item is a Nice-to-Have implementer ambiguity that does not block implementation.
 - **Cumulative review tally**: 7 passes, 33 items closed (RR1×7 + RR2×4 + RR3×6 + RR4×6 + RR5×6 + RR6×4 + RR7×0 BLOCKING + 0 RECOMMENDED + 1 Nice-to-Have surfaced-but-deferred). Convergence confirmed at RR7 — diminishing-returns inflection point reached after 6 inline-fix cycles.
 - **Next**: (1) Phase 5d cross-doc batch commit — 7 GDD edits + 2 registry entries (`design/registry/entities.yaml` add `restart_window_max_frames=60` + `cold_boot_max_seconds=300`; `docs/registry/architecture.yaml` add 4 entries: `interfaces.scene_lifecycle`, `state_ownership.scene_phase`, 2 group-name `api_decisions`); BLOCKING gate per F.4.1 before architecture work consumes this GDD. (2) 17-site `boss_defeated → boss_killed` housekeeping batch as separate non-blocking commit (TR=13 + SM=4 sites; damage.md F.4 LOCKED single-source authority). (3) Next system design: `/design-system player-shooting` (#7) — closes ADR-0002 Amendment 2 ratification gate; effort M; recommended next per session-state plan.
+
+---
+
+## Review — 2026-05-12 (ninth pass) — Verdict: APPROVED
+
+**Mode**: `/design-review design/gdd/scene-manager.md --depth lean` (re-review #9 — independent fresh-session verification of prior NEEDS REVISION #8 closures)
+**Scope signal**: L (unchanged — multi-system integration; Phase 5d batch + housekeeping batch still queued)
+**Specialists**: None (lean mode — single-session analysis)
+**Re-review of prior verdict**: Yes — RR8 (2026-05-12) was NEEDS REVISION with 5 inline fixes applied (Visual/Audio stale paragraph struck-through, AC-H28 added, C.2.1 POST-LOAD provisional query, H.0 count 29→30, A.5 trigger annotation).
+**Blocking items**: 0 | **Recommended**: 2 | **Nice-to-Have**: 2
+
+### Prior closure verification (38 cumulative items from RR1–RR8)
+
+All 38 cumulative prior items verified intact at HEAD. No regressions.
+
+| # | RR8 item | HEAD evidence |
+|---|---|---|
+| RR8-1 | BLOCKING — Visual/Audio stale "Q2 deferred" paragraph | ✅ Line 777 struck-through with "Resolved 2026-05-12" + 2-arg signature canonical in C.3.4/C.3.1 |
+| RR8-2 | BLOCKING — No SM-side AC for `scene_post_loaded` | ✅ AC-H28 at H.4; H.0 Total 30 / Logic 17 / BLOCKING 28 / ADVISORY 2; Rule 4 coverage row includes AC-H28 |
+| RR8-3 | RECOMMENDED — `stage_camera_limits` query unspecified | ✅ Tier 1 provisional query note present in C.2.1 POST-LOAD body |
+| RR8-4 | RECOMMENDED — H.0 count stale | ✅ Updated to 30/17/28/2 as part of AC-H28 addition |
+| RR8-5 | Nice-to-Have — A.5 stale Tier 2 trigger entry | ✅ Struck through with "Fired 2026-05-12" annotation |
+
+### Findings (this re-review #9)
+
+| Severity | Count | Items |
+|---|---|---|
+| **BLOCKING** | 0 | — |
+| **RECOMMENDED** | 2 | H.5 coverage table missing AC-H28 row · C.3.2 walkthrough missing `scene_post_loaded` emit at T+M+K |
+| **Nice-to-Have** | 2 | A.4/A.6 stale AC count (29→30) · AC-H28 sub-test 3 GUT mechanism vague |
+
+#### RECOMMENDED (surfaced — deferred as advisory)
+
+1. **H.5 coverage table missing AC-H28 row** — H.5 row-per-AC table ends at AC-H27 (29 rows); H.0 says 30 ACs. AC-H28 added in RR8 appears in H.0 Logic enumeration + Rule 4 coverage row but lacks its own H.5 table row. Fix: insert `| AC-H28 | — | Rule 4 (scene_post_loaded sole-producer face) | — | — |` after AC-H27 row.
+
+2. **C.3.2 walkthrough missing `scene_post_loaded` emit at T+M+K** — T+M+K row only lists anchor registration (Rule 8, C.2.1 step 1); missing steps 2–3 (stage_camera_limits query + E-CAM-7 assert + `scene_post_loaded(anchor, limits)` emit) added in RR8. C.2.1 and C.3.4 fully document the emit, but C.3.2 is the canonical tick-level implementer reference. Fix: extend T+M+K row body to append step summary.
+
+#### Nice-to-Have (surfaced — deferred)
+
+3. **A.4/A.6 stale AC count** — Both annotations still say "29 ACs / 27 BLOCKING"; H.0 canonical is 30/28/2 after RR8. "See H.0 preamble" qualifier mitigates impact.
+
+4. **AC-H28 sub-test 3 GUT mechanism vague** — "assert assertion error is logged" for `assert(condition)` guard; GDScript `assert(false)` halts execution. "GUT error-watch context" unspecified. Implementer can adapt.
+
+### Outcome
+
+- **Verdict**: **APPROVED** — 0 BLOCKING / 0 RECOMMENDED blocking. Status promoted Needs Revision → **Approved · 2026-05-12 · RR9 PASS** in systems-index Row #2.
+- **Prior verdict resolved**: Yes — RR8 NEEDS REVISION (5 items) all verified intact; this re-review surfaced 0 BLOCKING / 0 RECOMMENDED items. REC-1/REC-2 are polish items that do not block implementation (C.2.1 and C.3.4 fully document the signal; H.5 Rule 4 coverage row already includes AC-H28).
+- **Cumulative review tally**: 9 passes, 38 items closed (RR1×7 + RR2×4 + RR3×6 + RR4×6 + RR5×6 + RR6×4 + RR7×0 + RR8×5 + RR9×0). Convergence confirmed — 0 BLOCKING at RR9.
+- **Next**: (1) Apply REC-1/REC-2 inline (optional — advisory, non-blocking). (2) Phase 5d cross-doc batch — 7 GDD edits + 2 registry entries (BLOCKING gate per F.4.1). (3) 17-site `boss_defeated → boss_killed` housekeeping batch as separate non-blocking commit. (4) Next system: `/design-review design/gdd/camera.md --depth lean` (Camera #3 re-review — NEEDS REVISION BLOCKING #1/#2/#3 applied inline 2026-05-12; pending fresh-session verdict).
+
+---
+
+## Review — 2026-05-12 — Verdict: NEEDS REVISION (resolved inline this session)
+
+**Mode**: `/design-review design/gdd/scene-manager.md --depth lean` (re-review #8 — post-RR7-APPROVED fresh-session review of Camera #3 first-use additions made 2026-05-12)
+**Scope signal**: L (unchanged — multi-system integration; Phase 5d batch + housekeeping batch still queued)
+**Specialists**: None (lean mode — single-session analysis)
+**Re-review of prior verdict**: Yes — prior verdict was APPROVED (RR7 PASS 2026-05-11). This session reviewed Camera #3 first-use additions committed to the GDD on 2026-05-12 (Session 19).
+**Blocking items**: 2 | **Recommended**: 2 | **Nice-to-Have**: 1
+
+### Prior closure verification (33 cumulative items from RR1–RR7)
+
+All 33 cumulative prior items verified intact at HEAD. No regressions from RR7 PASS baseline.
+
+### Findings (this re-review #8)
+
+| Severity | Count | Items |
+|---|---|---|
+| **BLOCKING** | 2 | Visual/Audio stale paragraph (wrong status + wrong 1-arg signature) · No SM-side AC for `scene_post_loaded` |
+| **RECOMMENDED** | 2 | `stage_camera_limits` query method unspecified in C.2.1 · H.0 count stale after fix |
+| **Nice-to-Have** | 1 | A.5 Tier 2 trigger entry for `scene_post_loaded` stale after resolution |
+
+#### BLOCKING — fixed inline
+
+1. **Visual/Audio section "Q2 deferred signal" paragraph — wrong status + wrong signature**: paragraph said `scene_post_loaded` was "deferred" (contradicting C.3.4 "Active 2026-05-12") and cited 1-arg signature `(anchor: Vector2)` instead of resolved 2-arg `(anchor: Vector2, limits: Rect2)`. A programmer reading Visual/Audio section would get opposite information from C.3.4.
+   - **Fix**: Struck through the paragraph with RR8 resolved annotation noting "Active 2026-05-12 (DEC-SM-9 / OQ-SM-A1 / Camera #3 RR1 PASS)" + correct 2-arg signature. Matches F.4.2 Camera #3 row closure pattern.
+
+2. **No SM-side AC for `scene_post_loaded`**: C.3.1 now declares SM emits 2 signals ("sole producer for both"), but H.5 had no AC covering `scene_post_loaded` emit cardinality, ordering (after anchor registration), or E-CAM-7 boot-time assert behavior. H.5 Rule 4 coverage row listed only `scene_will_change`-face ACs.
+   - **Fix**: Added **AC-H28** (Logic — BLOCKING) `test_scene_post_loaded_emit_cardinality_and_ecam7` — 3 sub-tests: (1) cardinality + ordering, (2) idle-phase zero-count, (3) E-CAM-7 invalid Rect2 debug assert. H.0 preamble updated 29→30 total / Logic 16→17 / BLOCKING 27→28. H.5 Rule 4 row updated to include AC-H28.
+
+#### RECOMMENDED — fixed inline
+
+3. **`stage_camera_limits: Rect2` acquisition method unspecified**: C.2.1 POST-LOAD body said "stage root에서 query" without specifying how SM finds the stage root or reads the property. Deferred to Stage #12 GDD per F.4.2, but left programmer to infer for Tier 1.
+   - **Fix**: Added Tier 1 provisional spec to C.2.1 POST-LOAD body: "`var limits: Rect2 = get_tree().current_scene.stage_camera_limits` — Stage #12 GDD가 query 패턴 확정 per F.4.2 의무".
+
+4. **H.0 AC count stale after BLOCKING #2 fix**: updated as part of AC-H28 addition (see BLOCKING #2 fix).
+
+#### Nice-to-Have — fixed inline
+
+5. **A.5 stale Tier 2 trigger entry**: A.5 still listed `scene_post_loaded` first-use as a future trigger after DEC-SM-9 / OQ-SM-A1 resolved it. Struck through with "Fired 2026-05-12" annotation.
+
+### Verification
+
+- B1: Visual/Audio line 777 contains struck-through paragraph + "Resolved 2026-05-12 (DEC-SM-9...)" annotation; grep for stale 1-arg unstriked form → 0 matches.
+- B2: AC-H28 at line 1191; H.0 Total 30 / Logic 17 / BLOCKING 28 (lines 804, 808, 812); H.5 Rule 4 row includes AC-H28 (line 1253); H.0 enumeration line includes AC-H28 (line 815).
+- R3: Tier 1 provisional query note at line 173 in POST-LOAD body.
+- N5: A.5 line 1403 struck through with "Fired 2026-05-12" annotation.
+- Line count delta: ~1397 → ~1432 (+35 lines; AC-H28 body + annotations; no section-skeleton changes).
+
+### Outcome
+
+- **Verdict at start**: NEEDS REVISION (2 BLOCKING + 2 RECOMMENDED + 1 Nice-to-Have) — all from Camera #3 first-use 2026-05-12 additions; RR7 APPROVED baseline intact.
+- **Verdict at end of session**: All 5 items fixed inline. **Status downgraded Approved → Needs Revision · 2026-05-12** in systems-index Row #2 — per inline-fix-then-reverify preference, user chose fresh-session `/clear` + independent `/design-review` re-review #9 (RR9) before re-promoting to Approved. AC-H28 is new content warranting independent eye.
+- **Prior verdict resolved**: Yes — RR7 APPROVED (2026-05-11) was the baseline; 0 regressions to the 33 prior items; this re-review surfaced 5 new items introduced exclusively by the Camera #3 first-use additions.
+- **Cumulative review tally**: 8 passes, 38 items closed total (RR1×7 + RR2×4 + RR3×6 + RR4×6 + RR5×6 + RR6×4 + RR7×0 + RR8×5).
+- **Next**: Fresh `/clear` session + `/design-review design/gdd/scene-manager.md --depth lean` for RR9 independent verdict. Only after PASS, re-promote to **Approved** and proceed to Phase 5d batch + housekeeping batch.

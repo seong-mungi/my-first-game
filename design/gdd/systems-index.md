@@ -2,7 +2,7 @@
 
 > **Status**: Draft (v0)
 > **Created**: 2026-05-09
-> **Last Updated**: 2026-05-12 — see design/gdd/reviews/ for full review history.
+> **Last Updated**: 2026-05-12 — see design/gdd/reviews/ for full history.
 > **Source Concept**: design/gdd/game-concept.md
 > **Visual Bible**: design/art/art-bible.md
 > **Engine**: Godot 4.6 / GDScript
@@ -23,9 +23,9 @@ Echo는 횡스크롤 2D 런앤건 + 시간 회수 토큰 메커닉을 핵심으�
 | # | System Name | Category | Priority | Status | Design Doc | Depends On |
 |---|---|---|---|---|---|---|
 | 1 | Input System | Core | MVP | Approved · 2026-05-11 | [input.md](input.md) · [reviews/input-review-log.md](reviews/input-review-log.md) | — |
-| 2 | Scene / Stage Manager | Core | MVP | Approved · 2026-05-11 | [scene-manager.md](scene-manager.md) · [reviews/scene-manager-review-log.md](reviews/scene-manager-review-log.md) | — (Foundation — no upstream dependencies) |
-| 3 | Camera System | Core | MVP | Approved · 2026-05-12 · RR1 PASS | [camera.md](camera.md) · [reviews/camera-review-log.md](reviews/camera-review-log.md) | Scene Manager #2 (HARD — first-use of `scene_post_loaded(anchor, limits)` signal); Player Movement #6 (HARD — target.global_position); State Machine #5 (HARD — PlayerMovementSM state read); Damage #8 (HARD — player_hit_lethal, boss_killed signals); Time Rewind #9 (HARD — rewind_started, rewind_completed signals); Player Shooting #7 (SOFT — shot_fired micro-shake feedback); ADR-0003 (HARD — process_physics_priority=30 ladder slot); ADR-0002 (HARD — negative dep: Camera state NOT in PlayerSnapshot); art-bible.md (SOFT — Section 6 composition / readable third) |
-| 4 | Audio System | Audio | MVP | Not Started | — | Scene Manager |
+| 2 | Scene / Stage Manager | Core | MVP | Approved · 2026-05-12 · RR9 PASS | [scene-manager.md](scene-manager.md) · [reviews/scene-manager-review-log.md](reviews/scene-manager-review-log.md) | — (Foundation — no upstream dependencies) |
+| 3 | Camera System | Core | MVP | Approved · 2026-05-12 · RR2 PASS | [camera.md](camera.md) · [reviews/camera-review-log.md](reviews/camera-review-log.md) | Scene Manager #2 (HARD — first-use of `scene_post_loaded(anchor, limits)` signal); Player Movement #6 (HARD — target.global_position); State Machine #5 (HARD — PlayerMovementSM state read); Damage #8 (HARD — player_hit_lethal, boss_killed signals); Time Rewind #9 (HARD — rewind_started, rewind_completed signals); Player Shooting #7 (SOFT — shot_fired micro-shake feedback); ADR-0003 (HARD — process_physics_priority=30 ladder slot); ADR-0002 (HARD — negative dep: Camera state NOT in PlayerSnapshot); art-bible.md (SOFT — Section 6 composition / readable third) |
+| 4 | Audio System | Audio | MVP | Approved · 2026-05-12 | [audio.md](audio.md) | Scene Manager #2 (HARD — scene_will_change); State Machine #5 (HARD — play_rewind_denied direct call); Player Shooting #7 (HARD — shot_fired + play_ammo_empty); Damage #8 (HARD — boss_killed + player_hit_lethal); Time Rewind #9 (HARD — rewind_started + rewind_completed) |
 | 5 | **State Machine Framework** | Core | MVP | Approved · 2026-05-10 | [state-machine.md](state-machine.md) · [reviews/state-machine-review-log.md](reviews/state-machine-review-log.md) | — (Foundation; 시그널 소비자: Damage #8, Time Rewind #9, Scene #2, Input #1) |
 | 6 | Player Movement | Gameplay | MVP | Approved · 2026-05-11 | [player-movement.md](player-movement.md) · [reviews/player-movement-review-log.md](reviews/player-movement-review-log.md) | Input #1, State Machine #5, Scene Manager #2, Player Shooting #7 (provisional cache), Damage #8 (호스팅), Time Rewind #9 |
 | 7 | Player Shooting / Weapon System | Gameplay | MVP | Approved · 2026-05-11 | [player-shooting.md](player-shooting.md) · [reviews/player-shooting-review-log.md](reviews/player-shooting-review-log.md) | Input #1, Player Movement #6, Damage #8 |
@@ -189,10 +189,10 @@ Echo는 횡스크롤 2D 런앤건 + 시간 회수 토큰 메커닉을 핵심으�
 | MVP systems | 18 |
 | Vertical Slice systems | 3 |
 | Full Vision systems | 3 |
-| Design docs started | 8 |
+| Design docs started | 9 |
 | Design docs reviewed (Round 1 design-review 적어도 1회 적용) | 3 |
-| Design docs approved (re-review 통과 or LOCKED for prototype) | 7 |
-| Design docs Designed (pending re-review after Round 1 BLOCKING applied) | 1 |
+| Design docs approved (re-review 통과 or LOCKED for prototype) | 9 |
+| Design docs Designed (pending re-review after Round 1 BLOCKING applied) | 0 |
 | Deferred non-blocking warnings | 0 |
 | ADRs queued (R-T1/T2/T3) | 3 |
 | ADRs approved | 3 (R-T1 → ADR-0001, R-T2 → ADR-0002 with Amendment 1, R-T3 → ADR-0003) |

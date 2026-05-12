@@ -331,11 +331,11 @@ WeaponSlot `_try_fire`가 `spawn_projectile(facing_direction)` direct 호출 단
 - `weapon_fallback_activated(requested_id: int)` 구독 → optional "잘못된 무기" 시각 글리치
 - **Near-miss obligation 영구 유지** (damage.md DEC-3): VFX #14가 ECHO projectile destroy 시점 (본 GDD 규칙 7 `queue_free()`) 데이터로 *자체 근접 판정* — 본 GDD는 near-miss 정보 *발행하지 않음*. damage.md DEC-3 사전 lock.
 
-#### C.3.10 Audio System (#4, Not Started) — Soft downstream (signal subscriber)
+#### C.3.10 Audio System (#4, Approved · 2026-05-12) — Hard downstream (signal subscriber + direct callee)
 
-- `shot_fired(direction: int)` 구독 → 사격 SFX 발화 (`sfx_player_shoot_rifle_01.ogg` placeholder Tier 1)
-- `weapon_fallback_activated(requested_id: int)` 구독 → optional 큐
-- **F.4.2 Audio GDD obligation 발생**.
+- `shot_fired(direction: int)` 구독 → 사격 SFX 발화 + Rule 15 음정 지터 (audio.md Rule 16)
+- `AudioManager.play_ammo_empty()` direct call — `ammo_count == 0` + shoot input 시 (audio.md Rule 14)
+- `weapon_fallback_activated(requested_id: int)` 구독 → optional 큐 (Tier 2 이후)
 
 #### C.3.11 Camera System (#3, Not Started) — Soft downstream
 
@@ -590,7 +590,7 @@ restore_idx = (_lethal_hit_head - RESTORE_OFFSET_FRAMES + REWIND_WINDOW_FRAMES) 
 | #12 Stage / Encounter | downstream | Soft *(provisional)* | Stage `.tscn` root 자식에 `Projectiles: Node2D` 명명 노드 1개 필수; F.4.2 #1 | Not Started |
 | #13 HUD | downstream | Soft *(provisional)* | Subscribe to `weapon_equipped`, `weapon_fallback_activated`; read `ammo_count`. F.4.2 #2 | Not Started |
 | #14 VFX / Particle | downstream | Soft *(provisional)* | Subscribe to `shot_fired`, `weapon_fallback_activated`; near-miss obligation per damage.md DEC-3. F.4.2 #3 | Not Started |
-| #4 Audio | downstream | Soft *(provisional)* | Subscribe to `shot_fired`, `weapon_fallback_activated`; placeholder `sfx_player_shoot_rifle_01.ogg`. F.4.2 #4 | Not Started |
+| #4 Audio | downstream | Hard | Subscribe to `shot_fired(direction: int)` → `sfx_player_shoot_rifle_01.ogg` + pitch jitter (audio.md Rule 16). Direct callee: `AudioManager.play_ammo_empty()` on ammo=0+shoot (audio.md Rule 14). F.4.2 #4 | Approved |
 | #3 Camera | downstream | Soft *(provisional)* | Subscribe to `shot_fired(direction)` for micro-shake (Camera GDD spec). F.4.2 #5 | Not Started |
 | #19 Pickup (Tier 2) | downstream | Soft *(deferred)* | Call `WeaponSlot.set_active(weapon_id: int)` direct; invalid id → `weapon_fallback_activated` emit. F.4.2 #6 | Not Started, Tier 2 |
 | ADR-0001 | architecture | locked ref | Player-only rewind scope — projectile은 normal simulation (C.2.5) | Accepted |

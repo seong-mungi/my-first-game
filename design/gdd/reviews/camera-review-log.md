@@ -151,3 +151,36 @@ This log tracks every `/design-review` pass on `design/gdd/camera.md`. Each entr
 - **Standing obligation**: BLOCKING #4 — Phase 5 cross-doc reciprocity batch (10 + 4 rows; corrected count per R1 finding) — must land for full bidirectional-dep compliance per `.claude/rules/design-docs.md`. Per user's inline-fix-then-reverify workflow, this is housekeeping suitable for a follow-up commit.
 - **Promotion**: systems-index.md Row #3 promoted Needs Revision → **Approved** this session.
 - **Recommended next action**: Apply Phase 5 cross-doc batch (14 rows total) as a separate coordinated commit, OR proceed to next GDD authoring (`/design-system audio` #4 — next unblocked candidate; or `/architecture-review` for cross-ADR consistency sweep).
+
+---
+
+## Review — 2026-05-12 — Verdict: APPROVED (RR2 PASS)
+
+**Mode**: `/design-review design/gdd/camera.md --depth lean` (fresh session, post-`/clear`)
+**Scope signal**: M (single Core system, 7 formulas, 9 upstream deps all locked, Phase 5 batch already landed, no new ADR required)
+**Specialists**: None (lean mode — single-session analysis)
+**Re-review of prior verdict**: Yes — RR2 confirmation of RR1 APPROVED verdict
+**Completeness**: 8/8 required sections present + bonus Visual/Audio + UI Requirements + Open Questions
+
+### Re-Verification of All Prior BLOCKING Items
+
+| Item | Status | Verification path |
+|---|---|---|
+| **BLOCKING #1** — Split-H/V model | ✅ PASS | AC-CAM-H1-01 chain re-traced: `camera.x=500`, `target.x=565` → `delta_x=65>64` → advance `+1` → `camera.x=501`. DEC-CAM-A5 present in A.1. `look_offset.x=0` consistent across A.1/F-CAM-1 var table/R-C1-9/AC assertions. |
+| **BLOCKING #2** — F-CAM-3 numerics at rate 1/8 | ✅ PASS | Closed form `y_n = target × (1-(7/8)^n)` re-validated: `(7/8)^8 ≈ 0.343`. JUMP n=8: `−20 × 0.657 = −13.14 ≈ −13.1` ✓; FALL n=8: `52 × 0.657 = 34.16 ≈ 34.1` ✓. AC-CAM-H2-01 `−13.1±0.5` and AC-CAM-H2-02 `+34.1±0.5` both verified. |
+| **BLOCKING #3** — `_compute_initial_look_offset` spec | ✅ PASS | Inline spec at R-C1-9 present and complete. 1:1 match with R-C1-4 state→target_y mapping. AC-CAM-H4-02 field (e) directly verifiable. |
+| **BLOCKING #4** — Phase 5 cross-doc reciprocity batch | ✅ PASS (landed RR1) | F.5 all 5 upstreams show ✅. F.4.1 row count corrected to "10-row 배치" (R1 fix applied). 14-row batch complete per RR1 log. |
+
+### New Findings (RECOMMENDED only — none BLOCKING)
+
+| ID | Severity | Item | Disposition |
+|---|---|---|---|
+| **RR2-R1** | RECOMMENDED | R-C1-5 pseudocode does NOT call `.normalized()` on direction vector; F-CAM-5 and F-CAM-6 formulas DO. Without normalization, direction magnitude ∈ [0, √2], making `boss_killed` worst-case contribution ≈ 14.14 px > MAX_SHAKE_PX (12) — `limit_length` clamp fires for single event, contradicting INV-CAM-4 claim. Visual output still correctly bounded. Fix: add `.normalized()` to R-C1-5 pseudocode to match F-CAM-5/6. | Deferred — no gameplay impact |
+| **RR2-R2** | RECOMMENDED (carry) | F-CAM-3 frame 17 label ambiguity — "8 ticks into FALLING" arithmetic starts from −13.1 (pre-FALLING, frame 8), not −5.0 (first FALLING tick, frame 9). Off-by-one labeling, no AC impact. | Deferred |
+| **RR2-R3** | RECOMMENDED (carry) | G.3 nested inside Section D, "Detailed Design" heading, AC-CAM-H4-03 test fragility — all carried from RR1. | Deferred |
+
+### Verdict & Disposition
+
+- **This session**: APPROVED (RR2 PASS) — all prior BLOCKING items re-verified end-to-end. No new BLOCKING issues. One new RECOMMENDED (RR2-R1: normalize discrepancy, no gameplay impact).
+- **Promotion**: systems-index.md Row #3 updated RR1 PASS → **RR2 PASS** this session.
+- **Recommended next action**: Proceed to next GDD (`/design-system audio` #4 — next unblocked candidate) or `/architecture-review` for cross-ADR consistency sweep.
