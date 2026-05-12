@@ -7,6 +7,20 @@ updated: 2026-05-10
 
 Reverse chronological log of wiki operations. Newest at top.
 
+## [2026-05-12] ingest | CCGS Workflow Guide
+
+- **Source:** `docs/WORKFLOW-GUIDE.md` (project-local)
+- **Summary:** [[CCGS Workflow Guide]]
+- **Pages created (4):**
+  - Source: [[CCGS Workflow Guide]] — 7-Phase 마스터 참조 (66개 커맨드 · 12훅 · 리뷰모드 · 브라운필드)
+  - Concept: [[CCGS 7-Phase Development Pipeline]] — Phase 1~7 게이트 요건 + 판정 체계 (PASS/CONCERNS/FAIL)
+  - Concept: [[CCGS Story Lifecycle]] — story-readiness → 구현 → story-done 8단계 리뷰 + 스프린트 루프
+  - Concept: [[CCGS Team Orchestration Skills]] — 9개 팀 스킬 6단계 파이프라인
+- **Pages updated (2):**
+  - [[CCGS Framework]] — "7-Phase 워크플로" 섹션 + 관련 페이지 추가
+  - wiki/index.md · wiki/hot.md · wiki/log.md
+- **Key insight:** WORKFLOW-GUIDE.md 도입부 "68 slash commands" 표기는 오류 — Appendix B 실제 집계 66개가 정확한 수치.
+
 ## [2026-05-12] autoresearch | CCGS fork 생태계 — Star 순 Top 10
 
 - **Mode:** autoresearch · GitHub API 직접 조회 · 3 페이지 생성
