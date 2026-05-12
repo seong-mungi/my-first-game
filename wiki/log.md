@@ -7,6 +7,22 @@ updated: 2026-05-10
 
 Reverse chronological log of wiki operations. Newest at top.
 
+## [2026-05-12] autoresearch | CCGS fork 생태계 — Star 순 Top 10
+
+- **Mode:** autoresearch · GitHub API 직접 조회 · 3 페이지 생성
+- **Topic:** CCGS fork 버전 중 star가 많은 순으로 10개 리서치
+- **Method:** `GET /repos/Donchitos/Claude-Code-Game-Studios/forks?sort=stargazers&per_page=10` (high confidence)
+- **Pages created (3):**
+  - Synthesis: [[Research CCGS Fork Landscape]] — 원본(⭐18,359/🍴2,679) + Top 10 fork 테이블 + 3패턴 분류
+  - Concept: [[CCGS Chinese Localization Forks]] — CN 현지화 3종 (⭐9/⭐4/⭐3)
+  - Concept: [[CCGS Codex Port Pattern]] — Codex 포팅 2종 (⭐3/⭐2) + AGENTS.md 어댑터 구조
+- **Key insights:**
+  - 1위 fork(toukanno ⭐50)는 원본(⭐18,359)의 **0.27%** — fork star는 극소.
+  - 2,679개 fork 중 named/star 보유 fork는 극소수. 나머지는 비공개 개인 사본.
+  - 버전 식별자: "48 agents 36 skills" = 구버전(2026-03 이전), "49 agents 72 skills" = 현재 업스트림.
+  - 3대 패턴: CN 현지화(3개) · Codex 포팅(2개) · 기능 확장 Technica(1개).
+  - FreedomPortal/ccgs-technica-edition: ⭐2 — 실제 기능 분화 fork 중 유일 (퍼블리싱 워크플로).
+
 ## [2026-05-12] autoresearch | CCGS scaffolder 갭 — 구현 툴체인
 
 - **Mode:** autoresearch · 2 parallel agents · ~25 web searches · 9 페이지 생성
