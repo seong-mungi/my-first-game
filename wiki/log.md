@@ -7,6 +7,17 @@ updated: 2026-05-10
 
 Reverse chronological log of wiki operations. Newest at top.
 
+## [2026-05-12] autoresearch | Steam 인디 단기 개발 인기 장르
+
+- **Topic:** Steam의 인디게임 중 개발기간이 짧고 인기 있는 장르
+- **Rounds:** 3 · **Searches:** 9 · **Sources:** howtomarketagame.com, gamerant.com, gamesradar.com, gamedeveloper.com, notebookcheck.net
+- **Pages created (4):**
+  - Source/Synthesis: [[Research Steam Indie Short Dev Genre Landscape]] — 장르별 개발기간·수익·경쟁강도 종합 매트릭스
+  - Concept: [[Co-op Social Horror Genre Pattern]] — R.E.P.O./Peak 성공 공식, Co-op=6%출시→36%수익
+  - Concept: [[Bullet Heaven Survivors-like Dev Pattern]] — 2024 포화 경고, 차별화 없이 진입 위험
+  - Concept: [[Steam Indie Genre Revenue Matrix 2024-2025]] — 2025 Top 5 수익 + 장르별 추천 매트릭스
+- **Key finding:** 단기 개발 최적은 단편 공포(2주-4개월). 수익 ROI 최고는 Co-op 소셜 공포(6-12개월). Bullet Heaven은 2024년 포화.
+
 ## [2026-05-12] ingest | CCGS Workflow Guide
 
 - **Source:** `docs/WORKFLOW-GUIDE.md` (project-local)
