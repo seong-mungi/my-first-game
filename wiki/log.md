@@ -7,6 +7,22 @@ updated: 2026-05-10
 
 Reverse chronological log of wiki operations. Newest at top.
 
+## [2026-05-12] save | CCGS Context Bloat Remediation
+
+- **Mode:** main agent · /save · 1 concept 페이지
+- **Pages created (1):**
+  - Concept: [[CCGS Context Bloat Remediation]] — CCGS 프로젝트의 GDD 비대화 구조적 문제 진단/처방. Echo 실측 (systems-index.md 52 KB) 기반, 5 원인 분석 (Status 컬럼 narrative / "Last Updated" 헤더 / GDD 본체 inline / CLAUDE.md auto-import / review-log 중복) + 5 황금률 + Tier 1-4 처방. CCGS upstream 기여 권고 4항 포함.
+- **Key insights captured:**
+  - **본질적 원인**: 활성 데이터(현재 상태)와 이력 데이터(과거 결정 narrative)가 같은 파일에 섞임. 매 review session이 systems-index Status 컬럼에 narrative append → 영구 누적.
+  - **Echo 실측**: systems-index.md 52 KB · player-movement.md 1,893 줄 · 4 GDD 1,000줄+. 같은 정보가 review-log + systems-index 2× 중복.
+  - **Tier 1 즉시 액션**: Status 컬럼 truncate (~30 KB 절감) + "Last Updated" 헤더 정리 (~20 KB) + CLAUDE.md 임포트 점검 → systems-index.md 52 KB → 5-7 KB (90% 절감).
+  - **Tier 2 워크플로**: design-docs.md 룰에 "Status enum + 날짜 + log path만 허용" 추가. /design-review + /review-all-gdds 스킬에 auto-compact 의무 추가. Next Steps 갱신 책임자 부여 (현재 /map-systems만 작성, 갱신 책임자 없음 → stale).
+  - **Tier 3 인프라**: 계층적 CLAUDE.md (design/CLAUDE.md, design/gdd/CLAUDE.md), systems-index 분할, frontmatter 표준화 → dashboard 자동 생성.
+  - **5 황금률**: ① 활성/이력 분리 ② Status는 enum, narrative는 link ③ auto-import에 가변 데이터 X ④ 계층적 CLAUDE.md ⑤ Auto-compact가 default.
+  - **CCGS upstream 기여 권고**: 비대화는 Echo 한정 X — CCGS 프레임워크 자체의 디자인 갭. 4항 upstream 패치 권고 (design-docs 룰 / 스킬 narrative compaction / systems-index 템플릿 / design/gdd/CLAUDE.md 템플릿).
+- **Pages updated (meta):** [[index.md]] (Tooling/Framework +1), [[log.md]] (이 블록), [[hot.md]] (Recent Decisions + Cross-Ref Density)
+- **Source conversation**: 사용자가 "CCGS로 게임 제작 시 design-system 파일이 비대해지고 세션 시작 컨텍스트 증가 문제" 호소 → 진단/처방 답변 생성 → 사용자가 wiki 저장 요청.
+
 ## [2026-05-11] autoresearch | 런앤건 8방향 조준 사용성 (gamepad + KB+M + 접근성)
 
 - **Mode:** main agent · 4 parallel research agents · 3 rounds (combined) · 33 web searches · 6 pages
