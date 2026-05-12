@@ -196,6 +196,7 @@
   },
   "active": "069d84cd14959ebb",
   "lastOpenFiles": [
+    "sources/Research Steam Indie Short Dev Genre Landscape.md",
     "sources/CCGS Workflow Guide.md",
     "concepts/CCGS Story Lifecycle.md",
     "concepts/CCGS 7-Phase Development Pipeline.md",
@@ -221,7 +222,6 @@
     "sources/Game Developer Thumbstick Deadzones.md",
     "concepts/Aim Assist Accessibility Tiers.md",
     "concepts/Analog Stick To 8-Way Quantization.md",
-    "concepts/Aim Lock Modifier Pattern.md",
     "wiki/questions/zhc-cosmetics-execution-plan-presentation.html",
     "wiki/questions/zhc-cosmetics-proposal-2026-04-28.html",
     "bin/setup-vault.sh",
