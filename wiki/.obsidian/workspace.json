@@ -195,6 +195,7 @@
   },
   "active": "069d84cd14959ebb",
   "lastOpenFiles": [
+    "concepts/CCGS Context Bloat Remediation.md",
     "sources/XAG 107 Aim Assist Guidelines.md",
     "sources/Game Developer Thumbstick Deadzones.md",
     "concepts/Aim Assist Accessibility Tiers.md",
@@ -220,7 +221,6 @@
     "concepts/Roguelite Metaprogression For Run and Gun.md",
     "concepts/Time Manipulation Run and Gun.md",
     "concepts/Pink Parry System.md",
-    "concepts/Hit Rate Grading System.md",
     "wiki/questions/zhc-cosmetics-execution-plan-presentation.html",
     "wiki/questions/zhc-cosmetics-proposal-2026-04-28.html",
     "bin/setup-vault.sh",

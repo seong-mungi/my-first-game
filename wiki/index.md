@@ -92,6 +92,7 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[Aim Lock Modifier Pattern]] — **NEW** 8방향 조준 Lock-then-aim 모던 컨벤션 (Cuphead RB / Galuga ZR / Echo F+RB) + 발견성 + 안티 패턴
 - [[Analog Stick To 8-Way Quantization]] — **NEW** 아날로그→이산 양자화 4단계 파이프라인 (radial deadzone + Schmitt + sector + hysteresis) + Steam Deck floor + Echo 디폴트
 - [[Aim Assist Accessibility Tiers]] — **NEW** Returnal 4-tier (Off/Low/Med/High) + XAG 107 의무 + 어시스트 ↔ 난이도 직교 + 시간 메커닉 상호작용
+- [[CCGS Context Bloat Remediation]] — **NEW** CCGS GDD 비대화 진단 (Echo 52KB systems-index) + 5 황금률 + Tier 1-4 처방 — 모든 CCGS 프로젝트 적용 가능 (활성/이력 분리, Status enum 룰, frontmatter dashboard)
 - [[Bot Validation Catalog Summary]] — **NEW** Echo 봇 검증 카탈로그 14 페이지 단일 진입점 + 5 황금률 + 솔로 개발자 로드맵 + 비협상 결정 8종 인덱스
 - [[Research 8-Way Aim Usability For Run-and-Gun]] — **NEW** 런앤건 8방향 조준 사용성 (gamepad + KB+M + 접근성) — Echo 입력 시스템 검증/조정 권고 (FACING_THRESHOLD 0.10→0.15, 각도 hysteresis ±4°, aim_lock 컨벤션 정합)
 
