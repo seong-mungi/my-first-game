@@ -9,6 +9,15 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Active Research Topic
 
+**Steam 인디 단기 개발 인기 장르** (2026-05-12). 3라운드 · 9회 웹검색. 개발기간이 짧고 Steam에서 인기 있는 장르 분석. 4 페이지 생성.
+
+→ **Synthesis**: [[Research Steam Indie Short Dev Genre Landscape]] — 장르별 개발기간·수익·경쟁강도 종합 매트릭스
+→ **Concept**: [[Co-op Social Horror Genre Pattern]] — R.E.P.O./Peak 성공 공식, Co-op=6%출시→36%수익
+→ **Concept**: [[Bullet Heaven Survivors-like Dev Pattern]] — 2024년 포화 경고, 차별화 없이 진입 위험
+→ **Concept**: [[Steam Indie Genre Revenue Matrix 2024-2025]] — 2025 Top 5 수익 + 장르별 ROI 추천
+
+## 이전 활성 (CCGS Workflow Guide ingest — 2026-05-12)
+
 **CCGS Workflow Guide ingest** (2026-05-12). `docs/WORKFLOW-GUIDE.md` → wiki. 7-Phase 파이프라인 + 66개 커맨드 + 12훅 + 리뷰 모드 + 팀 스킬 9개 + 스토리 라이프사이클 문서화. 4 페이지 생성.
 
 → **Source**: [[CCGS Workflow Guide]] — 7-Phase 마스터 참조 (커맨드 카탈로그 · 리뷰 모드 · 파일 경로)
