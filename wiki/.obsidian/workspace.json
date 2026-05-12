@@ -195,6 +195,7 @@
   },
   "active": "069d84cd14959ebb",
   "lastOpenFiles": [
+    "concepts/CCGS Team Orchestration Skills.md",
     "concepts/CCGS Story Lifecycle.md",
     "concepts/CCGS 7-Phase Development Pipeline.md",
     "sources/CCGS Workflow Guide.md",
@@ -220,7 +221,6 @@
     "concepts/Analog Stick To 8-Way Quantization.md",
     "concepts/Aim Lock Modifier Pattern.md",
     "questions/Research 8-Way Aim Usability For Run-and-Gun.md",
-    "questions/Bot Validation Catalog Summary.md",
     "wiki/questions/zhc-cosmetics-execution-plan-presentation.html",
     "wiki/questions/zhc-cosmetics-proposal-2026-04-28.html",
     "bin/setup-vault.sh",

@@ -96,3 +96,20 @@ confidence: high
 > [!gap] 미확인 사항
 > CCGS로 실제 출시된 게임 사례가 있는지 확인되지 않음.
 > 브라운필드 온보딩 공식 가이드 존재 여부 불명확.
+
+## 7-Phase 워크플로
+
+CCGS는 7개 페이즈 + 공식 게이트(`/gate-check`) 구조로 전체 개발 생명주기를 커버한다.
+
+- [[CCGS 7-Phase Development Pipeline]] — 페이즈별 게이트 요건 상세
+- [[CCGS Story Lifecycle]] — Phase 5 스토리 사이클 (readiness → 구현 → done)
+- [[CCGS Team Orchestration Skills]] — 9개 팀 스킬 6단계 파이프라인
+- [[CCGS Workflow Guide]] — 워크플로 전체 참조 소스 (`docs/WORKFLOW-GUIDE.md`)
+
+## 관련 페이지
+
+- [[Donchitos CCGS Repo]]
+- [[CCGS Subagent Tier Architecture]]
+- [[Brownfield Project Onboarding]]
+- [[Research CCGS Framework And Local Drift]]
+- [[GitHub Donchitos Claude Code Game Studios]]
