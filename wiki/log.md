@@ -7,6 +7,21 @@ updated: 2026-05-12
 
 Reverse chronological log of wiki operations. Newest at top.
 
+## [2026-05-12] autoresearch | 런앤건 개발 베이스 종합 리서치
+
+- **Topic:** "런앤건" 개발을 위한 베이스 조사 (구현 기반: 적 AI·플레이어 FSM·불릿 시스템·레벨 설계·튜토리얼)
+- **Rounds:** 1 · **Searches:** ~18 · **Sources:** github.com, gdquest.com, youtube.com, kidscancode.org, slynyrd.com, gamedeveloper.com, codingquests.io, leveldesignbook.com, itch.io
+- **Pages created (8):**
+  - Synthesis: [[Research Run and Gun Development Base]] — 구현 베이스 종합 8 핵심 발견
+  - Concept: [[Run and Gun Enemy AI Archetypes]] — 6종 아키타입 FSM (그런트·저격수·순찰경비·포대·비행·도약)
+  - Concept: [[Run and Gun Player Character Architecture]] — 이중 레이어 FSM + 코요테 타임 + 점프 버퍼 + AnimationTree
+  - Concept: [[Run and Gun Bullet System Pattern]] — BulletServer 풀링 + Marker2D + WeaponData Resource
+  - Concept: [[Run and Gun Level Design Patterns]] — 스크롤 스폰 레코드 + 결정론 AI 패턴 + 페이싱 3원칙
+  - Source: [[Godot 4 Run and Gun GitHub Repos]] — Succubus-With-A-Gun + GDQuest 마이크로 데모 5종
+  - Source: [[Godot 4 Run and Gun Tutorial Resources]] — YouTube + GDQuest + Slynyrd + Godot Recipes
+  - Source: [[Run and Gun Dev Community Resources]] — Discord + Reddit + 커뮤니티 허브
+- **Key finding:** Godot 4 메탈슬러그 스타일 레포 극소 — 조각 조합 전략이 현실적 (GDQuest 이동 모듈 + ranged-attacks + hitbox-hurtbox). 플레이어는 이동+액션 이중 레이어 FSM. 스폰 레코드가 결정론 요구사항 직접 충족. Slynyrd 2026-01 런앤건 애니메이션 가이드 = 모든 이동 상태에 슈팅 오버레이 프레임 필요.
+
 ## [2026-05-12] autoresearch | Boss Rush 개발 베이스 종합 리서치
 
 - **Topic:** "BOSS RUSH" 개발을 위한 베이스 조사 (설계 이론·성공작·튜토리얼·커뮤니티)
