@@ -195,6 +195,7 @@
   },
   "active": "069d84cd14959ebb",
   "lastOpenFiles": [
+    "concepts/Boss Rush Godot Implementation Pattern.md",
     "sources/Research Boss Rush GitHub Baseline Repos.md",
     "log.md",
     "sources/Research Steam Low Competition Genre Analysis.md",
@@ -220,7 +221,6 @@
     "concepts/Godot Art Pipeline Tools.md",
     "sources/Research CCGS Implementation Gap Full Stack.md",
     "concepts/Godot CI CD Pipeline Pattern.md",
-    "concepts/Godot Audio Middleware Decision.md",
     "wiki/questions/zhc-cosmetics-execution-plan-presentation.html",
     "wiki/questions/zhc-cosmetics-proposal-2026-04-28.html",
     "bin/setup-vault.sh",

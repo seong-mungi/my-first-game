@@ -7,6 +7,15 @@ updated: 2026-05-10
 
 Reverse chronological log of wiki operations. Newest at top.
 
+## [2026-05-12] autoresearch | Boss Rush GitHub 베이스라인 레포
+
+- **Topic:** "BOSS RUSH" 베이스라인 GitHub repo
+- **Rounds:** 3 · **Searches:** 8 · **Sources:** github.com, itch.io, gamefromscratch.com, gdquest.com, limbonaut/limboai
+- **Pages created (2):**
+  - Synthesis: [[Research Boss Rush GitHub Baseline Repos]] — 레포 카탈로그 7종 + Boss Rush Jam 생태계 + Echo 적용 추천 우선순위
+  - Concept: [[Boss Rush Godot Implementation Pattern]] — FSM/BT/AnimationTree 3가지 접근법 + LimboAI + 구현 체크리스트
+- **Key finding:** Godot 4 보스러시 오픈소스는 소수. DevKinantan/BossRush_2024(Godot 4 GDScript) 최우선 참고. LimboAI = Godot 4 보스 AI 사실상 표준 플러그인. mseffner/bullet-hell-shooter = 3보스×4페이즈 구조 레퍼런스.
+
 ## [2026-05-12] autoresearch | 2026 Steam 저경쟁/중경쟁 인디 장르 업데이트
 
 - **Topic:** 2026 스팀에서 경쟁강도가 low/mid인 인디게임 장르
