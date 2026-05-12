@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "questions/Research Contra Best Story Series.md",
+                "file": "log.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Research Contra Best Story Series"
+              "title": "log"
             }
           }
         ]
@@ -195,15 +195,18 @@
   },
   "active": "069d84cd14959ebb",
   "lastOpenFiles": [
+    "index.md",
+    "log.md",
+    "concepts/Godot Art Pipeline Tools.md",
+    "sources/Research CCGS Implementation Gap Full Stack.md",
+    "concepts/Godot CI CD Pipeline Pattern.md",
+    "concepts/Godot Audio Middleware Decision.md",
+    "questions/Research Contra Best Story Series.md",
     "concepts/Indie Game Community Platform Stack.md",
     "concepts/Indie Game Publishing Pipeline.md",
-    "concepts/Godot Art Pipeline Tools.md",
-    "concepts/Godot Audio Middleware Decision.md",
     "concepts/Godot Analytics Stack.md",
-    "concepts/Godot CI CD Pipeline Pattern.md",
     "concepts/CCGS Scaffolder Scope Boundary.md",
     "sources/Research Godot 4.6 Ecosystem Toolchain.md",
-    "sources/Research CCGS Implementation Gap Full Stack.md",
     "concepts/CCGS Context Bloat Remediation.md",
     "sources/XAG 107 Aim Assist Guidelines.md",
     "sources/Game Developer Thumbstick Deadzones.md",
@@ -218,9 +221,6 @@
     "concepts/Non-Boss Bot Validation Suites.md",
     "concepts/Ghost Replay System For Time Rewind.md",
     "concepts/Death Heatmap Analytics.md",
-    "concepts/Determinism Verification Replay Diff.md",
-    "concepts/Bot Human Validation Reconciliation.md",
-    "concepts/RL Reward Shaping For Deterministic Boss.md",
     "wiki/questions/zhc-cosmetics-execution-plan-presentation.html",
     "wiki/questions/zhc-cosmetics-proposal-2026-04-28.html",
     "bin/setup-vault.sh",
