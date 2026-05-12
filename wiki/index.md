@@ -167,6 +167,7 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[CCGS Adopt Brownfield Example]] — `/adopt` 스킬 8턴 30분 데모 세션 (공식 예제, MIT)
 - [[CCGS Reverse Document Workflow Example]] — `/reverse-document` 4-Stage 워크플로 (공식 예제, MIT)
 - [[CCGS Adopt SKILL Definition]] — `/adopt` 스킬 권위 정의(.claude/skills/adopt/SKILL.md, 17.8KB) — Phase 1-7 분기 조건과 갭 등급 매핑
+- [[CCGS Workflow Guide]] — **NEW** CCGS 7-Phase 워크플로 마스터 참조 (`docs/WORKFLOW-GUIDE.md`): 66개 커맨드 · 12훅 · 리뷰모드 · 브라운필드 적용
 - [[Wikipedia Contra Series]] — 콘트라 시리즈 위키피디아 항목 (1996년 누적 400만 장, 3D 실패 타이틀 목록)
 - [[Wikipedia Konami Code]] — 코나미 코드 위키피디아 항목 (창안자 하시모토 카즈히사, 이스터에그 플랫폼 목록)
 - [[Steam Indie 1Hit Kill Reviews]] — Steam 포럼 정성적 패턴 — "unfair" 키워드는 즉사가 아닌 랜덤 패턴·긴 재시작 대기가 주원인
