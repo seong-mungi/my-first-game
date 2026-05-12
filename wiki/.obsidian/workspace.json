@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "sources/Research Boss Rush GitHub Baseline Repos.md",
+                "file": "questions/Research Boss Rush Development Base.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Research Boss Rush GitHub Baseline Repos"
+              "title": "Research Boss Rush Development Base"
             }
           }
         ]
@@ -195,6 +195,8 @@
   },
   "active": "069d84cd14959ebb",
   "lastOpenFiles": [
+    "log.md",
+    "sources/Research Boss Rush GitHub Baseline Repos.md",
     "sources/Godot 4 Boss Tutorial Resources.md",
     "sources/Boss Rush Jam 2025.md",
     "sources/GDC Boss Battle Design Talks.md",
@@ -203,14 +205,12 @@
     "concepts/Boss Identity Framework.md",
     "concepts/Boss Rush Design Fundamentals.md",
     "questions/Research Boss Rush Development Base.md",
-    "log.md",
     "concepts/Steam Indie Genre Revenue Matrix 2024-2025.md",
     "concepts/Bullet Heaven Survivors-like Dev Pattern.md",
     "concepts/Steam Genre Competition Density Matrix.md",
     "concepts/Job Simulator Blue Collar Genre Pattern.md",
     "concepts/Boss Rush Godot Implementation Pattern.md",
     "sources/Research Steam 2026 Genre Competition Update.md",
-    "sources/Research Boss Rush GitHub Baseline Repos.md",
     "sources/Research Steam Low Competition Genre Analysis.md",
     "concepts/Boss Rush Niche Genre Opportunity.md",
     "concepts/Chaotic Co-op Sub-genre Pattern.md",
