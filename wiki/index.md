@@ -94,6 +94,8 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[Aim Assist Accessibility Tiers]] — **NEW** Returnal 4-tier (Off/Low/Med/High) + XAG 107 의무 + 어시스트 ↔ 난이도 직교 + 시간 메커닉 상호작용
 - [[CCGS Context Bloat Remediation]] — **NEW** CCGS GDD 비대화 진단 (Echo 52KB systems-index) + 5 황금률 + Tier 1-4 처방 — 모든 CCGS 프로젝트 적용 가능 (활성/이력 분리, Status enum 룰, frontmatter dashboard)
 - [[CCGS Scaffolder Scope Boundary]] — **NEW** CCGS가 하는 것 vs 안 하는 것 명확한 경계 정의 (프로세스 레이어 vs 구현 툴체인)
+- [[CCGS Chinese Localization Forks]] — **NEW** 중국어 현지화 fork 3종 (phantacix-CN ⭐9, kada7-Zh ⭐4, Pickers-CN ⭐3) 분석
+- [[CCGS Codex Port Pattern]] — **NEW** CCGS → OpenAI Codex 포팅 패턴 (pa4uslf ⭐3, eiichimo ⭐2) + AGENTS.md 어댑터 구조
 - [[Godot CI CD Pipeline Pattern]] — **NEW** GitHub Actions 두 단계 패턴 (import warm-up → test run) + GODOT_DISABLE_LEAK_CHECKS + GUT/GdUnit4 비교
 - [[Godot Analytics Stack]] — **NEW** Talo (개발 중) + GameAnalytics (론치 후) 권고 스택 + Amplitude A/B 테스트
 - [[Godot Audio Middleware Decision]] — **NEW** Godot 내장 vs FMOD(856⭐) vs Wwise(407⭐) 결정 트리 + Echo 시간 되감기 오디오 특이점
