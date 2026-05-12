@@ -193,7 +193,10 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[Contra Shattered Soldier Story Source]] — Contra: Shattered Soldier(2002) 세계관·캐릭터·스테이지·다중엔딩 전체 데이터
 - [[MI Final Reckoning Plot]] — Mission: Impossible — The Final Reckoning(2025) 줄거리 + 모티프 + Echo 차용 매핑
 - [[Game Developer Thumbstick Deadzones]] — **NEW** Josh Sutphin 2014 산업 canonical 데드존 가이드 (axial 거부, radial 표준, scaled radial 정밀, hybrid 최선)
-- [[XAG 107 Aim Assist Guidelines]] — **NEW** Microsoft Xbox Accessibility Guideline #107 — single-stick + auto-fire + 4-tier + ±50% sensitivity + 난이도 직교 의무
+- [[XAG 107 Aim Assist Guidelines]] — Microsoft Xbox Accessibility Guideline #107 — single-stick + auto-fire + 4-tier + ±50% sensitivity + 난이도 직교 의무
+- [[GDC Boss Battle Design Talks]] — **NEW** GDC "Boss Up"(Itay Keren 2018, 무료) + Sackboy(2022) + gamedeveloper.com 7편 보스 설계 기사
+- [[Boss Rush Jam 2025]] — **NEW** itch.io 연간 잼 2025: 845편 제출 · Discord 링크 · 커뮤니티 허브
+- [[Godot 4 Boss Tutorial Resources]] — **NEW** YouTube 5편 + GDQuest FSM 레퍼런스 + 커뮤니티 블로그 카탈로그 (Godot 4.6 호환성 주의)
 
 ## By Tag
 
