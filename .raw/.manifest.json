@@ -16,6 +16,22 @@
         "wiki/log.md",
         "wiki/hot.md"
       ]
+    },
+    "docs/WORKFLOW-GUIDE.md": {
+      "hash": "bc24fc11bfbdd89dbf33563679c10595",
+      "ingested_at": "2026-05-12",
+      "pages_created": [
+        "wiki/sources/CCGS Workflow Guide.md",
+        "wiki/concepts/CCGS 7-Phase Development Pipeline.md",
+        "wiki/concepts/CCGS Story Lifecycle.md",
+        "wiki/concepts/CCGS Team Orchestration Skills.md"
+      ],
+      "pages_updated": [
+        "wiki/concepts/CCGS Framework.md",
+        "wiki/index.md",
+        "wiki/hot.md",
+        "wiki/log.md"
+      ]
     }
   },
   "url_sources": {
