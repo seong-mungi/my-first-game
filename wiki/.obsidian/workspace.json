@@ -195,6 +195,7 @@
   },
   "active": "069d84cd14959ebb",
   "lastOpenFiles": [
+    "concepts/Godot Art Pipeline Tools.md",
     "concepts/Godot Audio Middleware Decision.md",
     "concepts/Godot Analytics Stack.md",
     "concepts/Godot CI CD Pipeline Pattern.md",
@@ -220,7 +221,6 @@
     "concepts/RL Reward Shaping For Deterministic Boss.md",
     "concepts/GDD Bot Acceptance Criteria Template.md",
     "concepts/Heuristic Bot Reaction Lag Simulation.md",
-    "questions/Bot Validation Pipeline Architecture.md",
     "wiki/questions/zhc-cosmetics-execution-plan-presentation.html",
     "wiki/questions/zhc-cosmetics-proposal-2026-04-28.html",
     "bin/setup-vault.sh",
