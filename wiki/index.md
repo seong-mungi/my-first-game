@@ -104,6 +104,7 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[Research 8-Way Aim Usability For Run-and-Gun]] — **NEW** 런앤건 8방향 조준 사용성 (gamepad + KB+M + 접근성) — Echo 입력 시스템 검증/조정 권고 (FACING_THRESHOLD 0.10→0.15, 각도 hysteresis ±4°, aim_lock 컨벤션 정합)
 - [[Research CCGS Implementation Gap Full Stack]] — **NEW** CCGS scaffolder 갭 전체 매트릭스: 아트/오디오/CI/애널리틱스/퍼블리싱/커뮤니티 레이어별 필요 툴 (2026-05-12)
 - [[Research Godot 4.6 Ecosystem Toolchain]] — **NEW** Godot 4.6 에코시스템 툴 카탈로그: Aseprite·GUT·FMOD·Talo·GameAnalytics·GitHub Actions (2026-05-12)
+- [[Research CCGS Fork Landscape]] — **NEW** GitHub API 직접 조회 — Star 순 Top 10 fork + 3대 패턴(CN현지화·Codex포팅·기능확장) (2026-05-12)
 
 ## Entities
 
