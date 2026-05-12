@@ -9,6 +9,14 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Active Research Topic
 
+**CCGS fork 생태계 — Star 순 Top 10** (2026-05-12). GitHub API 직접 조회. 원본 ⭐18,359 / 🍴2,679 대비 1위 fork ⭐50(0.27%). 3패턴 식별: CN 현지화(3개), Codex 포팅(2개), 기능 확장 Technica(1개).
+
+→ **Synthesis**: [[Research CCGS Fork Landscape]] — GitHub API 직접 조회 Top 10 + 패턴 분류
+→ **Concept**: [[CCGS Chinese Localization Forks]] — phantacix-CN(⭐9) · kada7-Zh(⭐4) · Pickers-CN(⭐3)
+→ **Concept**: [[CCGS Codex Port Pattern]] — pa4uslf(⭐3) · eiichimo(⭐2), AGENTS.md 어댑터 구조
+
+## 이전 활성 (CCGS 구현 갭 — 2026-05-12)
+
 **CCGS scaffolder 갭 — 구현까지의 나머지 툴체인** (2026-05-12). 2 parallel agents · ~25 web searches · 9 페이지. CCGS가 제공하는 것(프로세스 레이어)과 제공하지 않는 것(실제 구현 툴) 명확히 분리. 아트·오디오·CI/CD·애널리틱스·퍼블리싱·커뮤니티 6개 레이어별 권고 툴 확정.
 
 → **Synthesis**: [[Research CCGS Implementation Gap Full Stack]] — CCGS 갭 전체 매트릭스 마스터
