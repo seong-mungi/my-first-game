@@ -7,6 +7,16 @@ updated: 2026-05-10
 
 Reverse chronological log of wiki operations. Newest at top.
 
+## [2026-05-12] autoresearch | 2026 Steam 저경쟁/중경쟁 인디 장르 업데이트
+
+- **Topic:** 2026 스팀에서 경쟁강도가 low/mid인 인디게임 장르
+- **Rounds:** 3 · **Searches:** 8 · **Sources:** howtomarketagame.com, appmagic.rocks, dev.to, mordorintelligence.com, techtimes.com, accio.com
+- **Pages created (3):**
+  - Synthesis: [[Research Steam 2026 Genre Competition Update]] — 2026 장르 경쟁강도 업데이트 매트릭스 + Extraction Shooter 고경쟁 진입 경고
+  - Concept: [[Chaotic Co-op Sub-genre Pattern]] — R.E.P.O./Peak로 공식화된 "Chaotic Co-op" 서브장르 정의
+  - Concept: [[Boss Rush Niche Genre Opportunity]] — 저경쟁 실험 니치, 4-8개월 솔로 개발 가능
+- **Key finding:** 내러티브 2025 히트 1위(51개). "Chaotic Co-op" 서브장르 공식화. Boss Rush 저경쟁 확인. Extraction Shooter 고경쟁 진입. Idle/Incremental PC Steam에서 모바일 포화와 별개로 기회 지속.
+
 ## [2026-05-12] autoresearch | Steam 저경쟁 인디 장르 분석
 
 - **Topic:** 스팀에서 경쟁강도가 낮은 인디게임 장르
