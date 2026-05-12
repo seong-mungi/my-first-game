@@ -7,6 +7,16 @@ updated: 2026-05-10
 
 Reverse chronological log of wiki operations. Newest at top.
 
+## [2026-05-12] autoresearch | Steam 저경쟁 인디 장르 분석
+
+- **Topic:** 스팀에서 경쟁강도가 낮은 인디게임 장르
+- **Rounds:** 3 · **Searches:** 8 · **Sources:** eastshade.com, howtomarketagame.com, game-oracle.com, explorminate.org, intelmarketresearch.com, indielaunchlab.com
+- **Pages created (3):**
+  - Source/Synthesis: [[Research Steam Low Competition Genre Analysis]] — 경쟁밀도·수요 교차 매트릭스 + 저경쟁 장르 전략 권고
+  - Concept: [[Job Simulator Blue Collar Genre Pattern]] — 블루칼라 직업 시뮬 패턴 (Schedule I $151M, PowerWash)
+  - Concept: [[Steam Genre Competition Density Matrix]] — 출시 밀도 데이터 + Gap Score + 의사결정 트리
+- **Key finding:** 플랫포머(~1900종/3.5년) vs 4X·Deckbuilder(합산 160종). 단기 개발 저경쟁 최적 = 직업 시뮬레이터(3-6개월). 블루칼라 Job Sim 2024-2025 급상승.
+
 ## [2026-05-12] autoresearch | Steam 인디 단기 개발 인기 장르
 
 - **Topic:** Steam의 인디게임 중 개발기간이 짧고 인기 있는 장르
