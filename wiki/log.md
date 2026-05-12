@@ -1,11 +1,26 @@
 ---
 title: Wiki Log
-updated: 2026-05-10
+updated: 2026-05-12
 ---
 
 # Wiki Log
 
 Reverse chronological log of wiki operations. Newest at top.
+
+## [2026-05-12] autoresearch | Boss Rush 개발 베이스 종합 리서치
+
+- **Topic:** "BOSS RUSH" 개발을 위한 베이스 조사 (설계 이론·성공작·튜토리얼·커뮤니티)
+- **Rounds:** 2 · **Searches:** ~20 · **Sources:** gamedeveloper.com, gdcvault.com, youtube.com, gdquest.com, itch.io, github.com, steamcommunity.com
+- **Pages created (8):**
+  - Synthesis: [[Research Boss Rush Development Base]] — 보스러시 개발 베이스 종합 (10 핵심 발견)
+  - Concept: [[Boss Rush Design Fundamentals]] — 8원칙 (보스퍼스트·툴킷제약·멀티채널텔레그래프·8비트구조 등)
+  - Concept: [[Boss Identity Framework]] — 5-축 모델 + 공격 패턴 어휘 분류
+  - Concept: [[Shmup Boss Design Factors]] — 슘프 전용 5팩터 (gamedeveloper.com 직접 fetch)
+  - Concept: [[Boss Rush Content Sizing]] — 스코프/가격 가이드 + 리트라이 루프 설계
+  - Source: [[GDC Boss Battle Design Talks]] — GDC "Boss Up"(무료) + gamedeveloper.com 7편
+  - Source: [[Boss Rush Jam 2025]] — itch.io 잼 845편·Discord·커뮤니티 허브
+  - Source: [[Godot 4 Boss Tutorial Resources]] — YouTube 5편 + GDQuest FSM 카탈로그
+- **Key finding:** 보스러시 핵심은 "제약이 깊이를 만든다" (Furi 4-버튼 모델). 인디 $12.99 적정 스코프 = 10-12 보스. Boss Rush Jam 2025 = 845편(전년비 2배+) — 장르 상승세 확인. GDC "Boss Up" (Itay Keren, 2018) 무료 필수 시청.
 
 ## [2026-05-12] autoresearch | Boss Rush GitHub 베이스라인 레포
 
