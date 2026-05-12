@@ -151,11 +151,11 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Cross-Reference Density
 
-- Concepts: **51** (+3: Aim Lock Modifier Pattern, Analog Stick To 8-Way Quantization, Aim Assist Accessibility Tiers)
+- Concepts: **52** (+1: CCGS Context Bloat Remediation)
 - Reference games: 23
 - Characters / fictional entities: 1
-- Sources catalogued: **23** (+2: Game Developer Thumbstick Deadzones, XAG 107 Aim Assist Guidelines)
-- Synthesis pages: **17** (+1: Research 8-Way Aim Usability For Run-and-Gun)
+- Sources catalogued: 23
+- Synthesis pages: 17
 - Design baselines: 1 (Solo Contra 2026 Concept v0)
 - Story spines: 1 (Echo Story Spine)
-- Total wiki files: **122** (.md, +6 this autoresearch — 8-way aim usability)
+- Total wiki files: **123** (.md, +1 — CCGS bloat remediation)
