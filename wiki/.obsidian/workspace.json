@@ -195,6 +195,7 @@
   },
   "active": "069d84cd14959ebb",
   "lastOpenFiles": [
+    "concepts/Boss Rush Design Fundamentals.md",
     "questions/Research Boss Rush Development Base.md",
     "log.md",
     "concepts/Steam Indie Genre Revenue Matrix 2024-2025.md",
@@ -220,7 +221,6 @@
     "concepts/CCGS Chinese Localization Forks.md",
     "index.md",
     "concepts/Godot Art Pipeline Tools.md",
-    "sources/Research CCGS Implementation Gap Full Stack.md",
     "wiki/questions/zhc-cosmetics-execution-plan-presentation.html",
     "wiki/questions/zhc-cosmetics-proposal-2026-04-28.html",
     "bin/setup-vault.sh",
