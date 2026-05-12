@@ -28,6 +28,7 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[Research Steam Indie Short Dev Genre Landscape]] — **NEW** Steam 인디 단기 개발 장르 매트릭스: Co-op 공포·단편 공포·Bullet Heaven·아이들 개발기간+수익 종합 (2026-05-12)
 - [[Research Steam Low Competition Genre Analysis]] — **NEW** Steam 저경쟁 장르 분석: 플랫포머 1900종 vs 4X 160종, Gap Score, 직업 시뮬 기회 (2026-05-12)
 - [[Research Steam 2026 Genre Competition Update]] — **NEW** 2026 업데이트: Boss Rush 저경쟁 신규, Extraction Shooter 고경쟁 진입, 내러티브 히트 1위(51개) (2026-05-12)
+- [[Research Boss Rush GitHub Baseline Repos]] — **NEW** Boss Rush 오픈소스 레포 7종 카탈로그 + Godot 4 적용 추천 + LimboAI 보스 AI (2026-05-12)
 
 ## Concepts
 
