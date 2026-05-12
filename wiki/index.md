@@ -201,7 +201,10 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[XAG 107 Aim Assist Guidelines]] — Microsoft Xbox Accessibility Guideline #107 — single-stick + auto-fire + 4-tier + ±50% sensitivity + 난이도 직교 의무
 - [[GDC Boss Battle Design Talks]] — **NEW** GDC "Boss Up"(Itay Keren 2018, 무료) + Sackboy(2022) + gamedeveloper.com 7편 보스 설계 기사
 - [[Boss Rush Jam 2025]] — **NEW** itch.io 연간 잼 2025: 845편 제출 · Discord 링크 · 커뮤니티 허브
-- [[Godot 4 Boss Tutorial Resources]] — **NEW** YouTube 5편 + GDQuest FSM 레퍼런스 + 커뮤니티 블로그 카탈로그 (Godot 4.6 호환성 주의)
+- [[Godot 4 Boss Tutorial Resources]] — YouTube 5편 + GDQuest FSM 레퍼런스 + 커뮤니티 블로그 카탈로그 (Godot 4.6 호환성 주의)
+- [[Godot 4 Run and Gun GitHub Repos]] — **NEW** Succubus-With-A-Gun·Chronobot·GDQuest 마이크로 데모 5종 + qurobullet 불릿 풀 카탈로그 (2026-05-12)
+- [[Godot 4 Run and Gun Tutorial Resources]] — **NEW** YouTube 5편 + GDQuest 마이크로 데모 + Slynyrd 픽셀아트 블로그 + Godot Recipes (2026-05-12)
+- [[Run and Gun Dev Community Resources]] — **NEW** Run and Gun Discord + Godot 공식 + r/gamedev + GDN Discord + awesome-godot (2026-05-12)
 
 ## By Tag
 
