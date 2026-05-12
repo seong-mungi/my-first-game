@@ -9,6 +9,14 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Active Research Topic
 
+**Steam 저경쟁 인디 장르 분석** (2026-05-12). 3라운드 · 8회 웹검색. 경쟁강도 낮은 장르 식별 + Gap Score 분석. 3 페이지 생성.
+
+→ **Synthesis**: [[Research Steam Low Competition Genre Analysis]] — 경쟁밀도·수요 교차 매트릭스 + 저경쟁 전략 권고
+→ **Concept**: [[Job Simulator Blue Collar Genre Pattern]] — 블루칼라 직업 시뮬 (Schedule I $151M, 단기 개발 3-6개월)
+→ **Concept**: [[Steam Genre Competition Density Matrix]] — 플랫포머 1900종 vs 4X 160종, Gap Score 자가 분석법
+
+## 이전 활성 (Steam 인디 단기 개발 인기 장르 — 2026-05-12)
+
 **Steam 인디 단기 개발 인기 장르** (2026-05-12). 3라운드 · 9회 웹검색. 개발기간이 짧고 Steam에서 인기 있는 장르 분석. 4 페이지 생성.
 
 → **Synthesis**: [[Research Steam Indie Short Dev Genre Landscape]] — 장르별 개발기간·수익·경쟁강도 종합 매트릭스
