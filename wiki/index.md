@@ -27,6 +27,7 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[Bot Validation Pipeline Architecture]] — **NEW** B+C+D 통합 파이프라인: Godot↔Python RL 브릿지 + Dashboard CI 게이트 + GDD 피드백 루프 (2026-05-10)
 - [[Research Steam Indie Short Dev Genre Landscape]] — **NEW** Steam 인디 단기 개발 장르 매트릭스: Co-op 공포·단편 공포·Bullet Heaven·아이들 개발기간+수익 종합 (2026-05-12)
 - [[Research Steam Low Competition Genre Analysis]] — **NEW** Steam 저경쟁 장르 분석: 플랫포머 1900종 vs 4X 160종, Gap Score, 직업 시뮬 기회 (2026-05-12)
+- [[Research Steam 2026 Genre Competition Update]] — **NEW** 2026 업데이트: Boss Rush 저경쟁 신규, Extraction Shooter 고경쟁 진입, 내러티브 히트 1위(51개) (2026-05-12)
 
 ## Concepts
 
