@@ -220,6 +220,7 @@
   },
   "active": "2762ca55ab8c1903",
   "lastOpenFiles": [
+    "meta",
     "log.md",
     "2026-05-12.md",
     "Furi (The Game Bakers).md",
@@ -246,7 +247,6 @@
     "concepts/Bullet Heaven Survivors-like Dev Pattern.md",
     "concepts/Steam Genre Competition Density Matrix.md",
     "concepts/Job Simulator Blue Collar Genre Pattern.md",
-    "concepts/Boss Rush Godot Implementation Pattern.md",
     "wiki/questions/zhc-cosmetics-execution-plan-presentation.html",
     "wiki/questions/zhc-cosmetics-proposal-2026-04-28.html",
     "bin/setup-vault.sh",
