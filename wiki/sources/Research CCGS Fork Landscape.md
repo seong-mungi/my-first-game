@@ -24,18 +24,18 @@ updated: 2026-05-12
 
 ## Star 순 Top 10 Fork 목록
 
-| 순위 | Repo | ⭐ | 🍴 | 생성일 | 특징 |
-|---|---|---|---|---|---|
-| 1 | toukanno/claude-code-game-studios | 50 | 5 | 2026-03-20 | 구버전(48 agents, 36 skills) 스냅샷 |
-| 2 | phantacix/Claude-Code-Game-Studios-CN | 9 | 4 | 2026-03-24 | 중국어 현지화(CN) |
-| 3 | kada7/Claude-Code-Game-Studios-Zh | 4 | 0 | 2026-04-22 | 중국어 현지화(Zh) |
-| 4 | pa4uslf/Codex-Game-Studios | 3 | 0 | 2026-05-03 | OpenAI Codex 포팅 |
-| 5 | Pickers/Claude-Code-Game-Studios-CN | 3 | 0 | 2026-05-08 | 중국어 현지화(CN) |
-| 6 | FreedomPortal/ccgs-technica-edition | 2 | 0 | 2026-04-02 | 퍼블리싱 워크플로 확장 |
-| 7 | eiichimo/Codex-Game-Studios | 2 | 0 | 2026-05-05 | Codex 포팅 (pa4uslf 변형) |
-| 8 | utkuhanakar/Claude-Code-Game-Studios | 2 | 0 | 2026-04-27 | 표준 개인 포크 |
-| 9 | kent666/Claude-Code-Game-Studios | 2 | 0 | 2026-03-22 | 구버전(48 agents, 36 skills) |
-| 10 | aekaterinaojenniferav9526-spec/... | 1 | 0 | 2026-04-07 | 표준 개인 포크 |
+| 순위  | Repo                                  | ⭐   | 🍴  | 생성일        | 특징                            |
+| --- | ------------------------------------- | --- | --- | ---------- | ----------------------------- |
+| 1   | toukanno/claude-code-game-studios     | 50  | 5   | 2026-03-20 | 구버전(48 agents, 36 skills) 스냅샷 |
+| 2   | phantacix/Claude-Code-Game-Studios-CN | 9   | 4   | 2026-03-24 | 중국어 현지화(CN)                   |
+| 3   | kada7/Claude-Code-Game-Studios-Zh     | 4   | 0   | 2026-04-22 | 중국어 현지화(Zh)                   |
+| 4   | pa4uslf/Codex-Game-Studios            | 3   | 0   | 2026-05-03 | OpenAI Codex 포팅               |
+| 5   | Pickers/Claude-Code-Game-Studios-CN   | 3   | 0   | 2026-05-08 | 중국어 현지화(CN)                   |
+| 6   | FreedomPortal/ccgs-technica-edition   | 2   | 0   | 2026-04-02 | 퍼블리싱 워크플로 확장                  |
+| 7   | eiichimo/Codex-Game-Studios           | 2   | 0   | 2026-05-05 | Codex 포팅 (pa4uslf 변형)         |
+| 8   | utkuhanakar/Claude-Code-Game-Studios  | 2   | 0   | 2026-04-27 | 표준 개인 포크                      |
+| 9   | kent666/Claude-Code-Game-Studios      | 2   | 0   | 2026-03-22 | 구버전(48 agents, 36 skills)     |
+| 10  | aekaterinaojenniferav9526-spec/...    | 1   | 0   | 2026-04-07 | 표준 개인 포크                      |
 
 ## Fork 패턴 분류
 

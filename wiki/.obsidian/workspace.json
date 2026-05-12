@@ -193,13 +193,14 @@
       "obsidian-memos:Thino Super": false
     }
   },
-  "active": "5565f1231fe95c42",
+  "active": "069d84cd14959ebb",
   "lastOpenFiles": [
     "concepts/CCGS Codex Port Pattern.md",
-    "concepts/CCGS Chinese Localization Forks.md",
-    "sources/Research CCGS Fork Landscape.md",
-    "index.md",
     "log.md",
+    "sources/Research CCGS Fork Landscape.md",
+    "concepts/CCGS Scaffolder Scope Boundary.md",
+    "concepts/CCGS Chinese Localization Forks.md",
+    "index.md",
     "concepts/Godot Art Pipeline Tools.md",
     "sources/Research CCGS Implementation Gap Full Stack.md",
     "concepts/Godot CI CD Pipeline Pattern.md",
@@ -208,7 +209,6 @@
     "concepts/Indie Game Community Platform Stack.md",
     "concepts/Indie Game Publishing Pipeline.md",
     "concepts/Godot Analytics Stack.md",
-    "concepts/CCGS Scaffolder Scope Boundary.md",
     "sources/Research Godot 4.6 Ecosystem Toolchain.md",
     "concepts/CCGS Context Bloat Remediation.md",
     "sources/XAG 107 Aim Assist Guidelines.md",
