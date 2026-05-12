@@ -7,6 +7,29 @@ updated: 2026-05-10
 
 Reverse chronological log of wiki operations. Newest at top.
 
+## [2026-05-12] autoresearch | CCGS scaffolder 갭 — 구현 툴체인
+
+- **Mode:** autoresearch · 2 parallel agents · ~25 web searches · 9 페이지 생성
+- **Topic:** CCGS가 scaffolder만 제공한다면 구현까지의 나머지 부분에 필요한 프레임워크와 툴
+- **Sources:** GitHub README (primary), Godot Asset Library, GitHub repos, 인디 dev 블로그, 공식 문서
+- **Pages created (9):**
+  - Synthesis: [[Research CCGS Implementation Gap Full Stack]] — CCGS 갭 전체 매트릭스 (아트/오디오/CI/애널리틱스/퍼블리싱/커뮤니티)
+  - Synthesis: [[Research Godot 4.6 Ecosystem Toolchain]] — Godot 에코시스템 빠른 참조 테이블
+  - Concept: [[CCGS Scaffolder Scope Boundary]] — IN/OUT SCOPE 경계 명확화
+  - Concept: [[Godot CI CD Pipeline Pattern]] — 두 단계 패턴 (import warm-up → test), GODOT_DISABLE_LEAK_CHECKS
+  - Concept: [[Godot Analytics Stack]] — Talo (개발 중) + GameAnalytics (론치 후) + Amplitude
+  - Concept: [[Godot Audio Middleware Decision]] — FMOD(856⭐) vs Wwise(407⭐) vs 내장 결정 트리 + Echo 시간 되감기 특이점
+  - Concept: [[Godot Art Pipeline Tools]] — Aseprite + godot-4-aseprite-importers (2026-05-07 활성) + Steam 2026 AI 공개 규정
+  - Concept: [[Indie Game Publishing Pipeline]] — Steamworks SDK + SteamCMD + itch.io + Steam 2026 AI 의무
+  - Concept: [[Indie Game Community Platform Stack]] — Discord(즉시) → Steam 허브(론치) → Reddit/itch.io(확장)
+- **Key insights:**
+  - CCGS는 프로세스·조정 레이어만 제공. 실제 구현 툴 6개 레이어 전부 외부.
+  - CCGS Technica Edition fork가 이 갭을 커뮤니티가 인식한 증거 (2026).
+  - Godot CI: two-step 패턴(import warm-up 필수) 모르면 false failure 반복.
+  - 아트: Aseprite + godot-4-aseprite-importers가 정석 (낮은 복잡도, 활발히 유지).
+  - 오디오: Echo 초기엔 내장으로 시작; FMOD는 시간 되감기 오디오 복잡도 결정 시 전환.
+  - 애널리틱스: Talo(개발 중 Godot 네이티브) + GameAnalytics(론치 후) 이분화 권고.
+
 ## [2026-05-12] save | CCGS Context Bloat Remediation
 
 - **Mode:** main agent · /save · 1 concept 페이지
