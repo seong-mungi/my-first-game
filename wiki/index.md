@@ -93,6 +93,13 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[Analog Stick To 8-Way Quantization]] — **NEW** 아날로그→이산 양자화 4단계 파이프라인 (radial deadzone + Schmitt + sector + hysteresis) + Steam Deck floor + Echo 디폴트
 - [[Aim Assist Accessibility Tiers]] — **NEW** Returnal 4-tier (Off/Low/Med/High) + XAG 107 의무 + 어시스트 ↔ 난이도 직교 + 시간 메커닉 상호작용
 - [[CCGS Context Bloat Remediation]] — **NEW** CCGS GDD 비대화 진단 (Echo 52KB systems-index) + 5 황금률 + Tier 1-4 처방 — 모든 CCGS 프로젝트 적용 가능 (활성/이력 분리, Status enum 룰, frontmatter dashboard)
+- [[CCGS Scaffolder Scope Boundary]] — **NEW** CCGS가 하는 것 vs 안 하는 것 명확한 경계 정의 (프로세스 레이어 vs 구현 툴체인)
+- [[Godot CI CD Pipeline Pattern]] — **NEW** GitHub Actions 두 단계 패턴 (import warm-up → test run) + GODOT_DISABLE_LEAK_CHECKS + GUT/GdUnit4 비교
+- [[Godot Analytics Stack]] — **NEW** Talo (개발 중) + GameAnalytics (론치 후) 권고 스택 + Amplitude A/B 테스트
+- [[Godot Audio Middleware Decision]] — **NEW** Godot 내장 vs FMOD(856⭐) vs Wwise(407⭐) 결정 트리 + Echo 시간 되감기 오디오 특이점
+- [[Godot Art Pipeline Tools]] — **NEW** Aseprite + godot-4-aseprite-importers (2026-05-07 활성) + Steam 2026 AI 공개 규정
+- [[Indie Game Publishing Pipeline]] — **NEW** Steamworks SDK + SteamCMD + itch.io + Steam 2026 AI 공개 의무 파이프라인
+- [[Indie Game Community Platform Stack]] — **NEW** Discord(즉시) → Steam 커뮤니티 허브(론치) → Reddit/itch.io(확장) 3단계 스택
 - [[Bot Validation Catalog Summary]] — **NEW** Echo 봇 검증 카탈로그 14 페이지 단일 진입점 + 5 황금률 + 솔로 개발자 로드맵 + 비협상 결정 8종 인덱스
 - [[Research 8-Way Aim Usability For Run-and-Gun]] — **NEW** 런앤건 8방향 조준 사용성 (gamepad + KB+M + 접근성) — Echo 입력 시스템 검증/조정 권고 (FACING_THRESHOLD 0.10→0.15, 각도 hysteresis ±4°, aim_lock 컨벤션 정합)
 - [[Research CCGS Implementation Gap Full Stack]] — **NEW** CCGS scaffolder 갭 전체 매트릭스: 아트/오디오/CI/애널리틱스/퍼블리싱/커뮤니티 레이어별 필요 툴 (2026-05-12)
