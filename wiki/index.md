@@ -71,8 +71,12 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[Job Simulator Blue Collar Genre Pattern]] — **NEW** 블루칼라 직업 시뮬 패턴: Schedule I $151M · 서브장르별 포화도 · 단기 개발 3-6개월 (2026-05-12)
 - [[Steam Genre Competition Density Matrix]] — **NEW** 출시 밀도 데이터 (플랫포머 1900 vs 4X 160) + Gap Score 자가 분석 의사결정 트리 (2026-05-12)
 - [[Chaotic Co-op Sub-genre Pattern]] — **NEW** R.E.P.O./Peak 정의 서브장르: 카오스+협동, TikTok 바이럴 공식 (2026-05-12)
-- [[Boss Rush Niche Genre Opportunity]] — **NEW** 저경쟁 실험 니치, 솔로 4-8개월, Echo 보스 설계 직접 적용 가능 (2026-05-12)
-- [[Boss Rush Godot Implementation Pattern]] — **NEW** FSM/BT/AnimationTree 3가지 접근법 + LimboAI + 구현 체크리스트 (2026-05-12)
+- [[Boss Rush Niche Genre Opportunity]] — 저경쟁 실험 니치, 솔로 4-8개월, Echo 보스 설계 직접 적용 가능 (2026-05-12)
+- [[Boss Rush Godot Implementation Pattern]] — FSM/BT/AnimationTree 3가지 접근법 + LimboAI + 구현 체크리스트 (2026-05-12)
+- [[Boss Rush Design Fundamentals]] — **NEW** 보스러시 설계 8원칙: 보스퍼스트·툴킷제약·텔레그래프·8비트구조·시그니처무브 (2026-05-12)
+- [[Boss Identity Framework]] — **NEW** 보스 기억성 5-축 모델 + 공격 패턴 어휘 분류 (2026-05-12)
+- [[Shmup Boss Design Factors]] — **NEW** 슘프 보스 설계 5팩터: 난이도·다양성·길이·보상감·캐릭터성 (2026-05-12)
+- [[Boss Rush Content Sizing]] — **NEW** 스코프-가격 가이드 (MVS 8보스 / $12.99 목표 10-12) + 리트라이 루프 설계 (2026-05-12)
 
 ### Cross-Genre Mechanic Transplants (런앤건 외부 메카닉 이식)
 - [[Time Manipulation Run and Gun]] — **NEW** PoP/Braid/Katana Zero 3 시간 모델 + Echo 선택 가이드
