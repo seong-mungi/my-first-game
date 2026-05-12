@@ -195,6 +195,7 @@
   },
   "active": "069d84cd14959ebb",
   "lastOpenFiles": [
+    "sources/Godot 4 Run and Gun Tutorial Resources.md",
     "sources/Godot 4 Run and Gun GitHub Repos.md",
     "concepts/Run and Gun Level Design Patterns.md",
     "concepts/Run and Gun Bullet System Pattern.md",
@@ -220,7 +221,6 @@
     "concepts/Boss Rush Godot Implementation Pattern.md",
     "sources/Research Steam 2026 Genre Competition Update.md",
     "sources/Research Steam Low Competition Genre Analysis.md",
-    "concepts/Boss Rush Niche Genre Opportunity.md",
     "wiki/questions/zhc-cosmetics-execution-plan-presentation.html",
     "wiki/questions/zhc-cosmetics-proposal-2026-04-28.html",
     "bin/setup-vault.sh",
