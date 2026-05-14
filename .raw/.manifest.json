@@ -32,6 +32,19 @@
         "wiki/hot.md",
         "wiki/log.md"
       ]
+    },
+    ".raw/adr-foundation-core-steps-explanation.md": {
+      "hash": "4bbc66d18f4703f267f15778c59cd774",
+      "ingested_at": "2026-05-14",
+      "pages_created": [
+        "wiki/sources/ADR Foundation Core Steps Explanation.md",
+        "wiki/concepts/Echo ADR Foundation Steps.md"
+      ],
+      "pages_updated": [
+        "wiki/index.md",
+        "wiki/log.md",
+        "wiki/hot.md"
+      ]
     }
   },
   "url_sources": {

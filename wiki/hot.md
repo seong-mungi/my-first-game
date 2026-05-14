@@ -9,6 +9,13 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Active Research Topic
 
+**ADR Foundation Core Steps Ingest** (2026-05-14). 1 source file ingested. 2 pages created: source + concept.
+
+→ **Concept**: [[Echo ADR Foundation Steps]] — 6 pre-coding foundation ADRs (scene lifecycle · signals · save · input · player entity · damage/combat)
+→ **Source**: [[ADR Foundation Core Steps Explanation]] — plain-language guide with analogies + GDD cross-refs
+
+## 이전 활성 (런앤건 개발 베이스 — 2026-05-12)
+
 **런앤건 개발 베이스 종합 리서치** (2026-05-12). 1라운드 · ~18회 웹검색. 구현 기반(적 AI·플레이어 FSM·불릿·레벨). 8 페이지 생성.
 
 → **Synthesis**: [[Research Run and Gun Development Base]] — 구현 베이스 8 핵심 발견
