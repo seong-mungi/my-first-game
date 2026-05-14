@@ -189,6 +189,7 @@ Knowledge base for `my-game`. Pages organized by type. See `hot.md` for recent a
 - [[Megacat Studios Run and Gun History]] — Indie retrospective on run-and-gun evolution
 - [[Metal Slug IP Avoidance Guide]] — 사내 리서치: 메탈슬러그 클론 제작 시 IP 회피 가이드 (Korean)
 - [[GitHub Donchitos Claude Code Game Studios]] — CCGS 업스트림 저장소 (MIT, v1.0.0-beta, 17.7K stars)
+- [[ADR Foundation Core Steps Explanation]] — **NEW** Plain-language guide to Echo's 6 foundation ADR steps: who owns what, analogies, GDD cross-refs (2026-05-14)
 - [[GitHub giacoballoccu MetalSlugClone]] — Unity 2D 메탈슬러그 클론 저장소 (라이선스 없음)
 - [[GitHub alfredo1995 metal-slug]] — Unity 2D 메탈슬러그 학습 구현 (라이선스 없음)
 - [[CCGS Adopt Brownfield Example]] — `/adopt` 스킬 8턴 30분 데모 세션 (공식 예제, MIT)
