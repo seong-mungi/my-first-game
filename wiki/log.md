@@ -7,6 +7,14 @@ updated: 2026-05-12
 
 Reverse chronological log of wiki operations. Newest at top.
 
+## [2026-05-14] ingest | ADR Foundation Core Steps Explanation
+
+- **Source:** `.raw/adr-foundation-core-steps-explanation.md`
+- **Summary:** [[ADR Foundation Core Steps Explanation]]
+- **Pages created:** [[Echo ADR Foundation Steps]], [[ADR Foundation Core Steps Explanation]]
+- **Pages updated:** [[index.md]]
+- **Key insight:** Defines 6 pre-coding ownership boundary ADRs for Echo — scene lifecycle, signal architecture, save/settings, input/UI focus, player entity composition, and damage/combat authority.
+
 ## [2026-05-12] autoresearch | 런앤건 개발 베이스 종합 리서치
 
 - **Topic:** "런앤건" 개발을 위한 베이스 조사 (구현 기반: 적 AI·플레이어 FSM·불릿 시스템·레벨 설계·튜토리얼)
