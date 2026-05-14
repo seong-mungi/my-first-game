@@ -82,6 +82,7 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Recent Decisions
 
+- **[2026-05-14]** 📐 **ADR Foundation 6-step guide ingested** — 6 pre-coding ownership boundary ADRs defined. Concept + source pages created. Ready for ADR authoring sprint.
 - **[2026-05-12]** 🎮 **런앤건 구현 베이스 완료** — 6종 적 AI FSM, 이중 레이어 플레이어 FSM, BulletServer 풀링, 스크롤 스폰 레코드. GDD 구현 단계 진입 준비 완료.
 - **[2026-05-12]** 🎮 **Boss Rush 개발 베이스 완료** — 8원칙·5-축·슘프 5팩터·10-12보스/$12.99. 보스 GDD 작성 준비 완료.
 - **[2026-05-11]** 🎯 **8방향 조준 검증** — FACING_THRESHOLD 0.15, hysteresis ±4°, XAG 107.
