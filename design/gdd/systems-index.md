@@ -2,7 +2,7 @@
 
 > **Status**: Draft (v0)
 > **Created**: 2026-05-09
-> **Last Updated**: 2026-05-13 — see design/gdd/reviews/ for full history.
+> **Last Updated**: 2026-05-14 — see design/gdd/reviews/ for full history.
 > **Source Concept**: design/gdd/game-concept.md
 > **Visual Bible**: design/art/art-bible.md
 > **Engine**: Godot 4.6 / GDScript
@@ -23,23 +23,23 @@ The core loop — Move → Spot enemy → Shoot → (Dodge OR Time Rewind) → S
 | # | System Name | Category | Priority | Status | Design Doc | Depends On |
 |---|---|---|---|---|---|---|
 | 1 | Input System | Core | MVP | Approved · 2026-05-11 | [input.md](input.md) · [reviews/input-review-log.md](reviews/input-review-log.md) | — |
-| 2 | Scene / Stage Manager | Core | MVP | Needs Revision · 2026-05-13 | [scene-manager.md](scene-manager.md) · [reviews/scene-manager-review-log.md](reviews/scene-manager-review-log.md) | — (Foundation — no upstream dependencies) |
-| 3 | Camera System | Core | MVP | Needs Revision · 2026-05-13 | [camera.md](camera.md) · [reviews/camera-review-log.md](reviews/camera-review-log.md) | Scene Manager #2 (HARD — first-use of `scene_post_loaded(anchor, limits)` signal); Player Movement #6 (HARD — target.global_position); State Machine #5 (HARD — PlayerMovementSM state read); Damage #8 (HARD — player_hit_lethal, boss_killed signals); Time Rewind #9 (HARD — rewind_started, rewind_completed signals); Player Shooting #7 (SOFT — shot_fired micro-shake feedback); ADR-0003 (HARD — process_physics_priority=30 ladder slot); ADR-0002 (HARD — negative dep: Camera state NOT in PlayerSnapshot); art-bible.md (SOFT — Section 6 composition / readable third) |
+| 2 | Scene / Stage Manager | Core | MVP | Approved · 2026-05-13 | [scene-manager.md](scene-manager.md) · [reviews/scene-manager-review-log.md](reviews/scene-manager-review-log.md) | — (Foundation — no upstream dependencies) |
+| 3 | Camera System | Core | MVP | Approved · 2026-05-13 | [camera.md](camera.md) · [reviews/camera-review-log.md](reviews/camera-review-log.md) | Scene Manager #2 (HARD — first-use of `scene_post_loaded(anchor, limits)` signal); Player Movement #6 (HARD — target.global_position); State Machine #5 (HARD — PlayerMovementSM state read); Damage #8 (HARD — player_hit_lethal, boss_killed signals); Time Rewind #9 (HARD — rewind_started, rewind_completed signals); Player Shooting #7 (SOFT — shot_fired micro-shake feedback); ADR-0003 (HARD — process_physics_priority=30 ladder slot); ADR-0002 (HARD — negative dep: Camera state NOT in PlayerSnapshot); art-bible.md (SOFT — Section 6 composition / readable third) |
 | 4 | Audio System | Audio | MVP | Approved · 2026-05-12 | [audio.md](audio.md) | Scene Manager #2 (HARD — scene_will_change); State Machine #5 (HARD — play_rewind_denied direct call); Player Shooting #7 (HARD — shot_fired + play_ammo_empty); Damage #8 (HARD — boss_killed + player_hit_lethal); Time Rewind #9 (HARD — rewind_started + rewind_completed) |
 | 5 | **State Machine Framework** | Core | MVP | Approved · 2026-05-10 | [state-machine.md](state-machine.md) · [reviews/state-machine-review-log.md](reviews/state-machine-review-log.md) | — (Foundation; signal consumers: Damage #8, Time Rewind #9, Scene #2, Input #1) |
 | 6 | Player Movement | Gameplay | MVP | Approved · 2026-05-11 | [player-movement.md](player-movement.md) · [reviews/player-movement-review-log.md](reviews/player-movement-review-log.md) | Input #1, State Machine #5, Scene Manager #2, Player Shooting #7 (provisional cache), Damage #8 (hosting), Time Rewind #9 |
 | 7 | Player Shooting / Weapon System | Gameplay | MVP | Approved · 2026-05-11 | [player-shooting.md](player-shooting.md) · [reviews/player-shooting-review-log.md](reviews/player-shooting-review-log.md) | Input #1, Player Movement #6, Damage #8 |
-| 8 | Damage / Hit Detection | Gameplay | MVP | Needs Revision · 2026-05-13 | [damage.md](damage.md) · [reviews/damage-review-log.md](reviews/damage-review-log.md) | State Machine #5, Time Rewind #9, Player Movement #6, Player Shooting #7, Enemy AI #10, Boss Pattern #11, Stage #12 |
+| 8 | Damage / Hit Detection | Gameplay | MVP | LOCKED for prototype · 2026-05-13 re-verified | [damage.md](damage.md) · [reviews/damage-review-log.md](reviews/damage-review-log.md) | State Machine #5, Time Rewind #9, Player Movement #6, Player Shooting #7, Enemy AI #10, Boss Pattern #11, Stage #12 |
 | 9 | **Time Rewind System** ⚠️ | Gameplay | MVP | Approved · 2026-05-11 | [time-rewind.md](time-rewind.md) · [reviews/time-rewind-review-log.md](reviews/time-rewind-review-log.md) | Input, Scene Manager, State Machine, Player Movement, Damage |
-| 10 | Enemy AI Base + Archetypes | Gameplay | MVP | Not Started | — | State Machine, Damage, Player Movement |
-| 11 | Boss Pattern System | Gameplay | MVP | Not Started | — | Enemy AI, Damage, Time Rewind |
-| 12 | Stage / Encounter System | Gameplay | MVP | Not Started | — | Scene Manager, Enemy AI |
-| 13 | HUD System | UI | MVP | Not Started | — | Time Rewind, Player Shooting, Boss Pattern |
-| 14 | VFX / Particle System | Presentation | MVP | Not Started | — | Damage, Time Rewind |
-| 15 | Collage Rendering Pipeline ⚠️ | Presentation | MVP | Not Started | — | Scene Manager |
-| 16 | Time Rewind Visual Shader ⚠️ | Presentation | MVP | Not Started | — | VFX, Time Rewind, Collage Rendering |
-| 17 | Story Intro Text System (inferred) | Narrative | MVP | Not Started | — | Scene Manager |
-| 18 | Menu / Pause System (inferred) | UI | MVP | Not Started | — | Input, Scene, Audio |
+| 10 | Enemy AI Base + Archetypes | Gameplay | MVP | Approved · 2026-05-13 · RR1 PASS | [enemy-ai.md](enemy-ai.md) · [reviews/enemy-ai-review-log.md](reviews/enemy-ai-review-log.md) | State Machine, Damage, Player Movement |
+| 11 | Boss Pattern System | Gameplay | MVP | Approved · 2026-05-13 | [boss-pattern.md](boss-pattern.md) · [reviews/boss-pattern-review-log.md](reviews/boss-pattern-review-log.md) | Enemy AI, Damage, Time Rewind, Stage |
+| 12 | Stage / Encounter System | Gameplay | MVP | Approved · 2026-05-13 | [stage-encounter.md](stage-encounter.md) · [reviews/stage-encounter-review-log.md](reviews/stage-encounter-review-log.md) | Scene Manager, Enemy AI |
+| 13 | HUD System | UI | MVP | Approved · 2026-05-13 | [hud.md](hud.md) · [reviews/hud-review-log.md](reviews/hud-review-log.md) | Time Rewind, Player Shooting, Boss Pattern |
+| 14 | VFX / Particle System | Presentation | MVP | Approved · 2026-05-13 | [vfx-particle.md](vfx-particle.md) · [reviews/vfx-particle-review-log.md](reviews/vfx-particle-review-log.md) | Damage, Time Rewind |
+| 15 | Collage Rendering Pipeline ⚠️ | Presentation | MVP | Approved · 2026-05-13 | [collage-rendering.md](collage-rendering.md) · [reviews/collage-rendering-review-log.md](reviews/collage-rendering-review-log.md) | Scene Manager |
+| 16 | Time Rewind Visual Shader ⚠️ | Presentation | MVP | Approved · 2026-05-13 | [time-rewind-visual-shader.md](time-rewind-visual-shader.md) · [reviews/time-rewind-visual-shader-review-log.md](reviews/time-rewind-visual-shader-review-log.md) | VFX, Time Rewind, Collage Rendering |
+| 17 | Story Intro Text System | Narrative | MVP | Approved · 2026-05-13 | [story-intro-text.md](story-intro-text.md) · [reviews/story-intro-text-review-log.md](reviews/story-intro-text-review-log.md) | Scene Manager, Input |
+| 18 | Menu / Pause System | UI | MVP | Approved · 2026-05-14 | [menu-pause.md](menu-pause.md) · [reviews/menu-pause-review-log.md](reviews/menu-pause-review-log.md) | Input, Scene Manager, Audio, State Machine |
 | 19 | Pickup System | Gameplay | Vertical Slice | Not Started | — | Player Shooting, Stage |
 | 20 | Difficulty Toggle System (Easy/Hard) | Meta | Vertical Slice | Not Started | — | Time Rewind, Player Movement |
 | 21 | Save / Settings Persistence (inferred) | Persistence | Vertical Slice | Not Started | — | Menu, Scene |
@@ -98,18 +98,18 @@ Progress / economy categories are not used in Echo — determinism + no metered 
 
 9. **Player Shooting / Weapon System** — 8-direction aim, projectile spawn, weapon swap. depends: Input, Player Movement, Damage
 10. **Enemy AI Base + Archetypes** — common enemy controller + Drone/Security Bot/STRIDER subclasses. depends: State Machine, Damage, Player Movement
-11. **Boss Pattern System** — multi-phase script, telegraph, HP gating, REWIND token reward. depends: Enemy AI, Damage, Time Rewind
+11. **Boss Pattern System** — multi-phase script, telegraph, discrete phase gating, REWIND token reward. depends: Enemy AI, Damage, Time Rewind, Stage
 12. **Stage / Encounter System** — per-room triggers, checkpoints. depends: Scene Manager, Enemy AI
-13. **Pickup System** (Tier 2) — weapon pickups + items. depends: Player Shooting, Stage
+19. **Pickup System** (Tier 2) — weapon pickups + items. depends: Player Shooting, Stage
 
 ### Presentation Layer (depends on Feature)
 
-14. **HUD System** — REWIND token counter, weapon icon, boss HP bar. depends: Time Rewind, Player Shooting, Boss Pattern
-15. **VFX / Particle System** — bullet impact, death flash, REWIND glitch. depends: Damage, Time Rewind
-16. **Collage Rendering Pipeline** ⚠️ — 3-layer collage compositing (photo + line + cutout). depends: Scene Manager
-17. **Time Rewind Visual Shader** ⚠️ — color inversion + glitch UV. depends: VFX, Time Rewind, Collage Rendering
-18. **Story Intro Text System** — 5-line typewriter intro. depends: Scene Manager
-19. **Menu / Pause System** — main menu, pause, options. depends: Input, Scene, Audio
+13. **HUD System** — REWIND token counter, weapon icon, boss phase pulse (no HP bar). depends: Time Rewind, Player Shooting, Boss Pattern
+14. **VFX / Particle System** — bullet impact, death flash, REWIND glitch. depends: Damage, Time Rewind
+15. **Collage Rendering Pipeline** ⚠️ — 3-layer collage compositing (photo + line + cutout). depends: Scene Manager
+16. **Time Rewind Visual Shader** ⚠️ — color inversion + glitch UV. depends: VFX, Time Rewind, Collage Rendering
+17. **Story Intro Text System** — 5-line typewriter intro. depends: Scene Manager
+18. **Menu / Pause System** — pause overlay and session-only options; title shell/return-to-title deferred. depends: Input, Scene Manager, Audio, State Machine
 
 ### Polish Layer (Tier 2–3)
 
@@ -125,7 +125,7 @@ Progress / economy categories are not used in Echo — determinism + no metered 
 
 | Cycle | Analysis | Resolution |
 |---|---|---|
-| Time Rewind ↔ Boss Pattern | Boss Pattern depends on Time Rewind token reward / Time Rewind does NOT depend on Boss Pattern HP gating signal (one-way) | **Not a cycle** — Boss → Time Rewind one-way notification (signal) pattern |
+| Time Rewind ↔ Boss Pattern | Boss Pattern depends on Time Rewind token reward / Time Rewind does NOT depend on Boss Pattern phase-gating internals (one-way) | **Not a cycle** — Boss → Time Rewind one-way notification (signal) pattern |
 | HUD ↔ Time Rewind | HUD reads token count / Time Rewind does NOT call HUD directly | **Not a cycle** — Observer pattern (Time Rewind emits signal, HUD subscribes) |
 
 No true cycles. All dependencies are one-directional and decoupled via signals/events.
@@ -162,14 +162,14 @@ No true cycles. All dependencies are one-directional and decoupled via signals/e
 | 8 | Player Movement | MVP | Core | game-designer | M | depends: 2, 3, 4, 7 |
 | 9 | Player Shooting | MVP | Feature | game-designer | M | depends: 8 |
 | 10 | Enemy AI Base + 3 Archetypes | MVP | Feature | ai-programmer | L | depends: 2, 7, 8 |
-| 11 | Boss Pattern System | MVP | Feature | game-designer + ai-programmer | L | depends: 1, 10 |
+| 11 | Boss Pattern System | MVP | Feature | game-designer + ai-programmer | L | depends: 1, 7, 10, 12 |
 | 12 | Stage / Encounter System | MVP | Feature | level-designer | M | depends: 4, 10 |
 | 13 | Collage Rendering Pipeline | MVP | Presentation | godot-shader-specialist + technical-artist | L | depends: 4. Follow art-bible ch.8 memory budget |
 | 14 | Time Rewind Visual Shader | MVP | Presentation | godot-shader-specialist | M | depends: 1, 13 |
 | 15 | VFX / Particle System | MVP | Presentation | technical-artist | M | depends: 7, 1 |
 | 16 | HUD System | MVP | Presentation | game-designer + ux-designer | M | depends: 1, 9, 11 |
 | 17 | Story Intro Text System | MVP | Presentation | writer + ux-designer | S | 5-line intro only |
-| 18 | Menu / Pause System | MVP | Presentation | ux-designer | M | depends: 3, 4, 6 |
+| 18 | Menu / Pause System | MVP | Presentation | ux-designer | M | depends: 1, 2, 4, 5 |
 | 19 | Pickup System | Vertical Slice | Feature | game-designer | S | Tier 2 |
 | 20 | Difficulty Toggle | Vertical Slice | Meta | game-designer | S | Tier 2 |
 | 21 | Save / Settings Persistence | Vertical Slice | Persistence | gameplay-programmer | S | Tier 2 |
@@ -189,14 +189,14 @@ No true cycles. All dependencies are one-directional and decoupled via signals/e
 | MVP systems | 18 |
 | Vertical Slice systems | 3 |
 | Full Vision systems | 3 |
-| Design docs started | 9 |
-| Design docs reviewed (Round 1 design-review applied at least once) | 3 |
-| Design docs approved (re-review passed or LOCKED for prototype) | 6 |
-| Design docs Needs Revision (post /review-all-gdds 2026-05-13) | 3 |
-| Design docs Designed (pending re-review after Round 1 BLOCKING applied) | 0 |
+| Design docs started | 18 |
+| Design docs reviewed (Round 1 design-review applied at least once) | 18 |
+| Design docs approved (re-review passed or LOCKED for prototype) | 18 |
+| Design docs Needs Revision (post review) | 0 |
+| Design docs Designed (pending design-review or re-review) | 0 |
 | Deferred non-blocking warnings | 0 |
-| ADRs queued (R-T1/T2/T3) | 3 |
-| ADRs approved | 3 (R-T1 → ADR-0001, R-T2 → ADR-0002 with Amendment 1, R-T3 → ADR-0003) |
+| ADRs queued (R-T1/T2/T3) | 0 — resolved by ADR-0001/0002/0003 |
+| ADRs approved | 11 (ADR-0001 through ADR-0011; latest architecture-review 2026-05-14 found no blocking ADR gaps) |
 
 ---
 
@@ -204,6 +204,9 @@ No true cycles. All dependencies are one-directional and decoupled via signals/e
 
 > [!resolved] R-T1/R-T2/R-T3 ADR prerequisites (resolved 2026-05-09)
 > All 3 ADRs Accepted (R-T1 ADR-0001, R-T2 ADR-0002 with Amendment 1, R-T3 ADR-0003). Time Rewind System GDD written and in Designed status. Recommend fresh-session `/design-review design/gdd/time-rewind.md` for verification.
+
+> [!resolved] Tier 1 architecture coverage (resolved 2026-05-14)
+> ADR-0001 through ADR-0011 are Accepted. `/architecture-review` on 2026-05-14 found 45 covered requirements, 1 partial/waived requirement (`TR-audio-001`), 0 gaps, and no blocking cross-ADR conflicts.
 
 > [!gap] Font license (Tier 3 gate)
 > Korean font (Noto Sans KR vs officially licensed) decision deferred until just before Tier 3 launch. Tier 1/2 use Noto Sans KR by default.
@@ -227,18 +230,23 @@ No true cycles. All dependencies are one-directional and decoupled via signals/e
 - [x] `/design-system player-shooting` (#7) — Approved (Round 2; closed ADR-0002 Amendment 2 ratification gate)
 - [x] `/design-system damage` (#8) — LOCKED for prototype
 - [x] `/design-system time-rewind` (#9) — Approved
-- [x] `/design-system camera` (#3) — NEEDS REVISION (Session 22 2026-05-12; BLOCKING #1/#2/#3 applied in same session per inline-fix-then-reverify workflow; pending fresh-session re-review)
-- [x] `/design-review design/gdd/camera.md --depth lean` (Session 22 2026-05-12) — NEEDS REVISION verdict; 3 BLOCKING resolved inline (R-C1-1 split H/V, F-CAM-3 numerics, `_compute_initial_look_offset` spec); review log written
+- [x] `/design-system camera` (#3) — Approved after since-last-review verification (2026-05-13; prior Session 22 BLOCKING fixes re-verified clean)
+- [x] `/design-review design/gdd/camera.md --depth lean` (Session 22 2026-05-12) — initial NEEDS REVISION; 3 BLOCKING resolved inline (R-C1-1 split H/V, F-CAM-3 numerics, `_compute_initial_look_offset` spec); review log written
+- [x] `/design-system audio` (#4) — Approved 2026-05-12; Tier 1 CC0/stub audio pipeline specified
 
 ### Queued — Next GDD Authoring (sorted by unblocking value)
 
-- [ ] `/design-review design/gdd/camera.md --depth lean` (fresh session — RE-REVIEW) — Verify BLOCKING #1/#2/#3 resolutions; promote Needs Revision → Designed → Approved on PASS
+- [x] `/review-all-gdds since-last-review` (2026-05-13) — Re-verified prior BLOCKING fixes; camera/damage/scene-manager ledger restored to clean status
 - [ ] `/architecture-review` — Validate cross-ADR consistency post-Amendment-2-Accepted (Effort S read-only sweep)
-- [ ] `/design-system audio` (#4) — Audio. Depends on Scene Manager #2. Tier 1 stub-level. Effort S
-- [ ] `/design-system stage-encounter` (#12) — Feature. Depends on Scene Manager #2 + Enemy AI #10. Effort M
-- [ ] `/design-system enemy-ai` (#10) + 3 archetypes — Feature. Depends on State Machine + Damage + Player Movement. Effort L
-- [ ] `/design-system hud` (#13) — UI. Depends on Time Rewind + Player Shooting + Boss Pattern. Closes TR D1 silent cap-overflow contract gap obligation. Effort M
-- [ ] `/design-system boss-pattern` (#11) — Feature. Depends on Enemy AI + Damage + Time Rewind. Effort L
+- [x] `/design-system stage-encounter` (#12) — Approved 2026-05-13. Depends on Scene Manager #2 + Enemy AI #10. Effort M
+- [x] `/design-system enemy-ai` (#10) + 3 archetypes — Approved 2026-05-13 (RR1 PASS). Depends on State Machine + Damage + Player Movement. Effort L
+- [x] `/design-system hud` (#13) — Approved 2026-05-13. Depends on Time Rewind + Player Shooting + Boss Pattern. Closes TR D1 silent cap-overflow contract gap obligation. Effort M
+- [x] `/design-system boss-pattern` (#11) — Approved 2026-05-13. Depends on Enemy AI + Damage + Time Rewind + Stage. Effort L
+- [x] `/design-system vfx-particle` (#14) — Approved 2026-05-13. Depends on Damage + Time Rewind, with Player Shooting / Enemy AI / Boss Pattern / Camera / Scene cleanup mirrors. Effort M
+- [x] `/design-system collage-rendering` (#15) — Approved 2026-05-13. Depends on Scene Manager and Art Bible; provides Shader #16 substrate. Effort L
+- [x] `/design-system time-rewind-visual-shader` (#16) — Approved 2026-05-13. Depends on VFX, Time Rewind, Collage Rendering, Camera, and Art Bible. Effort M
+- [x] `/design-system story-intro-text` (#17) — Approved 2026-05-13 after lean design-review. Depends on Scene Manager + Input; five-line no-prompt intro text. Effort S
+- [x] `/design-system menu-pause` (#18) — Approved 2026-05-14 after lean design-review. Depends on Input, Scene Manager, Audio, State Machine; pause/options/session audio only, title shell deferred. Effort M
 
 ### Gates & Reviews
 

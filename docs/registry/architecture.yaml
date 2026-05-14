@@ -30,7 +30,7 @@
 #   Superseded entries:     Grep pattern="status: superseded"
 
 version: 1
-last_updated: "2026-05-11"  # PM #6 B5 resolution: ADR-0002 Amendment 2 (Proposed) — PlayerSnapshot schema 7→8 PM-noted fields (ammo_count Weapon-owned). Updated state_ownership.player_movement_state interface (PM 7 fields capture set unchanged; ammo_count Weapon enforce site noted) + interfaces.player_movement_snapshot snapshot_schema (9-field Resource: 8 PM-noted + 1 TRC-internal). DEC-PM-3 v2 / time-rewind.md F6 (b) variant locked. Previous (2026-05-11): Input System #1 Designed (input.md F.4.1 #13 obligation): 7 new entries — state_ownership.input_actions_catalog, interfaces.input_polling_contract, api_decisions.pause_handler_autoload + active_profile_tracker, forbidden_patterns.gameplay_input_in_callback + wall_clock_in_input_logic + deadzone_in_consumer. Previous (2026-05-10): Player Movement #6 Designed (player-movement.md F.4.1 #6 obligation): 4 new entries — state_ownership.player_movement_state, interfaces.player_movement_snapshot, forbidden_patterns.delta_accumulator_in_movement, api_decisions.facing_direction_encoding. Previous (2026-05-09): damage GDD Round 2 review (DEC-5 boss_hit_absorbed 2-arg + DEC-6 hazard_grace_frames + boss_pattern_interrupted signal + start_hazard_grace invocation_api + emit ordering contract).
+last_updated: "2026-05-13"  # Menu / Pause #18 GDD Designed: registers focusable UI boundary, session-only options, Scene Manager transition request boundary. Previous: Story Intro Text #17 GDD Designed.
 
 # ─── STATE OWNERSHIP ─────────────────────────────────────────────────────────
 # Who is the authoritative owner of each piece of shared game state.
@@ -61,23 +61,25 @@ state_ownership:
     status: active
     owner_system: echo-lifecycle-sm  # EchoLifecycleSM (StateMachine instance, child of ECHO node)
     adr: design/gdd/state-machine.md  # GDD-owned (no ADR yet — framework-internal decision)
-    interface: "EchoLifecycleSM.current_state.name (read-only StringName) + signal state_changed(from, to) + method should_swallow_pause() -> bool"
+    interface: "EchoLifecycleSM.current_state.name (read-only StringName) + signal state_changed(from, to) + methods should_swallow_pause() -> bool and can_pause() -> bool (positive-polarity alias)"
     write_access: echo-lifecycle-sm-only  # external systems must call transition_to(); direct current_state assignment is forbidden (see forbidden_patterns.direct_current_state_assignment)
     referenced_by:
       - design/gdd/state-machine.md
       - design/gdd/time-rewind.md  # Time Rewind GDD imposes 6 hosting obligations on this SM (C.2.2 of state-machine.md)
+      - design/gdd/menu-pause.md    # pause initiation consumes can_pause()/should_swallow_pause() through PauseHandler
     added: 2026-05-09
     revised: ""
-    notes: "4 states: ALIVE / DYING / REWINDING / DEAD. Behavior definition is single-sourced in design/gdd/time-rewind.md Section C; state-machine.md hosts only the framework obligations (latch, pause-swallow, signal subscriptions, scene clear). Pause system polls should_swallow_pause(); HUD/VFX/Audio subscribe to state_changed for visual/audio reactions."
+    notes: "4 states: ALIVE / DYING / REWINDING / DEAD. Behavior definition is single-sourced in design/gdd/time-rewind.md Section C; state-machine.md hosts only the framework obligations (latch, pause-swallow, signal subscriptions, scene clear). PauseHandler/Menu-Pause consume can_pause()/should_swallow_pause(); HUD/VFX/Audio subscribe to state_changed for visual/audio reactions."
 
   - state: boss_phase_state
     status: active
     owner_system: boss-pattern-system  # per-boss host owns phase_index + phase_hits_remaining
     adr: design/gdd/damage.md  # GDD-owned (boss host follows Damage GDD D.2 transition formula)
-    interface: "Boss host members (read-only): phase_index: int, phase_hits_remaining: int, phase_hp_table: Array[int], final_phase_index: int. Mutation only via Damage system's HitBox→HurtBox path triggering D.2.1 transition. Signals: boss_hit_absorbed(boss_id, phase_index, hits_remaining), boss_phase_advanced(boss_id, new_phase), boss_killed(boss_id)."
+    interface: "Boss host members (read-only): phase_index: int, phase_hits_remaining: int, phase_hp_table: Array[int], final_phase_index: int. Mutation only via Damage system's HitBox→HurtBox path triggering D.2.1 transition. Signals: boss_hit_absorbed(boss_id, phase_index), boss_pattern_interrupted(boss_id, prev_phase_index), boss_phase_advanced(boss_id, new_phase), boss_killed(boss_id)."
     write_access: damage-system-mediated  # only Damage system's hurtbox_hit handler decrements; boss host validates table at _ready() (E.11 / AC-15)
     referenced_by:
       - design/gdd/damage.md
+      - design/gdd/boss-pattern.md
     added: 2026-05-09
     revised: ""
     notes: "Discrete phase thresholds (DEC-2). NO HP bar (Anti-Pillar Reveal Through Action). HUD subscribes to boss_phase_advanced only. Multi-hit same-frame transition is single-step bounded (D.2.3 — phase_index += 1 max even if remaining' goes negative). phase_hp_table values are owned per-boss by Boss Pattern GDD #11; Damage GDD owns the format contract (Array[int], length = final_phase_index + 1)."
@@ -127,6 +129,8 @@ state_ownership:
       - design/gdd/player-movement.md      # C.5.1 — PM polls 5 actions in _physics_process Phase 2
       - design/gdd/state-machine.md        # D.2 — SM polls rewind_consume per-tick at AliveState/DyingState physics_update
       - design/gdd/time-rewind.md          # C.3 #1 — TRC verifies SM input state
+      - design/gdd/story-intro-text.md     # C.1 Rule 4 — no new intro/skip InputMap action; cold-boot first-input route remains Input #1 / Scene Manager #2 owned
+      - design/gdd/menu-pause.md           # C.1 Rule 10 + AC-MENU-05 — no new Tier 1 menu_confirm/menu_cancel/skip_intro InputMap actions
     added: 2026-05-11
     revised: ""
     notes: "9-action catalog locked Tier 1; Tier 2 zero additions (Difficulty Toggle #20 changes RewindPolicy data only, never InputMap); Tier 3 #23 Input Remapping permits player-bound chord (default mapping table unchanged — 'default_only' interpretation, OQ-15 closure). KB+M defaults: A/D/W/S move, Space jump, F aim_lock (NOT Shift — Shift conflict resolved to rewind_consume), LMB shoot, Shift rewind_consume, Escape pause. Gamepad defaults (Xbox labels; Steam Deck inherits verbatim): Left Stick move, A jump, RB aim_lock, RT shoot, LT(threshold 0.5) rewind_consume, Start pause. PauseHandler autoload (api_decisions.pause_handler_autoload) handles pause toggle via _unhandled_input on PROCESS_MODE_ALWAYS path. ActiveProfileTracker autoload (api_decisions.active_profile_tracker) tracks KB+M/GAMEPAD profile for first-death prompt label (D.1 formula, HYSTERESIS_FRAMES=180)."
@@ -142,6 +146,8 @@ state_ownership:
       - design/gdd/state-machine.md        # C.2.2 O6 — EchoLifecycleSM subscribes to scene_will_change emitted in PRE_EMIT phase
       - design/gdd/time-rewind.md          # F.1 row #2 — TRC subscribes to scene_will_change for ring buffer invalidation
       - design/gdd/player-movement.md      # F.4.2 row #2 — PM ephemeral state cleared via EchoLifecycleSM O6 cascade (PM does not directly subscribe — Rule 5)
+      - design/gdd/story-intro-text.md     # passive cold-boot intro scene may be interrupted by TransitionIntent.COLD_BOOT; no direct scene-transition calls
+      - design/gdd/menu-pause.md           # pause restart/title shell requests go through Scene Manager API; no raw SceneTree calls
     added: 2026-05-11
     revised: ""
     notes: "Foundation/Infrastructure state owner. SM is autoload singleton with no `_physics_process` / `_process` override (Rule 2) — phase advancement is signal-reactive, not per-tick polling. Pillar 1 비협상 < 1초 restart and Pillar 4 5분 룰 cold-boot ceiling locked as entities.yaml constants (restart_window_max_frames=60, cold_boot_max_seconds=300). Tier 1 = single stage slice; multi-stage + async load + collage texture memory release deferred to Tier 2 gate (C.1 Rule 3 + Rule 11)."
@@ -194,7 +200,8 @@ interfaces:
     producer: time-rewind-controller
     consumers:
       - hud-system          # subscribes to update REWIND token counter UI
-      - vfx-system          # subscribes to trigger color-invert + glitch shader
+      - vfx-system          # subscribes for local particle pause/restart and local rewind burst
+      - time-rewind-visual-shader # subscribes to trigger color-invert + glitch shader
       - audio-system        # subscribes to play rewind SFX cue
       - enemy-ai-base       # subscribes to optionally re-acquire ECHO target
       - boss-pattern-system # subscribes to handle boss-kill token replenish
@@ -209,6 +216,7 @@ interfaces:
     referenced_by:
       - docs/architecture/adr-0001-time-rewind-scope.md
       - design/gdd/time-rewind.md  # extends contract with rewind_protection_ended (i-frame end signal)
+      - design/gdd/time-rewind-visual-shader.md
     added: 2026-05-09
     revised: 2026-05-09
 
@@ -498,13 +506,15 @@ api_decisions:
 
   - purpose: physics_step_ordering
     status: active
-    api: "Node.process_physics_priority ladder — player=0, time-rewind-controller=1, enemies=10, projectiles=20 (lower priority steps first); spawn orchestrators MUST insert children sorted by (spawn_frame, spawn_id)"
+    api: "Node.process_physics_priority ladder — player=0, time-rewind-controller=1, damage=2, enemies/boss=10, projectiles=20 (lower priority steps first); spawn orchestrators MUST insert children sorted by (spawn_frame, spawn_id)"
     not: "Node.process_priority (only orders _process(), NOT _physics_process — silent determinism break if used here). Implicit scene-tree-order fallback (unstable under runtime add_child/remove_child)."
     adr: docs/architecture/adr-0003-determinism-strategy.md
-    reason: "process_physics_priority is the explicit physics-step-ordering knob in 4.6. Without it, sibling order falls back to scene-tree order which is stable only if the tree is never mutated at runtime. Determinism boundary requires explicit ordering for the 1000-cycle test to pass under runtime spawn/despawn (validation criterion #6). TRC=1 ensures snapshot capture reads PlayerMovement after PlayerMovement._physics_process completes (avoids stale-read; design/gdd/time-rewind.md Integration Risk I8)."
+    reason: "process_physics_priority is the explicit physics-step-ordering knob in 4.6. Without it, sibling order falls back to scene-tree order which is stable only if the tree is never mutated at runtime. Determinism boundary requires explicit ordering for the 1000-cycle test to pass under runtime spawn/despawn (validation criterion #6). TRC=1 ensures snapshot capture reads PlayerMovement after PlayerMovement._physics_process completes (avoids stale-read; design/gdd/time-rewind.md Integration Risk I8). Damage=2 keeps hazard grace and lethal-hit signal handling before enemies/boss priority 10, preserving same-tick boss_killed/lethal-hit consume-then-grant order."
     referenced_by:
       - docs/architecture/adr-0003-determinism-strategy.md
       - design/gdd/time-rewind.md  # adds time-rewind-controller=1 slot to the ladder
+      - design/gdd/damage.md       # adds damage=2 slot to the ladder
+      - design/gdd/boss-pattern.md # mirrors boss priority=10 and projectile priority=20
       - design/gdd/state-machine.md  # explicitly declares SM has NO slot in the ladder (C.3.1) — SM transitions inherit host priority via signal-reactive + tick-driven dispatch (C.3.2)
     added: 2026-05-09
     revised: 2026-05-09
@@ -524,7 +534,7 @@ api_decisions:
         Hazard HitBox(L5) masks {L1}; Boss HurtBox(L6) masks {L2}.
     not: "Ad-hoc per-system layer allocation (would create silent collision graph conflicts). PhysicsServer2D direct queries (gameplay path uses Area2D signals only)."
     adr: design/gdd/damage.md  # GDD-owned (D.1.1 / C.2)
-    reason: "Centralizing layer assignment in Damage GDD prevents two systems claiming the same bit and provides single source for self-harm prevention (L2 mask omits L1) + friendly-fire blocking (L4 mask omits L3). All 5 host systems #6/#7/#10/#11/#12 must read this matrix; changes require Damage GDD update + ADR. Bits 7+ reserved for Tier 2 expansion (Pickup #15)."
+    reason: "Centralizing layer assignment in Damage GDD prevents two systems claiming the same bit and provides single source for self-harm prevention (L2 mask omits L1) + friendly-fire blocking (L4 mask omits L3). All 5 host systems #6/#7/#10/#11/#12 must read this matrix; changes require Damage GDD update + ADR. Bits 7+ reserved for Tier 2 expansion (Pickup #19)."
     referenced_by:
       - design/gdd/damage.md
     added: 2026-05-09
@@ -565,6 +575,7 @@ api_decisions:
     referenced_by:
       - design/gdd/input.md            # C.1.4 single source
       - design/gdd/state-machine.md    # C.2.2 O2 — SM provides can_pause() query interface
+      - design/gdd/menu-pause.md       # C.1 Rules 1/3/4 — #18 consumes PauseHandler contract and never implements a second pause listener
     added: 2026-05-11
     revised: "2026-05-11 — B4 reconciliation: documented veto-path consumption explicitly (was implicit in earlier draft, contradicted AC-IN-20-A). Reason added for E-IN-NEW dispatch-order correction (Session 13 review B5)."
 
@@ -605,6 +616,34 @@ api_decisions:
     added: 2026-05-11
     revised: ""
     notes: "Locked group name (G.1). Tier 2 mid-stage checkpoint pattern may warrant `multiple_anchors_warning_n` knob upgrade (G.4 — threshold raise to 3+ to suppress legitimate multi-anchor warnings). Phase 5d batch entry 2026-05-11 — Scene Manager #2 Approved RR7."
+
+  - purpose: story_intro_passive_renderer
+    status: active
+    api: "Story Intro Text #17 is a passive cold-boot presentation scene: it owns five text lines, fixed-step reveal pacing, and local visual treatment only. It adds no InputMap action and does not call SceneTree.change_scene_to_packed / change_scene_to_file directly."
+    not: "A modal cutscene system, Press-any-key gate, tutorial text box, input-remapping surface, or scene-transition owner."
+    adr: design/gdd/story-intro-text.md
+    reason: "Pillar 4 requires immediate core loop access, and Input #1 already locks the 9-action catalog. Scene Manager #2 owns TransitionIntent.COLD_BOOT; Story Intro can be interrupted by the approved cold-boot transition but cannot initiate it directly."
+    referenced_by:
+      - design/gdd/story-intro-text.md     # C.1 Rules 2-5 + AC-STI-11/12
+      - design/gdd/scene-manager.md        # F.1 #17 soft downstream; cold-boot scene lifetime only
+      - design/gdd/input.md                # 9-action catalog remains unchanged
+    added: 2026-05-13
+    revised: ""
+
+  - purpose: menu_pause_ui_boundary
+    status: active
+    api: "Menu/Pause #18 owns focusable `Control` UI surfaces for pause root, minimal title/menu shell, and session-only audio options. UI/Menu `_input` callbacks are allowed only for navigation, confirm/cancel, slider changes, and focus repair; pause toggling remains PauseHandler-owned. Session options may adjust Master/Music/SFX/UI volume through the approved Audio/Settings facade but write no files until Save/Settings #21."
+    not: "Gameplay polling in `_input`; a second pause listener; new Tier 1 InputMap actions such as `menu_confirm`, `menu_cancel`, or `skip_intro`; direct SceneTree.change_scene_to_packed/change_scene_to_file calls; persistent settings writes; first-launch Start/Options gate before Story Intro/core-loop entry."
+    adr: design/gdd/menu-pause.md
+    reason: "Menu/Pause closes the last MVP UI ownership gap without weakening Input #1 determinism or Scene Manager #2 transition ownership. Keeping options session-only avoids pulling Save #21 into Tier 1, while keeping cold boot no-prompt preserves Pillar 4. AC-MENU-01..14 define the enforceable boundary."
+    referenced_by:
+      - design/gdd/menu-pause.md
+      - design/gdd/input.md
+      - design/gdd/scene-manager.md
+      - design/gdd/audio.md
+      - design/gdd/hud.md
+    added: 2026-05-13
+    revised: ""
 
 # Example:
 #

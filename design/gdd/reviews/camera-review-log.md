@@ -49,7 +49,7 @@ This log tracks every `/design-review` pass on `design/gdd/camera.md`. Each entr
      | 17 (8 ticks in FALL) | FALLING | +29.6 | 66% |
      | 24 | FALLING | +43.7 | 87% |
      | 36 (apex window) | FALLING | +50.6 | 97% |
-     New explanatory note clarifies `LOOKAHEAD_LERP_FRAMES = 8` as *time-constant* (~66% convergence frame count), NOT settle frame count. INV-CAM-5 "정점 도달 전 settle 완료" still holds — at frame 36 (apex), convergence is ~97%. AC-CAM-H2-01 tolerance updated to `−13.1 ± 0.5`; AC-CAM-H2-02 updated to `+34.1 ± 0.5` (both with explicit note pointing back to BLOCKING #2 resolution).
+     New explanatory note clarifies `LOOKAHEAD_LERP_FRAMES = 8` as *time-constant* (~66% convergence frame count), NOT settle frame count. INV-CAM-5 "settle completes before reaching the apex" still holds — at frame 36 (apex), convergence is ~97%. AC-CAM-H2-01 tolerance updated to `−13.1 ± 0.5`; AC-CAM-H2-02 updated to `+34.1 ± 0.5` (both with explicit note pointing back to BLOCKING #2 resolution).
 
 3. **`_compute_initial_look_offset(player_node)` undefined.** R-C1-9 called this helper and AC-CAM-H4-02 field (e) asserted it, but the function was never specified — neither in C nor as a formula in D.
    - **Fix (per user choice — inline state→target_y table)**: Inline spec added just under R-C1-9:
@@ -74,7 +74,7 @@ This log tracks every `/design-review` pass on `design/gdd/camera.md`. Each entr
 
 #### RECOMMENDED — NOT fixed inline this session
 
-5. **G.3 Cross-Knob Invariants nested inside Section D** — Physically located at L526 (inside D. Formulas section), but section G also has a back-reference at L759 ("이미 D.G.3에 명시"). Cosmetic but confusing for grep/lint. Recommend moving under G as D.4 or G.0. Deferred.
+5. **G.3 Cross-Knob Invariants nested inside Section D** — Physically located at L526 (inside D. Formulas section), but section G also has a back-reference at L759 ("already specified in D.G.3"). Cosmetic but confusing for grep/lint. Recommend moving under G as D.4 or G.0. Deferred.
 
 6. **AC-CAM-H4-03 source-order test fragility** — Test relies on GDScript subclass spy of Camera2D internals. Code refactor could move setters around. Consider runtime instrumentation that observes execution order. Deferred.
 
@@ -137,7 +137,7 @@ This log tracks every `/design-review` pass on `design/gdd/camera.md`. Each entr
 
 | ID | Severity | Item | Disposition |
 |---|---|---|---|
-| **R1** | RECOMMENDED | F.4.1 / F.5 row count mismatch — F.4.1 says "9-row 배치" but C.3.3 has 10 rows; F.5 says "13-row total" should be 14 (10 + 4 reciprocity) | Apply during Phase 5 batch |
+| **R1** | RECOMMENDED | F.4.1 / F.5 row count mismatch — F.4.1 says "9-row batch" but C.3.3 has 10 rows; F.5 says "13-row total" should be 14 (10 + 4 reciprocity) | Apply during Phase 5 batch |
 | **R2** | RECOMMENDED | F-CAM-3 worked example frame numbering ambiguity — "frame 17 (8 ticks into FALLING)" only matches formula if measured from frame 8's value, not frame 9's. Off-by-one labeling, no AC impact | Optional cleanup |
 | **R3** | RECOMMENDED → APPLIED | camera.md L3 Status header cumulative narrative | Cleaned this session: now `Approved · 2026-05-12 · RR1 PASS — see review log` |
 | **R4** | RECOMMENDED → APPLIED | systems-index.md Row #3 Status format violation (modifier > 30 chars + narrative — explicit forbidden example in design-docs.md) | Cleaned this session: now `Approved · 2026-05-12 · RR1 PASS` |
@@ -169,7 +169,7 @@ This log tracks every `/design-review` pass on `design/gdd/camera.md`. Each entr
 | **BLOCKING #1** — Split-H/V model | ✅ PASS | AC-CAM-H1-01 chain re-traced: `camera.x=500`, `target.x=565` → `delta_x=65>64` → advance `+1` → `camera.x=501`. DEC-CAM-A5 present in A.1. `look_offset.x=0` consistent across A.1/F-CAM-1 var table/R-C1-9/AC assertions. |
 | **BLOCKING #2** — F-CAM-3 numerics at rate 1/8 | ✅ PASS | Closed form `y_n = target × (1-(7/8)^n)` re-validated: `(7/8)^8 ≈ 0.343`. JUMP n=8: `−20 × 0.657 = −13.14 ≈ −13.1` ✓; FALL n=8: `52 × 0.657 = 34.16 ≈ 34.1` ✓. AC-CAM-H2-01 `−13.1±0.5` and AC-CAM-H2-02 `+34.1±0.5` both verified. |
 | **BLOCKING #3** — `_compute_initial_look_offset` spec | ✅ PASS | Inline spec at R-C1-9 present and complete. 1:1 match with R-C1-4 state→target_y mapping. AC-CAM-H4-02 field (e) directly verifiable. |
-| **BLOCKING #4** — Phase 5 cross-doc reciprocity batch | ✅ PASS (landed RR1) | F.5 all 5 upstreams show ✅. F.4.1 row count corrected to "10-row 배치" (R1 fix applied). 14-row batch complete per RR1 log. |
+| **BLOCKING #4** — Phase 5 cross-doc reciprocity batch | ✅ PASS (landed RR1) | F.5 all 5 upstreams show ✅. F.4.1 row count corrected to "10-row batch" (R1 fix applied). 14-row batch complete per RR1 log. |
 
 ### New Findings (RECOMMENDED only — none BLOCKING)
 

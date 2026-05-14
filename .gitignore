@@ -20,6 +20,7 @@ production/session-state/
 expansions/
 
 # === Runtime Artifacts (auto-generated, start empty on fresh clone) ===
+reports/
 # Created on first use by /consistency-check and /architecture-review
 docs/consistency-failures.md
 

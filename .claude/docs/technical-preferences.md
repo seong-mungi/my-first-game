@@ -59,11 +59,19 @@
 ## Architecture Decisions Log
 
 <!-- Quick reference linking to full ADRs in docs/architecture/ -->
-- [No ADRs yet — use /architecture-decision to create one]
-- **Pending (queued for first ADR pass)**:
-  - **R-T1** — Time-rewind scope: player-only (checkpoint model) vs everything (Braid model)
-  - **R-T2** — Time-rewind storage: state snapshot vs input replay
-  - **R-T3** — Determinism strategy for enemy/bullet motion (CharacterBody2D + direct transform vs RigidBody2D)
+- **Accepted ADRs as of 2026-05-14**:
+  - **ADR-0001** — Time Rewind Scope: player-only checkpoint model
+  - **ADR-0002** — Time Rewind Storage Format: state snapshot ring buffer
+  - **ADR-0003** — Determinism Strategy: CharacterBody2D + direct transform / Area2D projectiles
+  - **ADR-0004** — Scene Lifecycle and Checkpoint Restart Architecture
+  - **ADR-0005** — Cross-System Signal Architecture and Event Ordering
+  - **ADR-0006** — Save and Settings Persistence Boundary
+  - **ADR-0007** — Input Polling, Pause Handling, and UI Focus Boundary
+  - **ADR-0008** — Player Entity Composition and Lifecycle State Ownership
+  - **ADR-0009** — Damage, HitBox/HurtBox, and Combat Event Ownership
+  - **ADR-0010** — Collage Rendering and Rewind Shader Pipeline
+  - **ADR-0011** — Enemy, Boss, and Projectile Deterministic Scheduling
+- **Pending ADRs**: None required for current Tier 1 MVP architecture; future ADRs may be needed for Pickup/Difficulty, localization/accessibility, or expanded audio/VFX routing.
 
 ## Engine Specialists
 

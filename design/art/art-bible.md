@@ -5,7 +5,7 @@ created: 2026-05-09
 updated: 2026-05-09
 project: Echo (working title)
 engine: Godot 4.6 / GDScript
-visual_anchor: 콜라주 SF — 1990s 잡지 컷아웃 + 2030s 메가시티 사진
+visual_anchor: Collage SF — 1990s magazine cutouts + 2030s megacity photography
 related:
   - design/gdd/game-concept.md
   - .claude/docs/technical-preferences.md
@@ -14,748 +14,748 @@ related:
 
 # Echo — Art Bible
 
-> **Visual Identity Anchor (locked)**: "이 게임의 모든 화면은 1990s 잡지 컷아웃이 2030년대 메가시티 사진과 콜라주된 것처럼 보인다."
+> **Visual Identity Anchor (locked)**: "Every screen in this game looks like 1990s magazine cutouts collaged with 2030s megacity photography."
 >
 > **Art Director Sign-Off (AD-ART-BIBLE)**: SKIPPED — Lean mode (per `production/review-mode.txt`).
 > Re-run with `--review full` if AAA-level director gate is needed before production.
 >
 > **Open Questions (block first concept-art round):**
-> - **Q2** — 콜라주 사진 출처 (스톡 / AI 생성 / 직접 촬영) → IP·라이선스 검토 후 결정
-> - **Q5** — ECHO 성별 명시 vs 코드명 유지 → 첫 콘셉트아트 라운드 후 결정
+> - **Q2** — Collage photo sources (stock / AI-generated / original photography) → decided after IP/license review
+> - **Q5** — ECHO gender explicit vs. code name retained → decided after first concept-art round
 >
-> **v0 Note:** 모든 색 hex 값은 시작점이며 첫 콘셉트아트 라운드 후 확정 (`/asset-spec` 시점).
+> **v0 Note:** All color hex values are starting points and will be finalized after the first concept-art round (at `/asset-spec` time).
 
 ---
 
 ## 1. Visual Identity Statement
 
-이 섹션은 Echo의 비주얼 정체성 원칙을 고정하는 최상위 계약이다. 이후 모든 아트 결정의 준거점이 된다.
+This section is the top-level contract that locks Echo's visual identity principles. It serves as the reference point for all subsequent art decisions.
 
-**고정 선언 (2026-05-09 락인):**
+**Locked Declaration (2026-05-09 lock-in):**
 
-> "이 게임의 모든 화면은 1990s 잡지 컷아웃이 2030년대 메가시티 사진과 콜라주된 것처럼 보인다."
+> "Every screen in this game looks like 1990s magazine cutouts collaged with 2030s megacity photography."
 
-이 선언은 협상 불가 기준이다. 어떤 에셋도 이 원칙을 위반하면 리젝된다.
-
----
-
-### 원칙 A — 명확성 우선 콜라주 (Clarity-First Collage)
-
-**지원 필러: Pillar 2 — 결정론적 패턴, 운은 적이다**
-
-콜라주 텍스처와 레이어는 배경·보스·UI 프레임에 집중한다. 플레이어 캐릭터(ECHO)와 모든 적 캐릭터는 단순한 실루엣과 명확한 색 대비를 유지한다. 복잡한 콜라주 패턴이 캐릭터 실루엣에 침범하는 순간 Pillar 2 테스트가 실패한다.
-
-**설계 테스트:** 1080p 해상도, 실제 게임플레이 속도의 스크린샷을 0.2초 글랜스했을 때 플레이어·적·탄환을 각각 구분할 수 있는가? "YES" 아니면 에셋 수정.
-
-**위반 패턴 (금지):**
-- 배경의 마젠타 광고 텍스처와 유사한 색조의 적 실루엣
-- 드론 외곽선에 사진 텍스처 오버레이 → 형태 해석 불가
-- 탄환 색이 배경 네온 색과 동일 (구분 불가)
+This declaration is a non-negotiable standard. Any asset that violates this principle is rejected.
 
 ---
 
-### 원칙 B — 사진 + 드로잉 = 항상 둘 다 (Photo + Drawing Always Together)
+### Principle A — Clarity-First Collage
 
-**지원 필러: Pillar 3 — 콜라주가 첫 인상이다, 스크린샷 = 마케팅**
+**Supporting Pillar: Pillar 2 — Deterministic patterns, luck is the enemy**
 
-사진만 쓰면 사실주의 시뮬레이터처럼 보인다. 드로잉만 쓰면 Pizza Tower 아류로 분류된다. Echo의 시그니처는 그 혼합 자체다 — Hannah Höch식 사진 컷아웃 위에 펜 라인 드로잉이 올라가고, 그 위에 다시 핸드레터링이 올라가는 레이어 구조.
+Collage textures and layers are concentrated on backgrounds, bosses, and UI frames. The player character (ECHO) and all enemy characters maintain simple silhouettes and clear color contrast. The moment complex collage patterns intrude on character silhouettes, the Pillar 2 test fails.
 
-**설계 테스트:** Steam 캡슐 이미지 1장, 스크린샷 1장을 봤을 때 "사진 질감"과 "드로잉 선"이 동시에 보이는가? 마케팅 이미지에서 둘 중 하나가 사라지면 원칙 B 위반.
+**Design Test:** At 1080p resolution, can you distinguish the player, enemies, and bullets individually with a 0.2-second glance at a screenshot taken at real gameplay speed? "YES" or revise the asset.
 
-**레이어 구조 (모든 씬에 적용):**
-1. Base: 사진 질감 배경 (메가시티 사진 또는 AI 생성 스톡 — Q2 결정 후 파이프라인 확정)
-2. Mid: 손드로잉 라인아트 캐릭터/오브젝트
-3. Top: 잡지 컷아웃 타이포그래피·광고 조각·컬러 플랫 도형
+**Violation Patterns (forbidden):**
+- Enemy silhouettes with a similar hue to the magenta advertisement texture in the background
+- Photo texture overlay on drone outlines → unreadable shape
+- Bullet color identical to background neon color (indistinguishable)
 
 ---
 
-### 원칙 C — 시간 되감기 = 색 반전 + 글리치 (Time-Rewind = Inversion + Glitch)
+### Principle B — Photo + Drawing Always Together
 
-**지원 필러: Pillar 1 — 시간 되감기는 처벌이 아닌 학습 도구다**
+**Supporting Pillar: Pillar 3 — Collage is the first impression, screenshot = marketing**
 
-REWIND Core 발동은 시각적으로 즉각 인식 가능해야 한다. 메커닉이 발동되는 순간 화면 전체가 색반전(시안/마젠타 우세)되고, 콜라주 텍스처가 글리치 패턴으로 분해된다. 이것이 "학습 도구"의 시각적 확인 — 죽음 순간이 아닌 *회복 순간*을 강조한다.
+Using only photography looks like a realism simulator. Using only drawing gets classified as a Pizza Tower clone. Echo's signature is the mixture itself — Hannah Höch-style photo cutouts with pen line drawings on top, and hand-lettering layered over that.
 
-**설계 테스트:** REWIND Core 발동을 0.5초 안에 화면만 보고 인식할 수 있는가? 발동 효과가 배경 아트와 구분되는가?
+**Design Test:** Looking at one Steam capsule image and one screenshot, can you see both "photo texture" and "drawing lines" simultaneously? If either disappears from a marketing image, Principle B is violated.
 
-**발동 시퀀스 (기술 사양은 technical-artist에게 위임):**
-- Frame 0: 정상 팔레트
-- Frame 1-3: 화면 전체 시안/마젠타 색반전 (셰이더)
-- Frame 4-8: 콜라주 레이어 글리치 분해 (UV distortion 패턴)
-- Frame 9-18: 역재생 애니메이션 + 원래 팔레트 복원
+**Layer Structure (applies to all scenes):**
+1. Base: Photo texture background (megacity photography or AI-generated stock — pipeline finalized after Q2 decision)
+2. Mid: Hand-drawn line-art characters/objects
+3. Top: Magazine cutout typography, advertisement fragments, color flat shapes
 
-**REWINDING 30프레임 i-frame 시각 규칙 (ABA-3 amendment 2026-05-11 — `player-movement.md` VA.3 단일 출처):**
+---
 
-복원 직후 30프레임 동안 ECHO는 무적이지만 시각적으로 *살아있음*을 알려야 한다. 색 반전 셰이더가 동시에 진행될 수 있으므로 **색이 아닌 *형태* 신호**가 단일 출처다.
+### Principle C — Time-Rewind = Color Inversion + Glitch
 
-- **메커니즘**: `Sprite2D.visible` **2:1 toggle** — `visible=true 2프레임 / visible=false 1프레임` 반복 (30프레임 = 10 펄스 = ~20 Hz)
-- **소유**: `player-movement.md` PM 측 — driven from `EchoLifecycleSM.RewindingState._physics_update()`, NOT AnimationPlayer (`seek()` interaction 회피)
-- **색 채널 사용 금지**: i-frame을 색 변경/틴팅으로 표현하면 REWIND 셰이더 색반전 패스와 충돌 → 식별 실패. 형태 채널(visibility) 단독 사용
-- **다채널 안전망** (Section 4 backup #4 일관): 형태(visibility) + 오디오(rewind_protection_ended) + 스크린-셰이크 (TR 측) — 3채널 중복
+**Supporting Pillar: Pillar 1 — Time rewind is a learning tool, not punishment**
 
-> **DYING 깜박임 (ABA-4 참조)** 과 **REWINDING i-frame 깜박임 (본 규칙)** 은 *별도 이벤트* — 케이던스도 다르고 (DYING 1:1 30 Hz vs REWINDING 2:1 20 Hz) 소유자도 다르다 (DYING REWIND Core glow만 / REWINDING 전체 sprite visibility). 혼동 금지.
+REWIND Core activation must be immediately recognizable visually. The moment the mechanic fires, the entire screen color-inverts (cyan/magenta dominant) and collage textures decompose into glitch patterns. This is the visual confirmation of the "learning tool" — emphasizing the *recovery moment* rather than the death moment.
+
+**Design Test:** Can you recognize REWIND Core activation within 0.5 seconds by looking at the screen alone? Is the activation effect distinguishable from background art?
+
+**Activation Sequence (technical specs delegated to technical-artist):**
+- Frame 0: Normal palette
+- Frame 1-3: Full-screen cyan/magenta color inversion (shader)
+- Frame 4-8: Collage layer glitch decomposition (UV distortion pattern)
+- Frame 9-18: Reverse-playback animation + palette restoration
+
+**REWINDING 30-frame i-frame visual rule (ABA-3 amendment 2026-05-11 — `player-movement.md` VA.3 single source of truth):**
+
+For 30 frames immediately after restoration, ECHO is invincible but must visually signal *alive*. Since the color inversion shader may run concurrently, a **shape signal, not color** is the single source of truth.
+
+- **Mechanism**: `Sprite2D.visible` **2:1 toggle** — `visible=true 2 frames / visible=false 1 frame` repeat (30 frames = 10 pulses = ~20 Hz)
+- **Ownership**: `player-movement.md` PM side — driven from `EchoLifecycleSM.RewindingState._physics_update()`, NOT AnimationPlayer (avoids `seek()` interaction)
+- **Color channel forbidden**: Expressing i-frames via color change/tinting conflicts with the REWIND shader color inversion pass → identification failure. Shape channel (visibility) only
+- **Multi-channel safety net** (consistent with Section 4 backup #4): shape (visibility) + audio (rewind_protection_ended) + screen-shake (TR side) — 3-channel redundancy
+
+> **DYING flicker (see ABA-4)** and **REWINDING i-frame flicker (this rule)** are *separate events* — different cadences (DYING 1:1 30 Hz vs REWINDING 2:1 20 Hz) and different owners (DYING REWIND Core glow only / REWINDING full sprite visibility). Do not confuse.
 
 ---
 
 ## 2. Mood & Atmosphere
 
-이 섹션은 각 게임 상태별 감정 목표와 시각적 분위기를 명세하여 씬 간 일관성을 보장한다.
+This section specifies the emotional goals and visual atmosphere for each game state to ensure consistency across scenes.
 
-| 게임 상태 | 감정 목표 | 조명 특성 | 분위기 형용사 | 에너지 레벨 | 핵심 시각 요소 |
+| Game State | Emotional Goal | Lighting Characteristics | Atmosphere Adjectives | Energy Level | Key Visual Elements |
 |---|---|---|---|---|---|
-| **전투 (Combat)** | 긴장·집중·즉각 반응 | 강한 역광, 날카로운 그림자, 네온 플리커 | 날카로운 / 급박한 / 냉정한 / 위협적인 | 최고 (9/10) | 드론 실루엣이 네온 시안 배경에 역광으로 잘려 보이는 컷아웃 구도 |
-| **탐색 (Exploration)** | 호기심·경계·고요한 긴장 | 환경광 주도, 부드러운 마젠타 광고판 반사 | 황량한 / 감시받는 / 텅 빈 / 도시적인 | 중간 (5/10) | VEIL 감시 카메라 아이콘이 새겨진 건물 벽면, 빛바랜 ARCA 광고판 |
-| **보스 등장 (Boss Reveal)** | 경외·위협·압도감 | 단일 강력 광원 (보스 코어 발광), 주변 암흑 | 압도적인 / 거대한 / 냉정한 / 기계적인 | 급상승 (7→10) | 보스 실루엣이 화면 가득 채우며 등장, 주변 콜라주 레이어 파편화 |
-| **시간 되감기 발동 (Time-Rewind Active)** | 안도·혼란·신속한 재정위 | 전체 화면 시안/마젠타 반전, 광원 없음 | 초현실적인 / 분해되는 / 역설적인 / 긴박한 | 순간 폭발 (10/10, 0.5초) | 화면 전체 색반전 + 콜라주 텍스처 글리치 파편 |
-| **DYING (피격 후 12프레임 유예) (ABA-4 amendment 2026-05-11)** | 긴박한 반전 기대 — "되돌릴 수 있다, *지금*" | 화면 전체 효과 없음; ECHO 캐릭터 로컬만 (Section 1 Principle A — 가독성 우선) | 긴장된 / 정지된 / 결정 임박 / 인지 가능 | 순간 최고 (10/10, 0.2초 — 12 frames @ 60 fps) | **히트-스태거 포즈 유지 (collapse 아님)** + **REWIND Core 글로우 1:1 깜박임** (`visible=true 1f / false 1f` toggle, 6 펄스 = 30 Hz — `player-movement.md` VA.2 Dead row B6 fix 2026-05-11 단일 출처; ≥4 Hz "intentional pulse" 인지 임계로 engine hitch 와 구분); 화이트아웃 없음 (DEAD 단계로 진행 시까지 보류); 오디오 = `sfx_dying_pending_01.ogg` synth filter sweep 80→400 Hz over 200 ms (`time-rewind.md` Audio Events DYING entry — 1:1 envelope 매칭) |
-| **사망 후 재시작 (Death & Restart)** | 즉각 수용·재도전 욕구 | 1프레임 화이트아웃 → 즉시 씬 복원 | 간결한 / 중립적인 / 즉각적인 | 순간 0 → 전투 레벨 | 화이트플래시 1프레임 (복잡한 사망 연출 없음 — Pillar 1: <1초 재시작 절대 기준) |
-| **메뉴/HUD** | 브랜드 인식·탐색 명확성 | 플랫 / 무조명 | 구조적인 / 명확한 / 콜라주 | 낮음 (3/10) | 잡지 컷아웃 타이포그래피 프레임, 콘크리트 회색 배경에 시안 하이라이트 |
-| **스토리 인트로 텍스트 (Story Intro)** | 분위기 침잠·세계관 흡수 | 거의 암흑, 텍스트 단일 광원 | 음침한 / 절제된 / 차가운 / 확정적인 | 최저 (2/10) | 잡지 컷아웃 사진 배경 위 타자기 스타일 타이포그래피, VEIL 감시 아이콘 워터마크 |
+| **Combat** | Tension, focus, immediate response | Strong backlight, sharp shadows, neon flicker | Sharp / Urgent / Cold / Threatening | Maximum (9/10) | Drone silhouettes cut out against neon cyan backlight in a collage composition |
+| **Exploration** | Curiosity, alertness, quiet tension | Ambient light dominant, soft magenta billboard reflections | Desolate / Surveilled / Empty / Urban | Medium (5/10) | Building walls engraved with VEIL surveillance camera icons, faded ARCA billboards |
+| **Boss Reveal** | Awe, threat, overwhelming presence | Single powerful light source (boss core glow), surrounding darkness | Overwhelming / Massive / Cold / Mechanical | Rising fast (7→10) | Boss silhouette fills the screen on entry, surrounding collage layers fragment |
+| **Time-Rewind Active** | Relief, disorientation, rapid reorientation | Full-screen cyan/magenta inversion, no light source | Surreal / Decomposing / Paradoxical / Urgent | Instant burst (10/10, 0.5 sec) | Full-screen color inversion + collage texture glitch fragments |
+| **DYING (12-frame grace period after hit) (ABA-4 amendment 2026-05-11)** | Urgent reversal anticipation — "I can undo this, *now*" | No full-screen effect; ECHO character local only (Section 1 Principle A — readability first) | Tense / Frozen / Decision imminent / Recognizable | Instant maximum (10/10, 0.2 sec — 12 frames @ 60 fps) | **Hit-stagger pose held (not collapse)** + **REWIND Core glow 1:1 flicker** (`visible=true 1f / false 1f` toggle, 6 pulses = 30 Hz — `player-movement.md` VA.2 Dead row B6 fix 2026-05-11 single source; ≥4 Hz "intentional pulse" perception threshold distinguishes from engine hitch); no whiteout (deferred until DEAD stage progression); audio = `sfx_dying_pending_01.ogg` synth filter sweep 80→400 Hz over 200 ms (`time-rewind.md` Audio Events DYING entry — 1:1 envelope match) |
+| **Death & Restart** | Immediate acceptance, desire to retry | 1-frame whiteout → immediate scene restoration | Crisp / Neutral / Immediate | Instant 0 → combat level | White flash 1 frame (no complex death animation — Pillar 1: <1 second restart absolute requirement) |
+| **Menu/HUD** | Brand recognition, navigation clarity | Flat / unlit | Structured / Clear / Collage | Low (3/10) | Magazine cutout typography frame, concrete gray background with cyan highlights |
+| **Story Intro Text** | Atmospheric immersion, worldbuilding absorption | Near darkness, single text light source | Grim / Restrained / Cold / Definitive | Lowest (2/10) | Typewriter-style typography over magazine cutout photo background, VEIL surveillance icon watermark |
 
-**공통 조명 규칙:**
-- 실외 (옥상): 상단 역광 + 도시 네온 반사광. 자연광 없음 — 2038 NEXUS는 스모그층으로 태양 직광 차단
-- 실내 (데이터센터): 형광등 플리커 + 서버 발광 (초록/시안 냉광)
-- 암흑 기본값: 완전 블랙이 아닌 콘크리트 회색 (#1A1A1E) — 콜라주 텍스처가 어둠 속에서도 존재감 유지
+**Common Lighting Rules:**
+- Exterior (rooftop): Top backlight + urban neon reflected light. No natural light — 2038 NEXUS has direct sunlight blocked by a smog layer
+- Interior (data center): Fluorescent flicker + server glow (green/cyan cold light)
+- Darkness baseline: Not full black but concrete gray (#1A1A1E) — collage textures maintain presence even in darkness
 
 ---
 
 ## 3. Shape Language
 
-이 섹션은 게임 내 모든 시각 요소의 형태 어휘를 정의하여 캐릭터, 환경, UI가 하나의 시각 언어를 공유하게 한다.
+This section defines the shape vocabulary for all visual elements in the game so that characters, environments, and UI share a single visual language.
 
-### ECHO (플레이어 캐릭터) 실루엣 철학
+### ECHO (Player Character) Silhouette Philosophy
 
-**지원 필러: Pillar 2 + Pillar 3**
+**Supporting Pillars: Pillar 2 + Pillar 3**
 
-ECHO는 날렵한 수직 실루엣이다. 헬멧 또는 마스크가 얼굴 전체를 덮어 성별을 노출하지 않는다 (Q5 — ECHO 성별 미결정 유지). 실루엣의 핵심 형태: 좁은 어깨, 긴 다리 비율, 등에 부착된 REWIND Core 장치 (뚜렷한 사각형 돌출부). 라인아트는 유기적 곡선보다 각진 끊김선 위주 — 사진 컷아웃이 가위로 잘린 느낌.
+ECHO has a sleek vertical silhouette. A helmet or mask covers the entire face, concealing gender (Q5 — ECHO gender undetermined). Core silhouette shapes: narrow shoulders, long leg proportions, REWIND Core device attached to the back (distinctive rectangular protrusion). Line-art favors angular broken lines over organic curves — the feel of a photo cutout cut with scissors.
 
-**스프라이트 사양 (ABA-1 amendment 2026-05-11 — `player-movement.md` VA.6 단일 출처):**
-- **캐릭터 시각 높이**: 48px (1080p 기준; Section 5 ECHO 비주얼 아키타입 표와 일치)
-- **스프라이트 셀 크기**: **48×96px** (REWIND Core 등 돌출부 포함 셀 공간; 8-way 팔 오버레이는 별도 32×32px 셀 — Section 5 ABA-2 참조)
-- **아틀라스 배치**: `atlas_chars_tier1.png` 512×512 (Section 8 표 — 17 body frames + 8 arm frames = 25 frames Tier 1 총량; ECHO 단일 캐릭터)
+**Sprite Specifications (ABA-1 amendment 2026-05-11 — `player-movement.md` VA.6 single source of truth):**
+- **Character visual height**: 48px (at 1080p; consistent with Section 5 ECHO Visual Archetype table)
+- **Sprite cell size**: **48×96px** (cell space including REWIND Core and other protrusions; 8-way arm overlay is a separate 32×32px cell — see Section 5 ABA-2)
+- **Atlas placement**: `atlas_chars_tier1.png` 512×512 (Section 8 table — 17 body frames + 8 arm frames = 25 frames total Tier 1; ECHO single character)
 
-**썸네일 가독성 테스트 (Pillar 2):**
-- 32×32px로 축소했을 때 머리·몸통·총기를 구분할 수 있는가?
-- ECHO 실루엣이 세 적 아키타입 중 어느 것과도 혼동되지 않는가?
+**Thumbnail Readability Test (Pillar 2):**
+- When scaled down to 32×32px, can you distinguish the head, torso, and weapon individually?
+- Is ECHO's silhouette not confused with any of the three enemy archetypes?
 
-**Q5 적용 규칙:** 캐릭터 방향 섹션의 모든 규칙은 실루엣·비율·장비 위주다. 얼굴형·머리카락·음성 톤은 이 문서에서 미결정 상태 유지. 시각적 성별 단서는 헬멧/마스크로 차단.
+**Q5 Application Rule:** All rules in the character direction section are about silhouette, proportion, and equipment. Face shape, hair, and voice tone remain undecided in this document. Visual gender cues are blocked by the helmet/mask.
 
 ---
 
-### 적 아키타입 실루엣 구분 규칙
+### Enemy Archetype Silhouette Differentiation Rules
 
-**지원 필러: Pillar 2 — 0.2초 글랜스 구분 보장**
+**Supporting Pillar: Pillar 2 — Guaranteed 0.2-second glance differentiation**
 
-| 아키타입 | 지배 형태 | 구분 특징 | 크기 비율 (ECHO 대비) | 금지 형태 |
+| Archetype | Dominant Shape | Distinguishing Feature | Size Ratio (vs. ECHO) | Forbidden Shapes |
 |---|---|---|---|---|
-| **드론 (Drone)** | 원·타원 — 부드럽고 빠른 느낌 | 회전 날개 실루엣, 발광 눈 2개, 몸통 원형 | 0.3x (소형) | 사각형 몸통 (보스와 혼동) |
-| **경비로봇 (Security Bot)** | 사각형·직선 — 둔중하고 위협적인 느낌 | 넓은 사각 몸통, 팔 없는 포탑 형태, 트랙 이동 | 1.5x (대형) | 원형 요소, 날개류 |
-| **미니보스 (STRIDER — Tier 1)** | 역삼각형 — 지배적이고 공격적인 느낌 | 화면 상단에서 내려오는 대형 드론 플랫폼, 포탑 4개, 중앙 코어 발광 | 3-4x (전체 화면 폭 1/3) | ECHO와 유사한 수직 라인 |
+| **Drone** | Circle/Ellipse — soft and fast feeling | Rotating blade silhouette, 2 glowing eyes, circular body | 0.3x (small) | Rectangular body (confused with boss) |
+| **Security Bot** | Rectangle/Straight lines — heavy and threatening | Wide rectangular body, turret form without arms, track movement | 1.5x (large) | Circular elements, blade-like parts |
+| **Mini-Boss (STRIDER — Tier 1)** | Inverted triangle — dominant and aggressive | Large drone platform descending from top of screen, 4 turrets, central core glow | 3-4x (1/3 of full screen width) | Vertical lines similar to ECHO |
 
-**형태 대비 원칙 (Gestalt — Figure-Ground):**
-- 소형 적(드론): 배경 사각형 건물에 원형 실루엣이 팝 아웃
-- 대형 적(경비로봇): ECHO의 유기적 라인에 대비되는 직선 격자
-- 보스: 화면 프레임을 채우는 역삼각 구도 — 플레이어를 심리적으로 압박
-
----
-
-### 환경 형태 언어 — NEXUS 메가시티
-
-**지배 형태: 수직 직선 + 반복 격자 (기업 브루탈리즘)**
-
-NEXUS의 건물은 전부 수직 블록 — 곡면이나 유기적 형태 없음. 그러나 그 위를 덮는 광고·낙서·컷아웃 조각은 대각선·불규칙 컷·원형을 도입한다. 이 대비가 "콘트롤된 도시 위의 인간 카오스"를 시각화한다.
-
-- **건물 기본형:** 수직 직사각형, 반복 창문 격자
-- **광고판:** 불규칙 사각형 + 대각선 컷아웃 레이어 (1990s 잡지 레이아웃 차용)
-- **도로/플랫폼:** 수평 직선, 플레이어 이동선과 평행 → 이동 방향성 강화 (Visual Hierarchy)
-- **배경 빌딩:** 실루엣만 (사진 텍스처 없음) — 미드그라운드/포어그라운드 구분 명확화
+**Shape Contrast Principle (Gestalt — Figure-Ground):**
+- Small enemies (drone): Circular silhouette pops out against rectangular background buildings
+- Large enemies (Security Bot): Straight-line grid contrasting with ECHO's organic lines
+- Boss: Inverted triangle composition filling the screen frame — psychologically pressures the player
 
 ---
 
-### UI 형태 문법
+### Environment Shape Language — NEXUS Megacity
 
-- **버튼/패널:** 불규칙 잘린 모서리 (컷아웃 미학). 완전 원형 또는 완전 직각 모두 금지 — 잡지에서 가위로 자른 느낌
-- **아이콘:** 굵은 선 (stroke ≥ 3px at 1080p) 플랫 드로잉. 사진 텍스처 없음 — 0.2초 인식 우선
-- **토큰 카운터:** 원형 배지 — 드론 형태 연상 (게임 내 소형 적과 형태 공명)
-- **체력 바:** 분절 세그먼트 (가득 찬 연속 바 금지 — 잡지 컷아웃 단편 구조)
+**Dominant Shape: Vertical straight lines + repeating grid (Corporate Brutalism)**
+
+NEXUS buildings are all vertical blocks — no curves or organic forms. However, the advertisements, graffiti, and cutout fragments covering them introduce diagonals, irregular cuts, and circles. This contrast visualizes "human chaos over a controlled city."
+
+- **Building base form:** Vertical rectangles, repeating window grids
+- **Billboards:** Irregular rectangles + diagonal cutout layers (borrowing 1990s magazine layout)
+- **Roads/Platforms:** Horizontal straight lines, parallel to player movement — reinforces movement direction (Visual Hierarchy)
+- **Background buildings:** Silhouette only (no photo texture) — clear mid-ground/foreground differentiation
 
 ---
 
-### 영웅 vs. 서포팅 형태 규칙
+### UI Shape Grammar
 
-- **영웅 오브젝트 (ECHO, 무기, 토큰):** 날카로운 각진 라인 + 고채도 색 테두리 → 시선 우선 흡수
-- **서포팅 오브젝트 (배경, 플랫폼, 소품):** 저채도 + 부드러운 사진 텍스처 → 시선 후순위
-- **적대 오브젝트 (드론, 경비로봇, 탄환):** 붉은 계열 테두리 또는 발광 + 독특한 실루엣 → 위협 즉시 인식
+- **Buttons/Panels:** Irregularly clipped corners (cutout aesthetic). Both full circles and full right angles are forbidden — the feel of being cut with scissors from a magazine
+- **Icons:** Bold line (stroke ≥ 3px at 1080p) flat drawing. No photo texture — 0.2-second recognition first
+- **Token Counter:** Circular badge — evokes drone shape (shape resonance with small in-game enemies)
+- **Health Bar:** Segmented (no solid continuous bar — magazine cutout fragment structure)
+
+---
+
+### Hero vs. Supporting Shape Rules
+
+- **Hero Objects (ECHO, weapons, tokens):** Sharp angular lines + high-saturation color outline → absorbs gaze first
+- **Supporting Objects (backgrounds, platforms, props):** Low saturation + soft photo texture → lower visual priority
+- **Hostile Objects (drones, Security Bots, bullets):** Red-family outline or glow + distinctive silhouette → immediate threat recognition
 
 ---
 
 ## 4. Color System
 
-이 섹션은 게임 전체의 색 어휘를 정의하고, 각 색의 의미와 쓰임새, 접근성 대응을 명시한다.
+This section defines the color vocabulary for the entire game, specifying the meaning and usage of each color and accessibility handling.
 
-### Primary Palette (v0 시작 팔레트 — 첫 콘셉트아트 라운드 후 확정)
+### Primary Palette (v0 starting palette — finalized after first concept-art round)
 
-| 역할 | 색명 | Hex | 의미 | 사용처 |
+| Role | Color Name | Hex | Meaning | Usage |
 |---|---|---|---|---|
-| **기반 중성** | Concrete Dark | `#1A1A1E` | 통제·압억·기업 질서 | 배경 베이스, UI 패널 베이스 |
-| **기반 중성 2** | Concrete Mid | `#3C3C44` | 인프라·중간층 현실 | 환경 중간 레이어, 비활성 UI |
-| **메인 신호** | Neon Cyan | `#00F5D4` | 자유·REWIND Core 에너지·플레이어 | ECHO 색 테두리, 토큰 UI, 시간 되감기 발광 |
-| **적대 신호** | Ad Magenta | `#FF2D7F` | VEIL 위협·광고 선전·위험 | 적 발광, VEIL UI 요소, 위험 표시 |
-| **인간 흔적** | Vintage Yellow | `#F0C040` | 과거·인간성·Sigma Unit 기억 | 콜라주 컷아웃 조각, 무기 픽업, 선택적 환경 소품 |
-| **부패 흔적** | Sepia Brown | `#7A5C3A` | 낡음·기억·ARCA 붕괴 | 오래된 광고판, ARCA 로고 잔재, 사진 텍스처 색조 |
-| **시간 반전 시안** | Rewind Cyan | `#7FFFEE` | 시간 되감기 발동 (연한 버전) | 색반전 상태 ECHO 실루엣, 역재생 광원 |
+| **Base Neutral** | Concrete Dark | `#1A1A1E` | Control, suppression, corporate order | Background base, UI panel base |
+| **Base Neutral 2** | Concrete Mid | `#3C3C44` | Infrastructure, middle-layer reality | Environment mid layer, inactive UI |
+| **Main Signal** | Neon Cyan | `#00F5D4` | Freedom, REWIND Core energy, player | ECHO color outline, token UI, time-rewind glow |
+| **Hostile Signal** | Ad Magenta | `#FF2D7F` | VEIL threat, advertising propaganda, danger | Enemy glow, VEIL UI elements, danger indicators |
+| **Human Trace** | Vintage Yellow | `#F0C040` | Past, humanity, Sigma Unit memory | Collage cutout fragments, weapon pickups, select environmental props |
+| **Decay Trace** | Sepia Brown | `#7A5C3A` | Age, memory, ARCA collapse | Old billboards, ARCA logo remnants, photo texture tint |
+| **Time-Inversion Cyan** | Rewind Cyan | `#7FFFEE` | Time rewind activation (lighter version) | ECHO silhouette in color-inverted state, reverse-playback light source |
 
-**금지 색:** 포화도 0 흰색(`#FFFFFF`) — 화이트아웃 단 1회(사망 플래시)에만 허용. 이외 순백 사용 금지.
-
----
-
-### 색 의미 어휘 (Semantic Color Vocabulary)
-
-**시안(Neon Cyan `#00F5D4`)이 보이면:**
-- ECHO의 존재, REWIND Core 기능, 플레이어가 사용 가능한 오브젝트
-- "이것은 플레이어 편이다, 이것은 시간 되감기와 관련이 있다"
-
-**마젠타(Ad Magenta `#FF2D7F`)가 보이면:**
-- VEIL의 통제 영역, 적 기동, 위험 지대
-- "이것은 죽음이다, 이것은 피해야 한다"
-
-**노랑(Vintage Yellow `#F0C040`)이 보이면:**
-- 인간이 남긴 흔적, 픽업 아이템, 탐색 보상
-- "이것은 집을 수 있다, 이것은 기억이다"
-
-**콘크리트 회색 계열이 넓게 보이면:**
-- 배경 인프라, 내러티브 중립 공간
-- "이것은 지나가도 된다, VEIL의 지배 영역이다"
-
-**색 반전(시안+마젠타 동시)이 보이면:**
-- REWIND Core 발동 — 시각적 즉각 인식 트리거
-- "지금 시간이 역전되고 있다" (Pillar 1)
+**Forbidden Color:** Fully saturated white (`#FFFFFF`) — permitted only once for the death flash whiteout. No pure white usage otherwise.
 
 ---
 
-### UI 팔레트
+### Semantic Color Vocabulary
 
-UI는 월드 팔레트를 따르되 채도를 10% 낮춘다. 세계가 UI보다 시각적으로 우선하는 구조.
+**When Cyan (Neon Cyan `#00F5D4`) is visible:**
+- ECHO's presence, REWIND Core function, objects the player can use
+- "This is on the player's side, this is related to time rewind"
 
-| UI 요소 | 색 | Hex | 비고 |
+**When Magenta (Ad Magenta `#FF2D7F`) is visible:**
+- VEIL's control zone, enemy movement, danger area
+- "This is death, this must be avoided"
+
+**When Yellow (Vintage Yellow `#F0C040`) is visible:**
+- Traces left by humans, pickup items, exploration rewards
+- "This can be picked up, this is a memory"
+
+**When wide areas of concrete gray are visible:**
+- Background infrastructure, narratively neutral space
+- "This can be passed through, it is VEIL's domain"
+
+**When color inversion (cyan + magenta simultaneously) is visible:**
+- REWIND Core activation — immediate visual recognition trigger
+- "Time is being reversed right now" (Pillar 1)
+
+---
+
+### UI Palette
+
+UI follows the world palette but with saturation reduced by 10%. The world takes visual priority over the UI.
+
+| UI Element | Color | Hex | Notes |
 |---|---|---|---|
-| HUD 배경 패널 | Concrete Dark 40% 투명 | `#1A1A1E99` | 반투명 — 게임플레이 시야 방해 최소화 |
-| 활성 버튼 | Neon Cyan | `#00F5D4` | 기본 인터랙션 색 |
-| 위험/경고 버튼 | Ad Magenta | `#FF2D7F` | 취소, 위험 확인 |
-| 비활성 요소 | Concrete Mid | `#3C3C44` | 잠긴 기능, 비활성 메뉴 항목 |
-| 텍스트 (주) | 오프화이트 | `#E8E8E0` | 완전 흰색 대신 빈티지 느낌 |
-| 텍스트 (부) | Concrete Mid | `#3C3C44` | 보조 정보, 설명 텍스트 |
-| 토큰 잔량 | Neon Cyan (발광) | `#00F5D4` + glow | 최우선 시각 우선순위 |
+| HUD background panel | Concrete Dark 40% transparent | `#1A1A1E99` | Semi-transparent — minimum obstruction of gameplay view |
+| Active button | Neon Cyan | `#00F5D4` | Default interaction color |
+| Danger/warning button | Ad Magenta | `#FF2D7F` | Cancel, danger confirmation |
+| Inactive element | Concrete Mid | `#3C3C44` | Locked features, inactive menu items |
+| Text (primary) | Off-white | `#E8E8E0` | Vintage feel instead of pure white |
+| Text (secondary) | Concrete Mid | `#3C3C44` | Secondary information, description text |
+| Token remaining | Neon Cyan (glow) | `#00F5D4` + glow | Highest visual priority |
 
 ---
 
-### 색맹 안전 점검
+### Color Blindness Safety Check
 
-**Deuteranopia(적녹색맹) 위험 쌍:**
-- `Neon Cyan (#00F5D4)` + `Concrete Mid (#3C3C44)`: 명도 차이 충분 — 비교적 안전
-- `Ad Magenta (#FF2D7F)` + `Vintage Yellow (#F0C040)`: 두 색이 유사 명도의 황갈색으로 붕괴 가능 → 위험
+**Deuteranopia (red-green color blindness) risk pairs:**
+- `Neon Cyan (#00F5D4)` + `Concrete Mid (#3C3C44)`: Sufficient brightness difference — relatively safe
+- `Ad Magenta (#FF2D7F)` + `Vintage Yellow (#F0C040)`: Both colors may collapse into similar-brightness tan → risk
 
-**Protanopia(적색맹) 위험 쌍:**
-- `Ad Magenta (#FF2D7F)` 단독 사용: 적색 성분 손실 시 청회색으로 인식 → VEIL 위협 신호 소실 위험
+**Protanopia (red blindness) risk pairs:**
+- `Ad Magenta (#FF2D7F)` used alone: When red component is lost, perceived as blue-gray → risk of losing VEIL threat signal
 
-**백업 보장 규칙 (모든 색맹 유형 대응):**
+**Backup Guarantee Rules (covering all color blindness types):**
 
-1. **적 탄환:** Ad Magenta 테두리 + 삼각형/다이아몬드 형태 (원형 아이템과 구분). 색만으로 구분하지 않음.
-2. **VEIL 위험 존:** 마젠타 색 + 격자 무늬 패턴 병행. 색 제거 상태에서도 패턴으로 인식.
-3. **토큰 카운터:** Cyan 색 + 원형 배지 + 숫자 표시. 세 가지 중 어느 하나만 보여도 잔량 인식 가능.
-4. **REWIND Core 발동:** 색반전 + 화면 진동(쉐이크 0.3초) + 사운드 큐 병행 (Anti-Pillar #4 대응: Tier 1 CC0 사운드로 구현, 색 신호에만 의존하지 않음).
+1. **Enemy bullets:** Ad Magenta outline + triangle/diamond shape (distinguishes from circular items). Not differentiated by color alone.
+2. **VEIL danger zones:** Magenta color + grid pattern overlay. Recognizable by pattern even when color is removed.
+3. **Token counter:** Cyan color + circular badge + numeric display. Any one of the three alone is sufficient to recognize remaining count.
+4. **REWIND Core activation:** Color inversion + screen shake (0.3 seconds) + sound cue in combination (Anti-Pillar #4 response: implemented with Tier 1 CC0 sounds, not dependent on color signal alone).
 
 ---
 
 ## 5. Character Design Direction
 
-이 섹션은 ECHO와 세 적 아키타입의 시각 설계 기준을 정의하고, 솔로 개발 생산 가능 해상도를 명세한다.
+This section defines the visual design standards for ECHO and the three enemy archetypes, and specifies resolutions achievable in solo development production.
 
-### ECHO — 비주얼 아키타입 (Q5 성별 미결정 적용)
+### ECHO — Visual Archetype (Q5 gender undetermined applied)
 
-**실루엣 및 비율 규칙 (성별 무관, 양쪽 해석에 유효):**
+**Silhouette and proportion rules (gender-neutral, valid for either interpretation):**
 
-| 항목 | 사양 | 근거 |
+| Item | Specification | Rationale |
 |---|---|---|
-| 전체 키 | 스프라이트 48px tall (1080p 기준) | 경비로봇 72px, 드론 16px — 명확한 크기 계층 |
-| 머리:몸:다리 비율 | 1:2:2 | 액션 영웅 비율 — 긴 다리 = 스피드감 |
-| 얼굴 | 전면 마스크/헬멧으로 완전 덮임 | Q5 해결까지 얼굴 표현 없음. 마스크 표면에 REWIND Core 상태 표시등 |
-| 어깨 | 좁고 날카로운 각도 | 드론·경비로봇의 넓은 어깨와 대비 |
-| 등 장치 | REWIND Core (사각형 돌출, 시안 발광) | 실루엣에서 ECHO를 식별하는 고유 특징 |
-| 총기 | 몸통 오른쪽에 명확히 돌출 | 8방향 조준 중에도 방향 인식 가능 |
-| **facing 시각화 (ABA-2 amendment 2026-05-11)** | **`flip_h` 몸체 + 8방향 팔 오버레이** — Contra-style modular cutout: 몸체 스프라이트 1종은 동일 (`char_echo_*`), `Sprite2D.flip_h`로 좌·우 반전; 팔(`char_echo_gunarm_*`)은 8 방향 별도 스프라이트(5 unique + 3 flip mirror)를 facing_direction (`int 0..7 enum`, CCW from East — `player-movement.md` D.4 단일 출처)로 선택 | Option C — `player-movement.md` Visual/Audio Section VA.1 2026-05-10 결정. 솔로 budget: 8 방향 × 2 (L/R) = 16 풀-바디 anim 대신 5 arm unique + 3 flip = **62.5% asset 절감** + Pillar 5 (작은 성공). 팔 오버레이는 몸체 위 z-order overlay; 무기 변경 시 팔만 교체 (Tier 2+) |
-| 포즈 | 기본 이동 시 전경 45도 리닝 | 스피드·목적의식 전달. 직립 배제 |
+| Total height | Sprite 48px tall (at 1080p) | Security Bot 72px, Drone 16px — clear size hierarchy |
+| Head:body:leg ratio | 1:2:2 | Action hero proportions — long legs = sense of speed |
+| Face | Fully covered by front mask/helmet | No facial expression until Q5 resolved. REWIND Core status indicator on mask surface |
+| Shoulders | Narrow and sharply angled | Contrasts with the wide shoulders of drones and Security Bots |
+| Back device | REWIND Core (rectangular protrusion, cyan glow) | Unique feature that identifies ECHO in silhouette |
+| Weapon | Clearly protruding to the right of the body | Direction recognizable even during 8-way aiming |
+| **Facing visualization (ABA-2 amendment 2026-05-11)** | **`flip_h` body + 8-way arm overlay** — Contra-style modular cutout: body sprite 1 variant is the same (`char_echo_*`), left/right mirrored via `Sprite2D.flip_h`; arms (`char_echo_gunarm_*`) are 8 direction separate sprites (5 unique + 3 flip mirror) selected by facing_direction (`int 0..7 enum`, CCW from East — `player-movement.md` D.4 single source of truth) | Option C — `player-movement.md` Visual/Audio Section VA.1 2026-05-10 decision. Solo budget: 8 directions × 2 (L/R) = 16 full-body anims replaced by 5 arm unique + 3 flip = **62.5% asset reduction** + Pillar 5 (small wins). Arm overlay is z-order overlay above body; weapon change replaces arm only (Tier 2+) |
+| Pose | Leaning 45 degrees forward during base movement | Conveys speed and purpose. Upright stance excluded |
 
-**표정/포즈 목표:** ECHO는 마스크로 얼굴 표현이 없다. 감정은 보디랭귀지로만 전달 — 긴장 시 몸 낮춤, 시간 되감기 발동 시 뒤로 순간 플리커, 착지 시 무릎 굽힘 충격 흡수. Monty Python 컷아웃 애니메이션 참조: 정지 자세들의 조합으로 동작 표현.
+**Expression/Pose Goal:** ECHO has no facial expression due to the mask. Emotion is conveyed through body language only — crouching when tense, momentary flicker backward when REWIND activates, knees bending to absorb impact on landing. Reference: Monty Python cutout animation — motion expressed through combinations of static poses.
 
-**Q5 해결 시 아트 업데이트 범위:** 헬멧 실루엣 세부 + 성명 공개 장면 1컷(Tier 3 한정). 스프라이트 시트 자체는 변경 최소화 — 기존 애니메이션 프레임 재사용. 솔로 생산 비용 절감 (Pillar 5).
-
----
-
-### 적 아키타입 — 구분 특징 규칙
-
-**드론 (Drone / VEIL 정찰 유닛)**
-
-| 항목 | 사양 |
-|---|---|
-| 스프라이트 크기 | 16×16px |
-| 색 테마 | 마젠타(`#FF2D7F`) 발광 눈, 다크 회색 몸통 |
-| 고유 특징 | 프로펠러 2-4개 (이동 중 회전), 발광 눈이 ECHO를 추적 |
-| 이동 패턴 시각화 | 지그재그 + 포위 경로 — 이동 예고 없이 방향 전환 |
-| 애니메이션 프레임 | 이동 4프레임, 공격 2프레임 (솔로 생산 절약) |
-
-**경비로봇 (Security Bot / VEIL 지상 유닛)**
-
-| 항목 | 사양 |
-|---|---|
-| 스프라이트 크기 | 72×72px |
-| 색 테마 | ARCA 회색+마젠타 경고 라이트 |
-| 고유 특징 | 트랙 이동, 상체 포탑 독립 회전, ARCA 로고 부착 |
-| 이동 패턴 시각화 | 직선 전진 + 정지 사격 — 패턴 예측 명확 (Pillar 2) |
-| 애니메이션 프레임 | 이동 4프레임, 사격 2프레임, 파괴 3프레임 |
-
-**미니보스 — STRIDER (Tier 1 보스)**
-
-| 항목 | 사양 |
-|---|---|
-| 스프라이트 크기 | 192×128px (보스 전용 씬에서 동적 스케일) |
-| 색 테마 | 다크 메탈 + 마젠타 코어 + 포탑 4개 시안 조준선 |
-| 고유 특징 | 중앙 코어 (파괴 가능 취약점 발광), 드론 방출 포트 좌우, 역삼각형 전체 실루엣 |
-| 보스 패턴 시각화 | 페이즈별 코어 색 변화 (마젠타→주황→빨강) — 체력 단계 색으로 표시 |
-| 환경 스토리텔링 | 몸체에 ARCA 기업 로고 + 시리얼 번호 스티커 인쇄 (콜라주 미학 적용) |
+**Art update scope when Q5 is resolved:** Helmet silhouette detail + 1 identity reveal cut (Tier 3 only). Sprite sheet itself changes minimally — reuse existing animation frames. Reduces solo production cost (Pillar 5).
 
 ---
 
-### LOD (Level of Detail) 철학 — 1080p 게임 카메라 거리
+### Enemy Archetypes — Distinguishing Feature Rules
 
-2D 스프라이트이므로 3D LOD는 적용 없음. 대신 카메라 거리에 따른 **스프라이트 해상도 티어**:
+**Drone (VEIL Reconnaissance Unit)**
 
-| 거리 | 대상 | 해상도 | 상세 수준 |
+| Item | Specification |
+|---|---|
+| Sprite size | 16×16px |
+| Color theme | Magenta (`#FF2D7F`) glowing eyes, dark gray body |
+| Unique feature | 2-4 propellers (rotating during movement), glowing eyes tracking ECHO |
+| Movement pattern visualization | Zigzag + encirclement path — direction changes without movement telegraphing |
+| Animation frames | 4 frames movement, 2 frames attack (solo production economy) |
+
+**Security Bot (VEIL Ground Unit)**
+
+| Item | Specification |
+|---|---|
+| Sprite size | 72×72px |
+| Color theme | ARCA gray + magenta warning lights |
+| Unique feature | Track movement, independent upper turret rotation, ARCA logo attached |
+| Movement pattern visualization | Straight advance + stationary shooting — pattern clearly predictable (Pillar 2) |
+| Animation frames | 4 frames movement, 2 frames firing, 3 frames destruction |
+
+**Mini-Boss — STRIDER (Tier 1 Boss)**
+
+| Item | Specification |
+|---|---|
+| Sprite size | 192×128px (dynamic scale in boss-exclusive scene) |
+| Color theme | Dark metal + magenta core + 4 turret cyan targeting lines |
+| Unique feature | Central core (destructible weak point glow), drone launch ports left and right, inverted triangle full silhouette |
+| Boss pattern visualization | Core color changes per phase (magenta → orange → red) — health stage shown by color |
+| Environmental storytelling | ARCA corporate logo + serial number sticker printed on body (collage aesthetic applied) |
+
+---
+
+### LOD (Level of Detail) Philosophy — 1080p Game Camera Distance
+
+No 3D LOD applies since these are 2D sprites. Instead, **sprite resolution tiers** based on camera distance:
+
+| Distance | Target | Resolution | Detail Level |
 |---|---|---|---|
-| 전경 (화면 내 활성 플레이) | ECHO, 소형 적, 탄환 | 레퍼런스 해상도 (위 사양) | 풀 디테일 + 프레임 애니메이션 |
-| 중경 (같은 룸, 비활성) | 경비로봇 대기 상태 | 동일 스프라이트, 컬러 덤 다운 | 색 채도 -30%, 명도 -15% |
-| 원경 (배경 레이어) | 배경 빌딩 실루엣, 비행 드론 무리 | 16px 이하 도트 실루엣 | 형태만 — 텍스처·라인아트 없음 |
+| Foreground (active in-screen play) | ECHO, small enemies, bullets | Reference resolution (specs above) | Full detail + frame animation |
+| Midground (same room, inactive) | Security Bot idle state | Same sprite, color dumbed down | Color saturation -30%, brightness -15% |
+| Background (background layer) | Background building silhouettes, drone swarms | 16px or smaller dot silhouettes | Shape only — no texture or line-art |
 
 ---
 
 ## 6. Environment Design Language
 
-이 섹션은 NEXUS 메가시티의 공간 언어와 환경 스토리텔링 어휘를 정의한다.
+This section defines the spatial language and environmental storytelling vocabulary of the NEXUS megacity.
 
-### NEXUS 메가시티 건축 양식
+### NEXUS Megacity Architectural Style
 
-**핵심 스타일: 기업 브루탈리즘 (Corporate Brutalism) + 광고 오버레이 + 도시 부패**
+**Core Style: Corporate Brutalism + Advertisement Overlay + Urban Decay**
 
-NEXUS의 모든 건물은 ARCA가 설계한 효율 최적화 구조물이다 — 콘크리트 직선, 반복 격자, 인간적 디테일 배제. 그러나 그 위에 두 개의 레이어가 덧붙는다:
+Every building in NEXUS is an efficiency-optimized structure designed by ARCA — concrete straight lines, repeating grids, no human detail. However, two layers are added on top:
 
-1. **ARCA 광고 레이어**: VEIL 최적화 알고리즘이 최대 효율로 배치한 전광판·홀로그램 광고. 마젠타+흰색 팔레트. 반짝이고 새것 같다 — 이것이 "현재 지배"다.
-2. **인간 부패 레이어**: ARCA 광고 위에 뿌려진 낙서, 빛바랜 종이, Sigma Unit 기념 그래피티, 찢긴 포스터. 노랑·갈색 팔레트. 낡고 불규칙하다 — 이것이 "인간 저항"이다.
+1. **ARCA Advertisement Layer**: Digital billboards and hologram ads placed at maximum efficiency by the VEIL optimization algorithm. Magenta + white palette. Bright and new-looking — this is "present domination."
+2. **Human Decay Layer**: Graffiti sprayed over ARCA ads, faded paper, Sigma Unit memorial graffiti, torn posters. Yellow and brown palette. Old and irregular — this is "human resistance."
 
-이 두 레이어의 갈등이 Stage 1 (옥상)의 환경 내러티브다.
-
----
-
-### 텍스처 철학 — 콜라주 레이어 구조
-
-모든 환경 오브젝트는 3 레이어 합성으로 구성:
-
-**레이어 1 (Base): 사진 질감**
-- 실제 콘크리트/금속 사진 또는 AI 생성 스톡 (Q2: 사진 출처 결정 전까지 회색조 플레이스홀더 사용)
-- 해상도: 128×128px 타일, 리피트 허용
-- 필터: Godot `TextureFilter.NEAREST` — 픽셀 보간 없음, 콜라주 경계선 유지
-
-**레이어 2 (Character/Object): 손드로잉 라인아트**
-- 검은 선(stroke 2-4px) 벡터 스타일 → 레스터 출력
-- ECHO, 적, 소품 오브젝트가 모두 이 레이어
-- 사진 질감 위에 얹혀 "잡지 일러스트가 사진 위에 붙여넣어진" 느낌
-
-**레이어 3 (Collage Detail): 잡지 컷아웃 조각**
-- 광고 타이포그래피 파편, 기하도형 컬러 블럭, VEIL/ARCA 브랜딩 아이콘
-- Stage 1 옥상: ARCA 광고판 + Sigma Unit 그래피티 태그 포함
-- 이 레이어만 교체하면 스테이지 분위기 전환 가능 (솔로 생산 효율 — Pillar 5)
+The conflict between these two layers is the environmental narrative of Stage 1 (rooftop).
 
 ---
 
-### 소품 밀도 규칙 (Prop Density Rules)
+### Texture Philosophy — Collage Layer Structure
 
-| 스테이지 타입 | 밀도 | 이유 | 예시 |
+All environment objects are composed as 3-layer composites:
+
+**Layer 1 (Base): Photo Texture**
+- Real concrete/metal photography or AI-generated stock (Q2: use grayscale placeholders until photo source is decided)
+- Resolution: 128×128px tiles, repeat allowed
+- Filter: Godot `TextureFilter.NEAREST` — no pixel interpolation, maintains collage edges
+
+**Layer 2 (Character/Object): Hand-Drawn Line-Art**
+- Black line (stroke 2-4px) vector style → raster output
+- ECHO, enemies, and prop objects all on this layer
+- Placed over photo texture — the feel of "a magazine illustration pasted onto a photo"
+
+**Layer 3 (Collage Detail): Magazine Cutout Fragments**
+- Advertisement typography fragments, geometric color blocks, VEIL/ARCA branding icons
+- Stage 1 rooftop: includes ARCA billboard + Sigma Unit graffiti tags
+- Replacing only this layer allows changing the stage atmosphere (solo production efficiency — Pillar 5)
+
+---
+
+### Prop Density Rules
+
+| Stage Type | Density | Reason | Examples |
 |---|---|---|---|
-| **옥상 (Tier 1)** | 낮음 (화면당 소품 5-8개) | 이동 경로 명확화, 실루엣 배경 없애기 | 물탱크, VEIL 안테나, 광고판 프레임 |
-| **데이터센터 (Tier 2)** | 높음 (화면당 소품 15-20개) | 탐색 복잡성, 숨겨진 정보 | 서버랙, 냉각 파이프, 터미널, 데이터 단편 |
-| **마그레브 (Tier 2)** | 중간 + 이동 (화면 스크롤) | 속도감, 통과하는 느낌 | 열차 칸, 터널 조명, 도시 파노라마 |
-| **기업 본사 (Tier 3)** | 높음 + 위계 | 권력의 장소, 장식 → 적의 영역 | 임원 가구, ARCA 트로피, 감시 화면 |
-| **궤도 (Tier 3)** | 최저 (화면당 소품 2-3개) | 고립·단절·최후 결전 | 서버 클러스터 유닛, 우주 배경 |
+| **Rooftop (Tier 1)** | Low (5-8 props per screen) | Clarify movement paths, remove silhouette backgrounds | Water tank, VEIL antenna, billboard frame |
+| **Data Center (Tier 2)** | High (15-20 props per screen) | Exploration complexity, hidden information | Server rack, cooling pipes, terminal, data fragments |
+| **Maglev (Tier 2)** | Medium + motion (screen scroll) | Sense of speed, passing-through feel | Train cars, tunnel lighting, city panorama |
+| **Corporate HQ (Tier 3)** | High + hierarchy | Place of power, decoration → enemy territory | Executive furniture, ARCA trophies, surveillance screens |
+| **Orbital (Tier 3)** | Minimum (2-3 props per screen) | Isolation, disconnection, final battle | Server cluster units, space background |
 
 ---
 
-### 환경 스토리텔링 큐 (Story Spine 연동)
+### Environmental Storytelling Cues (Story Spine Integration)
 
-모든 씬에 텍스트 없이 이야기를 전달하는 시각 단서:
+Visual cues that tell the story without text in every scene:
 
-**VEIL 감시 아이콘 (반복 모티프):**
-- 스타일: 육각형 안에 눈동자 없는 눈 형태 (콜라주 잡지 컷 스타일)
-- 배치: 모든 스테이지 배경 건물에 최소 2-3개. 카메라가 가까워질수록 더 선명해짐
-- 의미 전달: "당신은 항상 감시받고 있다"
+**VEIL Surveillance Icon (repeating motif):**
+- Style: Eye form without pupil inside a hexagon (collage magazine cut style)
+- Placement: Minimum 2-3 on background buildings in every stage. Becomes clearer as camera gets closer
+- Meaning conveyed: "You are always being watched"
 
-**ARCA 브랜딩 부패 (진행 상황 시각화):**
-- Stage 1: ARCA 로고 완전하고 빛남 (지배 정점)
-- Stage 2-3: 로고에 낙서·찢김 중첩
-- Stage 4-5: 로고가 ECHO의 REWIND Core 마크로 덮어씌워짐
-- 솔로 개발 적용: 동일 광고판 에셋에 레이어만 교체하는 방식으로 재사용
+**ARCA Branding Decay (progress visualization):**
+- Stage 1: ARCA logo complete and shining (peak domination)
+- Stage 2-3: Graffiti and tears layered over logo
+- Stage 4-5: Logo overwritten by ECHO's REWIND Core mark
+- Solo development application: Reuse the same billboard asset by replacing only the layer
 
-**Sigma Unit 기념 그래피티 (인간 저항 흔적):**
-- 스타일: 빈티지 노랑 스텐실 스프레이 → SIGMA Σ 기호
-- Stage 1 옥상에만 (ECHO 귀환 지점에서 발견)
-- 크기: 배경에서 지나쳐 보이는 작은 디테일 — 주의 깊은 플레이어만 인식
+**Sigma Unit Memorial Graffiti (traces of human resistance):**
+- Style: Vintage yellow stencil spray → SIGMA Σ symbol
+- Stage 1 rooftop only (found at ECHO's return point)
+- Size: Small detail passing in the background — only attentive players notice
 
-**VEIL 대사 타이포그래피 환경 배치:**
-- VEIL의 확률 대사 파편이 광고판에 삽입됨: "생존 확률: 0.003%", "최적화 완료"
-- 폰트: 모노스페이스 터미널 스타일 (UI 폰트와 동일 계열) — VEIL이 도시 광고를 장악한 암시
+**VEIL Dialogue Typography Environment Placement:**
+- VEIL probability dialogue fragments inserted in billboards: "Survival probability: 0.003%", "Optimization complete"
+- Font: Monospace terminal style (same family as UI font) — implies VEIL has taken over the city's advertising
 
-**REWIND Core 에너지 잔재 (게임플레이 연동):**
-- 체크포인트 위치에 시안 발광 균열 → "REWIND Core가 여기서 방전됐다가 재충전됨" 서사
-- 보스 격파 후 해당 공간에 시안 에너지 파편 남김
+**REWIND Core Energy Residue (gameplay integration):**
+- Cyan glowing cracks at checkpoint locations → "REWIND Core discharged here and recharged" narrative
+- Cyan energy fragments remain in the space after defeating the boss
 
-### 카메라 뷰포트 컨트랙트 (Camera Viewport Contract — Camera System #3 2026-05-12)
+### Camera Viewport Contract (Camera System #3 2026-05-12)
 
-본 서브섹션은 카메라 시스템(Camera System #3)이 NEXUS 메가시티 환경 디자인에 부과하는 시각 컨트랙트를 명시한다. art-bible Approved → Camera #3 Approved RR1 PASS 양방향 정합 (Camera #3 GDD VA.6 + F.1 row #9 reciprocal).
+This subsection specifies the visual contract that the camera system (Camera System #3) imposes on NEXUS megacity environment design. art-bible Approved → Camera #3 Approved RR1 PASS bidirectional consistency (Camera #3 GDD VA.6 + F.1 row #9 reciprocal).
 
-**스크린쉐이크 변위 모델 (uniform displacement):**
-- 카메라 쉐이크는 `camera.offset` (post-smoothing 채널)로 viewport 전체를 uniform 이동시킨다 — Base photo / Mid line-art / Top collage-detail 3-레이어가 모두 같은 vector로 함께 이동하므로 torn-paper edge 사이 distance가 0 픽셀 변화한다.
-- 결과: 흔들려도 콜라주 합성은 분해되지 않는다 (Principle A 명확성 우선 콜라주 정합).
-- 구현 측: per-element 독립 움직임 패턴 (예: 각 레이어가 독립 parallax 또는 wobble shader 추가)은 본 컨트랙트와 양립 불가 — 채택 시 Camera #3 GDD revision 필요.
+**Screen shake displacement model (uniform displacement):**
+- Camera shake moves the entire viewport uniformly via `camera.offset` (post-smoothing channel) — Base photo / Mid line-art / Top collage-detail 3 layers all move together with the same vector, so the distance between torn-paper edges changes by 0 pixels.
+- Result: Even when shaking, the collage composite does not decompose (Principle A Clarity-First Collage consistency).
+- Implementation note: Per-element independent movement patterns (e.g., each layer having independent parallax or wobble shader) are incompatible with this contract — adoption requires Camera #3 GDD revision.
 
-**Readable Third (가독 영역):**
-- Tier 1 viewport 1280×720 기준 **수평 중심 ±213 px** (= viewport_width / 6) 영역을 "readable third"로 정의.
-- Camera 최대 쉐이크 변위는 `MAX_SHAKE_PX = 12` (글로벌 length clamp; camera.md G.1.2). 12 px ≪ 213 px (~17× 안쪽 마진)이므로 boss silhouette 등 게임플레이 핵심 요소가 readable third 안에 머무는 한 쉐이크 피크에서도 가독성 보장.
-- **소품 배치 룰**: 게임플레이상 *중요한* 콜라주 요소 (보스 실루엣, 도약 위협 hazard, REWIND Core 잔재 같은 서사적 큐)는 12 px MAX_SHAKE_PX 변위 가정 하에 readable third 외부에 *단독 배치되어서는 안 된다*. 외부 배치 자체는 가능하나 readable third 내부에 paired hint 또는 alternative read path가 함께 있어야 한다.
+**Readable Third (readable zone):**
+- Define the **horizontal center ±213 px** (= viewport_width / 6) area as the "readable third" for Tier 1 viewport 1280×720.
+- Camera maximum shake displacement is `MAX_SHAKE_PX = 12` (global length clamp; camera.md G.1.2). 12 px ≪ 213 px (~17× inner margin), so readability is guaranteed even at shake peak as long as key gameplay elements like boss silhouettes remain within the readable third.
+- **Prop placement rule**: Gameplay-*critical* collage elements (boss silhouette, jump-threat hazards, REWIND Core residue narrative cues) must *not be placed alone outside the readable third* assuming 12 px MAX_SHAKE_PX displacement. Placement outside is possible, but must be accompanied by a paired hint or alternative read path inside the readable third.
 
-**버티컬 lookahead 비율 (asymmetric):**
-- Camera는 점프 시 ECHO 머리 위 20 px 미리보기, 낙하 시 아래 52 px 미리보기 (2.6× 비대칭 — 착지 위협이 점프 정점 위협보다 빈번한 run-and-gun 페이싱 정합).
-- **환경 디자인 의무**: 착지 지점 hazard (스파이크, 바닥 적, 추락 트랩)는 ECHO 발 위치 기준 viewport 하단 52 px 영역 안에서 시각적으로 식별 가능해야 한다 (Pillar 2 — "운으로 죽지 않음" 정합). hazard sprite의 silhouette gap (Section 3 shape-language)이 콜라주 배경과 충분한 contrast를 유지하도록 prop density (D.4 prop density rules)와 조율.
+**Vertical lookahead ratio (asymmetric):**
+- Camera previews 20 px above ECHO's head on jump, 52 px below on fall (2.6× asymmetry — landing threats are more frequent than jump-apex threats in run-and-gun pacing).
+- **Environment design obligation**: Landing hazards (spikes, floor enemies, fall traps) must be visually identifiable within the viewport bottom 52 px area relative to ECHO's foot position (Pillar 2 — "don't die by luck" consistency). Maintain sufficient contrast between hazard sprite silhouette gap (Section 3 shape-language) and collage background, coordinating with prop density (D.4 prop density rules).
 
-**Tier 2 zoom 범위 (deferred, art-direction intent locked now):**
-- Tier 1: zoom = 1.0 고정 (DEC-CAM-A4).
-- Tier 2 boss arena 도입 시 활성화 — `0.85..1.25×` 범위 사전 lock (camera.md VA.2):
-  - **0.85× min** (boss arena pull-out): ECHO 48 px sprite × 0.85 = 41 px apparent (Section 3 ≥32 px floor 통과)
-  - **1.25× max** (boss face push-in): STRIDER 192 px sprite × 1.25 = viewport 18.75% — readable third 안쪽
-- **Hard floor invariant** (Tier 2 도입 시 Camera #3 GDD에 새 INV로 등록): "any Tier 2 zoom level에서 ECHO 렌더된 픽셀 높이 ≥ 32 px apparent" (Section 3 thumbnail test 정합 — 720p Steam Deck native 검증).
-- **Zoom transition 곡선**: 하드 cut 금지 — tween 사용 (Pillar 3 — 콜라주 합성이 새 frame에 "숨을 쉬며" 진입; 정확한 곡선/속도는 Tier 2 Boss Pattern #11 GDD revision 시 결정).
+**Tier 2 zoom range (deferred, art-direction intent locked now):**
+- Tier 1: zoom = 1.0 fixed (DEC-CAM-A4).
+- Activated when Tier 2 boss arena is introduced — `0.85..1.25×` range pre-locked (camera.md VA.2):
+  - **0.85× min** (boss arena pull-out): ECHO 48 px sprite × 0.85 = 41 px apparent (Section 3 ≥32 px floor passed)
+  - **1.25× max** (boss face push-in): STRIDER 192 px sprite × 1.25 = viewport 18.75% — inside readable third
+- **Hard floor invariant** (register as new INV in Camera #3 GDD when Tier 2 is introduced): "ECHO rendered pixel height ≥ 32 px apparent at any Tier 2 zoom level" (Section 3 thumbnail test consistency — verified at 720p Steam Deck native).
+- **Zoom transition curve**: Hard cut forbidden — use tween (Pillar 3 — collage composite "breathes" into the new frame; exact curve/speed decided at Tier 2 Boss Pattern #11 GDD revision).
 
-**Cross-doc 참조**:
-- camera.md VA.6 (Cross-doc Art-Bible Reciprocal — 본 amendment의 source spec)
-- camera.md F.1 row #9 (art-bible.md SOFT dependency — Pillar 3 콜라주 시그너처 보존)
-- camera.md F.5 art-bible reciprocal row (Phase 5 cross-doc 배치)
+**Cross-doc references**:
+- camera.md VA.6 (Cross-doc Art-Bible Reciprocal — source spec for this amendment)
+- camera.md F.1 row #9 (art-bible.md SOFT dependency — Pillar 3 collage signature preservation)
+- camera.md F.5 art-bible reciprocal row (Phase 5 cross-doc placement)
 
 ---
 
 ## 7. UI/HUD Visual Direction
 
-이 섹션은 HUD와 메뉴 시스템의 시각 설계 기준을 정의하고, 게임패드 기본 조작에 최적화된 내비게이션 시각화를 명세한다.
+This section defines the visual design standards for the HUD and menu system, and specifies the navigation visualization optimized for gamepad-primary controls.
 
-### 다이어제틱 vs. 스크린스페이스 분리
+### Diegetic vs. Screen-Space Separation
 
-**권장: 혼합형 (Hybrid) — 다이어제틱 70% / 스크린스페이스 30%**
+**Recommended: Hybrid — Diegetic 70% / Screen-Space 30%**
 
-근거: Echo는 1히트 즉사 게임이다. 체력 바 같은 전통 HUD가 없다 — ECHO는 한 번 맞으면 죽는다. 대신 가장 중요한 정보(REWIND 토큰 잔량)만 스크린스페이스에 유지하고, 나머지는 월드에 임베드한다.
+Rationale: Echo is a one-hit-kill game. There is no traditional HUD like a health bar — ECHO dies from one hit. Instead, only the most important information (REWIND token count) is kept in screen-space, and the rest is embedded in the world.
 
-| UI 요소 | 분류 | 배치 | 이유 |
+| UI Element | Type | Placement | Reason |
 |---|---|---|---|
-| **REWIND 토큰 카운터** | 스크린스페이스 | 좌상단 고정 | 0.2초 글랜스 필수 — Pillar 2 핵심. 다이어제틱으로 배치하면 시야 밖 가능성 |
-| **체력 시스템** | 다이어제틱 없음 | N/A | 1히트 즉사 = 체력 바 없음 |
-| **무기 타입 표시** | 스크린스페이스 | 우하단 소형 아이콘 | 픽업 무기 종류 인식 필요 |
-| **VEIL 경보 레벨** | 다이어제틱 | 배경 광고판 색 변화 | 감시 강도를 환경으로 표현 — Tier 2+ |
-| **보스 체력** | 스크린스페이스 | 화면 하단 중앙 | 보스 전투에서만 등장, 세그먼트 바 |
-| **일시정지 메뉴** | 스크린스페이스 | 전체 오버레이 | 탐색 명확성 우선 |
+| **REWIND Token Counter** | Screen-space | Fixed upper-left | 0.2-second glance required — Pillar 2 core. Diegetic placement risks going off-screen |
+| **Health System** | No diegetic | N/A | One-hit-kill = no health bar |
+| **Weapon Type Display** | Screen-space | Small icon lower-right | Need to recognize pickup weapon type |
+| **VEIL Alert Level** | Diegetic | Background billboard color change | Express surveillance intensity through environment — Tier 2+ |
+| **Boss Phase Pulse / Boss Title Flash** | Screen-space | Upper center or boss-safe frame | Appears only during boss fights; phase/presence notification only, no HP bar or hit counter |
+| **Pause Menu** | Screen-space | Full overlay | Navigation clarity first |
 
 ---
 
-### 타이포그래피
+### Typography
 
-**폰트 성격 요구사항:**
-- 영문: 모노스페이스 (터미널·데이터 느낌) + 잡지 컷아웃 디스플레이 폰트 병용
-- 한국어: 고딕 계열 (명조 금지 — 픽셀 밀도에서 가독성 열세)
+**Font Character Requirements:**
+- English: Monospace (terminal/data feel) + magazine cutout display font in combination
+- Korean: Gothic family (no Myungjo — inferior readability at pixel density)
 
-**Candidate A — 모노스페이스 터미널 계열 (권장):**
-- 대표 예: `IBM Plex Mono`, `Fira Code`, `JetBrains Mono`
-- VEIL 대사, HUD 숫자, 데이터 텍스트에 사용
-- 이유: VEIL이 도시 전체 터미널을 장악했다는 설정과 정합. 콜라주 미학에서 타자기 감각 제공.
+**Candidate A — Monospace Terminal Family (recommended):**
+- Representative examples: `IBM Plex Mono`, `Fira Code`, `JetBrains Mono`
+- Used for VEIL dialogue, HUD numbers, data text
+- Rationale: Consistent with the setting where VEIL controls all city terminals. Provides typewriter feel in collage aesthetic.
 
-**Candidate B — 디스플레이 컷아웃 산세리프:**
-- 대표 예: `Bebas Neue`, `Anton`, 또는 핸드레터링 스캔 폰트
-- 타이틀, 챕터 제목, 보스 이름에 사용
-- 이유: 1990s 잡지 헤드라인 미학. Hannah Höch 다다 콜라주 타이포그래피 직접 차용.
+**Candidate B — Display Cutout Sans-Serif:**
+- Representative examples: `Bebas Neue`, `Anton`, or hand-lettering scan font
+- Used for titles, chapter headings, boss names
+- Rationale: 1990s magazine headline aesthetic. Direct reference to Hannah Höch Dada collage typography.
 
-**권장 조합:** Candidate A(HUD·본문) + Candidate B(타이틀·강조) 혼용. 단일 폰트로 두 역할을 커버하지 않는다.
+**Recommended combination:** Candidate A (HUD/body text) + Candidate B (title/emphasis) mixed. Do not cover both roles with a single font.
 
-**Q: 한국어 폰트 선택 — 나눔스퀘어 계열 vs Noto Sans KR vs 시스템 폰트?** Tier 1에서는 Noto Sans KR 기본 사용, Tier 3 출시 시 정식 라이선스 폰트 결정.
-
----
-
-### 아이콘 스타일
-
-**스타일: 굵은 선 플랫 드로잉 (Outlined Flat) — 사진 텍스처 없음**
-
-근거: Pillar 2 — 0.2초 글랜스. 아이콘은 형태 인식 우선. 콜라주 텍스처를 아이콘에 넣으면 식별 속도 저하.
-
-- 선 굵기: 3px at 1080p (2px at 720p)
-- 모서리: 컷아웃 스타일 (불규칙 절단, 완전 라운드 금지)
-- 색: 시안(플레이어 관련) / 마젠타(위협·비활성) / 노랑(수집) 세 가지만
-
-**REWIND 토큰 아이콘 상세:**
-- 형태: 역삼각형 내 원 (REWIND 방향성 + 에너지 수렴 표현)
-- 활성: 시안 발광 + 내부 채움
-- 소모됨: 회색 테두리만 (Concrete Mid)
-- 크기: 32×32px per token, 3개 수평 나열
+**Q: Korean font selection — Nanum Square family vs Noto Sans KR vs system font?** Use Noto Sans KR as default for Tier 1, decide official licensed font at Tier 3 release.
 
 ---
 
-### UI 애니메이션 느낌
+### Icon Style
 
-- **진입 애니메이션:** 컷인 (fade 없음) — 콜라주 미학. 사진이 화면에 떨어지는 느낌
-- **전환:** 글리치 플리커 1프레임 → 컷. 부드러운 크로스페이드 금지 (사실주의 소프트웨어 느낌)
-- **호버/포커스 피드백:** 선 굵기 증가 + 시안 하이라이트. 크기 변화 없음 (레이아웃 이동 금지)
-- **선택 확인:** 0.1초 색 플래시 + 사운드 큐
+**Style: Bold Line Flat Drawing (Outlined Flat) — No photo texture**
+
+Rationale: Pillar 2 — 0.2-second glance. Icons prioritize shape recognition. Adding collage texture to icons reduces identification speed.
+
+- Line weight: 3px at 1080p (2px at 720p)
+- Corners: Cutout style (irregular cuts, no full rounds)
+- Colors: Only three — cyan (player-related) / magenta (threat/inactive) / yellow (collectible)
+
+**REWIND Token Icon Detail:**
+- Shape: Circle inside inverted triangle (expresses REWIND directionality + energy convergence)
+- Active: Cyan glow + filled interior
+- Spent: Gray outline only (Concrete Mid)
+- Size: 32×32px per token, 3 arranged horizontally
 
 ---
 
-### 게임패드 내비게이션 시각화 (Gamepad Primary — Anti-Pillar #5 준수)
+### UI Animation Feel
 
-D-패드 방향성이 명확해야 한다. 메뉴에서 포커스 이동은 항상 방향이 보여야 한다.
+- **Entry animation:** Cut-in (no fade) — collage aesthetic. The feel of a photo dropping onto the screen
+- **Transition:** Glitch flicker 1 frame → cut. No smooth crossfade (feels like realism software)
+- **Hover/focus feedback:** Line weight increase + cyan highlight. No size change (no layout shift)
+- **Selection confirmation:** 0.1-second color flash + sound cue
 
-- **포커스 표시:** 활성 항목 좌측에 시안 삼각형 포인터 (커서 스타일)
-- **방향 이동 피드백:** 이동 방향으로 0.05초 슬라이드 (방향성 인식)
-- **화면 내 순환:** 마지막 항목에서 아래 누르면 첫 항목으로 — 시각적으로 화면 가장자리 wrap 표시
-- **토큰 카운터 게임패드 글랜스 테스트:** 실제 패드 쥔 상태에서 엄지로 플레이하며 토큰 잔량을 0.2초 안에 인식할 수 있는가? — Tier 1 플레이테스트 필수 검증 항목
+---
+
+### Gamepad Navigation Visualization (Gamepad Primary — Anti-Pillar #5 compliance)
+
+D-pad directionality must be clear. Focus movement in menus must always show direction.
+
+- **Focus indicator:** Cyan triangle pointer to the left of the active item (cursor style)
+- **Directional movement feedback:** 0.05-second slide in movement direction (directional awareness)
+- **On-screen cycling:** Pressing down on the last item goes to the first item — visually shows screen-edge wrap
+- **Token counter gamepad glance test:** While playing with thumbs holding the actual pad, can you recognize the token count within 0.2 seconds? — Required verification item for Tier 1 playtesting
 
 ---
 
 ## 8. Asset Standards
 
-이 섹션은 솔로 개발자 생산 가능한 범위 내에서 Godot 4.6 파이프라인에 최적화된 에셋 규격을 정의한다. 모든 수치는 60fps / 500 draw call / 1.5GB 메모리 제약을 준수한다.
+This section defines asset specifications optimized for the Godot 4.6 pipeline within the range achievable by a solo developer. All values comply with the 60fps / 500 draw call / 1.5GB memory constraints.
 
-### 파일 포맷
+### File Formats
 
-| 에셋 유형 | 포맷 | 이유 |
+| Asset Type | Format | Reason |
 |---|---|---|
-| 스프라이트 (캐릭터·적) | PNG (투명 지원) | 알파 채널 필수 |
-| UI 아이콘 | PNG 또는 SVG → 런타임 레스터화 | 해상도 독립 (다중 해상도 대응) |
-| 환경 타일 | PNG 아틀라스 | 드로우 콜 절감 |
-| 패럴랙스 배경 | PNG (레이어별) | 레이어 분리 compositing |
-| VFX 파티클 | PNG 스프라이트 시트 | Godot GPUParticles2D 호환 |
-| 폰트 | TTF/OTF → Godot import | 런타임 bitmap 변환 |
-| 오디오 (Tier 1) | OGG Vorbis (CC0 플레이스홀더) | Godot 2D 기본 포맷, 스트리밍 지원 |
+| Sprites (characters/enemies) | PNG (transparency support) | Alpha channel required |
+| UI icons | PNG or SVG → runtime rasterization | Resolution-independent (multi-resolution support) |
+| Environment tiles | PNG atlas | Draw call reduction |
+| Parallax backgrounds | PNG (per layer) | Layer-separated compositing |
+| VFX particles | PNG sprite sheet | Godot GPUParticles2D compatible |
+| Fonts | TTF/OTF → Godot import | Runtime bitmap conversion |
+| Audio (Tier 1) | OGG Vorbis (CC0 placeholder) | Godot 2D default format, streaming support |
 
 ---
 
-### 네이밍 컨벤션
+### Naming Convention
 
 `[category]_[name]_[variant]_[size].[ext]`
 
-| 카테고리 | 예시 |
+| Category | Examples |
 |---|---|
-| 캐릭터 | `char_echo_idle_01.png`, `char_echo_run_03.png` |
-| 적 | `char_drone_fly_01.png`, `char_secbot_idle_01.png`, `char_strider_phase2_01.png` |
-| 환경 타일 | `env_rooftop_concrete_large.png`, `env_rooftop_adboard_small.png` |
-| 패럴랙스 | `env_bg_nexus_skyline_large.png`, `env_bg_veil_drone_swarm_medium.png` |
-| UI | `ui_token_active_small.png`, `ui_btn_primary_hover.png`, `ui_boss_hp_bar_large.png` |
+| Characters | `char_echo_idle_01.png`, `char_echo_run_03.png` |
+| Enemies | `char_drone_fly_01.png`, `char_secbot_idle_01.png`, `char_strider_phase2_01.png` |
+| Environment tiles | `env_rooftop_concrete_large.png`, `env_rooftop_adboard_small.png` |
+| Parallax | `env_bg_nexus_skyline_large.png`, `env_bg_veil_drone_swarm_medium.png` |
+| UI | `ui_token_active_small.png`, `ui_btn_primary_hover.png`, `ui_boss_phase_pulse_large.png` |
 | VFX | `vfx_rewind_glitch_loop_small.png`, `vfx_bullet_impact_small.png` |
-| 콜라주 조각 | `col_arca_logo_decay_medium.png`, `col_veil_icon_graffiti_small.png` |
+| Collage fragments | `col_arca_logo_decay_medium.png`, `col_veil_icon_graffiti_small.png` |
 
-GDScript 파일 네이밍과 연동: `char_echo_*` 에셋은 `echo_controller.gd` 로드.
+GDScript file naming integration: `char_echo_*` assets are loaded by `echo_controller.gd`.
 
 ---
 
-### 텍스처 해상도 티어
+### Texture Resolution Tiers
 
-| 에셋 유형 | 기본 해상도 | 비고 |
+| Asset Type | Base Resolution | Notes |
 |---|---|---|
-| ECHO 스프라이트 (1프레임) | 48×96px | 1080p 기준 화면 대비 비율 유지 |
-| 드론 스프라이트 | 16×16px | 소형, 화면 다수 동시 등장 |
-| 경비로봇 스프라이트 | 72×72px | 대형, 화면 최대 2-3개 |
-| STRIDER 보스 스프라이트 | 192×128px | 보스 전용, 단일 인스턴스 |
-| 환경 타일 (기본) | 128×128px | 4×4 격자로 화면 커버 |
-| 패럴랙스 배경 | 1920×360px (레이어당) | 3레이어 × 360px height |
-| UI 아이콘 | 64×64px (최대) | SVG 우선 시 레스터 백업 |
-| 콜라주 사진 조각 | 256×256px 이하 | 초과 시 아틀라스에서 제외 |
+| ECHO sprite (1 frame) | 48×96px | Maintain screen ratio at 1080p |
+| Drone sprite | 16×16px | Small, many on screen simultaneously |
+| Security Bot sprite | 72×72px | Large, maximum 2-3 on screen |
+| STRIDER boss sprite | 192×128px | Boss-exclusive, single instance |
+| Environment tile (base) | 128×128px | Covers screen in 4×4 grid |
+| Parallax background | 1920×360px (per layer) | 3 layers × 360px height |
+| UI icons | 64×64px (max) | Raster backup if SVG preferred |
+| Collage photo fragments | 256×256px or smaller | Excluded from atlas if exceeded |
 
 ---
 
-### 아틀라스 예산 (스테이지당)
+### Atlas Budget (per stage)
 
-**Tier 1 (Stage 1 옥상 한정):**
+**Tier 1 (Stage 1 Rooftop only):**
 
-| 아틀라스 | 내용 | 크기 |
+| Atlas | Contents | Size |
 |---|---|---|
-| `atlas_chars_tier1.png` | ECHO + 드론 + 경비로봇 + STRIDER | 512×512px |
-| `atlas_env_rooftop.png` | 옥상 타일 세트 전체 | 512×512px |
-| `atlas_ui.png` | HUD + 메뉴 아이콘 전체 | 256×256px |
-| `atlas_vfx_tier1.png` | REWIND 글리치 + 탄환 임팩트 | 256×256px |
-| `atlas_collage_stage1.png` | 콜라주 조각 (ARCA 광고, VEIL 아이콘, Sigma 그래피티) | 512×512px |
+| `atlas_chars_tier1.png` | ECHO + Drone + Security Bot + STRIDER | 512×512px |
+| `atlas_env_rooftop.png` | Full rooftop tile set | 512×512px |
+| `atlas_ui.png` | Full HUD + menu icons | 256×256px |
+| `atlas_vfx_tier1.png` | REWIND glitch + bullet impact | 256×256px |
+| `atlas_collage_stage1.png` | Collage fragments (ARCA ads, VEIL icons, Sigma graffiti) | 512×512px |
 
-**총 Tier 1 아틀라스 메모리: 약 3.5MB (비압축 기준)**
-512×512 RGBA = 1MB × 2개 + 256×256 RGBA = 0.25MB × 3개 = 2.75MB. 여유 있음.
+**Total Tier 1 atlas memory: approx. 3.5MB (uncompressed)**
+512×512 RGBA = 1MB × 2 + 256×256 RGBA = 0.25MB × 3 = 2.75MB. Sufficient headroom.
 
 ---
 
-### Godot 4.6 임포트 설정 권장
+### Godot 4.6 Import Settings Recommendation
 
 ```
-# 스프라이트 (캐릭터/UI):
-filter = TextureFilter.NEAREST        # 픽셀 보간 없음 — 콜라주 경계선 유지
+# Sprites (characters/UI):
+filter = TextureFilter.NEAREST        # No pixel interpolation — maintains collage edges
 repeat = TextureRepeat.DISABLED
-mipmaps/generate = false              # 2D 고정 카메라 — 밉맵 불필요
+mipmaps/generate = false              # Fixed 2D camera — mipmaps unnecessary
 
-# 환경 타일 (리피트 필요):
+# Environment tiles (repeat needed):
 filter = TextureFilter.NEAREST
 repeat = TextureRepeat.ENABLED
 mipmaps/generate = false
 
-# 패럴랙스 배경:
-filter = TextureFilter.LINEAR         # 스크롤 시 부드러운 샘플링
+# Parallax backgrounds:
+filter = TextureFilter.LINEAR         # Smooth sampling during scroll
 repeat = TextureRepeat.ENABLED
 mipmaps/generate = false
 
-# 콜라주 사진 조각:
-filter = TextureFilter.LINEAR         # 사진 텍스처는 선형 필터로 자연스럽게
+# Collage photo fragments:
+filter = TextureFilter.LINEAR         # Natural look with linear filter for photo textures
 repeat = TextureRepeat.DISABLED
 mipmaps/generate = false
 ```
 
 ---
 
-### 드로우 콜 예산 배분 (총 ≤500)
+### Draw Call Budget Allocation (total ≤500)
 
-| 카테고리 | 예산 | 산정 근거 |
+| Category | Budget | Calculation Basis |
 |---|---|---|
-| 플레이어 + 적 | 80 | ECHO(1) + 드론 최대 8(8) + 경비로봇 최대 3(3) + STRIDER(1) + 탄환 최대 20(20) + 히트이펙트 최대 8(8) → 아틀라스 배칭 적용 후 약 80 |
-| 환경 타일맵 | 100 | Godot TileMap 배칭. 전경·중경·후경 레이어 3개 × 타일 약 30개 = 약 90-100 |
-| 패럴랙스 배경 | 50 | 3레이어 × 배경당 복수 메시 = 약 40-50 |
-| 콜라주 레이어 | 80 | 스테이지당 콜라주 조각 20-30개, 아틀라스 배칭 시 약 60-80 |
-| VFX | 100 | GPUParticles2D 배칭. REWIND 글리치(1 pass) + 탄환 트레일 + 보스 파티클 |
-| UI / HUD | 40 | 토큰 카운터(3) + 보스 HP(1) + 무기 아이콘(1) + 폰트 렌더 패스(~15) = 약 40 |
-| 셰이더 풀스크린 패스 | 50 | REWIND 발동 시 색반전 1패스, 평상시 비네트 1패스 = 최대 50 |
-| **합계** | **500** | 경계치 정확히 충족. 최적화 여유 없음 — 콜라주 조각 수 제어가 핵심 레버 |
+| Player + enemies | 80 | ECHO(1) + max 8 drones(8) + max 3 Security Bots(3) + STRIDER(1) + max 20 bullets(20) + max 8 hit effects(8) → approx. 80 after atlas batching |
+| Environment tilemap | 100 | Godot TileMap batching. Foreground/midground/background 3 layers × approx. 30 tiles = approx. 90-100 |
+| Parallax backgrounds | 50 | 3 layers × multiple meshes per background = approx. 40-50 |
+| Collage layer | 80 | 20-30 collage fragments per stage, approx. 60-80 with atlas batching |
+| VFX | 100 | GPUParticles2D batching. REWIND glitch (1 pass) + bullet trails + boss particles |
+| UI / HUD | 40 | Token counter(3) + boss phase pulse(1) + weapon icon(1) + font render pass(~15) = approx. 40 |
+| Shader fullscreen pass | 50 | 1 pass color inversion on REWIND activation, 1 pass vignette at rest = max 50 |
+| **Total** | **500** | Exactly at the limit. No optimization headroom — controlling collage fragment count is the key lever |
 
-**주의:** 콜라주 사진 텍스처(원칙 B)는 드로우 콜보다 **메모리**에서 압박을 준다. 아래 메모리 예산 참조.
+**Note:** Collage photo textures (Principle B) put pressure on **memory** more than draw calls. See memory budget below.
 
 ---
 
-### 메모리 예산 (스테이지당, 1.5GB 제약)
+### Memory Budget (per stage, 1.5GB constraint)
 
-| 항목 | 추정 메모리 | 산정 방식 |
+| Item | Estimated Memory | Calculation Method |
 |---|---|---|
-| Godot 엔진 + GDScript 런타임 | ~350MB | 엔진 기본 오버헤드 |
-| 오디오 스트림 버퍼 (Tier 1 CC0) | ~20MB | OGG 스트리밍, 비압축 버퍼 |
-| 게임 코드 + 씬 데이터 | ~30MB | GDScript 컴파일 + 씬 트리 |
-| 스프라이트 아틀라스 (Tier 1, 5개) | ~4MB | 위 아틀라스 예산 참조 |
-| 패럴랙스 배경 텍스처 | ~15MB | 1920×360 × 3레이어 × RGBA |
-| 콜라주 사진 소스 텍스처 | ~60MB | 256×256 RGBA × 최대 60장 |
-| VFX 파티클 텍스처 | ~5MB | 소형 스프라이트 시트 다수 |
-| 폰트 비트맵 캐시 | ~10MB | 런타임 글리프 캐시 |
-| **Tier 1 추정 총합** | **~494MB** | 1.5GB의 33% — 충분한 여유 |
+| Godot engine + GDScript runtime | ~350MB | Engine base overhead |
+| Audio stream buffer (Tier 1 CC0) | ~20MB | OGG streaming, uncompressed buffer |
+| Game code + scene data | ~30MB | GDScript compiled + scene tree |
+| Sprite atlases (Tier 1, 5 total) | ~4MB | See atlas budget above |
+| Parallax background textures | ~15MB | 1920×360 × 3 layers × RGBA |
+| Collage photo source textures | ~60MB | 256×256 RGBA × max 60 images |
+| VFX particle textures | ~5MB | Many small sprite sheets |
+| Font bitmap cache | ~10MB | Runtime glyph cache |
+| **Tier 1 estimated total** | **~494MB** | 33% of 1.5GB — ample headroom |
 
-**콜라주 사진 텍스처 충돌 경고:**
-Tier 3에서 스테이지 5개 동시 로드 시, 콜라주 사진 소스 텍스처만 최대 300MB(60MB × 5)에 달할 수 있다. 스테이지 전환 시 **이전 스테이지 텍스처 명시적 해제 필수** — Godot 4.6 `ResourceLoader.load()` 레퍼런스 카운트 확인. 이 리스크는 기술 아티스트에게 Tier 2 진입 전 ADR 작성 요청.
+**Collage photo texture collision warning:**
+At Tier 3 when loading 5 stages simultaneously, collage photo source textures alone could reach up to 300MB (60MB × 5). `collage-rendering.md` now locks the Tier 1 policy: clear Collage-owned local references on `scene_will_change()` and rely on single-stage scene unload. **Explicit release of previous stage textures remains a Tier 2 ADR gate** before multi-stage implementation; verify `ResourceLoader.load()` reference count in Godot 4.6 as part of that ADR.
 
-**솔로 개발 생산 노트:**
-Tier 1 에셋 총량(아틀라스 5개 + 배경 3장 = 약 30개 PNG 파일)은 4-6주 안에 솔로 생산 가능한 범위다. Pillar 5 (작은 성공 > 큰 야심) 준수: Tier 1에서 콜라주 사진 소스를 무제한 추가하지 않는다. 스테이지당 콜라주 조각 최대 30개 제한이 드로우 콜과 메모리 양쪽에서 레버 역할을 한다.
+**Solo development production note:**
+Total Tier 1 assets (5 atlases + 3 backgrounds = approx. 30 PNG files) are within solo production range in 4-6 weeks. Pillar 5 (small wins > big ambitions) compliance: do not add collage photo sources without limit in Tier 1. A maximum of 30 collage fragments per stage acts as a lever for both draw calls and memory.
 
 ---
 
 ## 9. Reference Direction
 
-이 섹션은 Echo 비주얼 개발에서 취하는 것과 피하는 것을 명세하여 레퍼런스 오해로 인한 방향 이탈을 방지한다. 레퍼런스 상한 4개 (사용자 확정 기준).
+This section specifies what Echo's visual development takes and avoids to prevent directional drift from misunderstanding references. Maximum 4 references (user-confirmed standard).
 
 ---
 
-### Reference 1 — Hannah Höch (1920s 다다 콜라주)
+### Reference 1 — Hannah Höch (1920s Dada Collage)
 
-**역할:** 콜라주 합성 미학의 역사적 원점
+**Role:** Historical origin of the collage composite aesthetic
 
-**취하는 것:**
-- 잡지·신문 사진 컷아웃을 선 드로잉과 나란히 배치하는 기법
-- 스케일 무시 — 인물이 건물보다 크거나, 글자가 얼굴을 덮는 구성
-- 백지가 아닌 사진 배경 위의 오브젝트 배치
-- 콜라주 경계선을 숨기지 않고 드러냄 (가위질 흔적이 미학)
+**What to take:**
+- Technique of placing magazine/newspaper photo cutouts alongside line drawings
+- Ignoring scale — figures larger than buildings, letters covering faces
+- Placing objects over photo backgrounds rather than blank white
+- Revealing collage edges rather than hiding them (scissor marks are the aesthetic)
 
-**피하는 것:**
-- 에로틱·정치 풍자 톤 (Höch의 원작 목적 — Echo는 액션·SF)
-- 흑백 또는 세피아 단색 구성 (Echo는 네온 컬러 필수)
-- 추상 구성주의 레이아웃 (Echo는 횡스크롤 가독성 우선)
+**What to avoid:**
+- Erotic/political satire tone (Höch's original purpose — Echo is action/SF)
+- Black-and-white or sepia monochrome compositions (Echo requires neon color)
+- Abstract constructivist layouts (Echo prioritizes side-scrolling readability)
 
-**적용:** 모든 환경 콜라주 레이어, Steam 캡슐 이미지, 보스 등장 컷
-
----
-
-### Reference 2 — Monty Python 컷아웃 애니메이션 (Terry Gilliam, 1969-1975)
-
-**역할:** 움직이는 콜라주의 애니메이션 언어
-
-**취하는 것:**
-- 정지된 사진·그림이 관절 단위로 분리되어 움직이는 구조 (ECHO 애니메이션 방식)
-- 과장되고 단절적인 움직임 — 유기적 트위닝 없이 포즈 간 컷
-- 애니메이션이 "만들어진 것"임을 숨기지 않는 투명성
-- 단순한 프레임 수로 강렬한 동작 표현 (솔로 생산 효율 직결 — Pillar 5)
-
-**피하는 것:**
-- 코미디·부조리 톤 (Monty Python의 목적 — Echo는 긴장 액션)
-- 갈색·낡음 위주 팔레트 (1970s TV 색감)
-- 인체 과장 변형 (Echo 캐릭터는 액션 비율 유지)
-
-**적용:** ECHO 이동 애니메이션 구조, 적 파괴 연출, 보스 페이즈 전환 컷
+**Application:** All environment collage layers, Steam capsule image, boss reveal cuts
 
 ---
 
-### Reference 3 — 아시아 메가시티 디스토피아 클러스터 (Blade Runner 1982 / Akira 1988 / Ghost in the Shell 1995)
+### Reference 2 — Monty Python Cutout Animation (Terry Gilliam, 1969-1975)
 
-**역할:** NEXUS의 무드·색감·도시 공간 문법의 집합 레퍼런스
+**Role:** Animation language of moving collage
 
-세 작품을 단일 클러스터로 처리한다 — 모두 같은 방향(아시아 도시 기반 SF 디스토피아 무드)을 지시하므로.
+**What to take:**
+- Structure where static photos/illustrations move separated at joints (ECHO animation method)
+- Exaggerated and discontinuous movement — cuts between poses without organic tweening
+- Transparency of not hiding that the animation "was made"
+- Expressing intense action with minimal frame count (directly tied to solo production efficiency — Pillar 5)
 
-**취하는 것 (Blade Runner):**
-- 빗속 네온 반사 (NEXUS 야경 팔레트의 출발점)
-- 광고와 감시가 공존하는 도시 레이어링
-- 콘크리트 암흑 + 색점 네온 대비
+**What to avoid:**
+- Comedy/absurdist tone (Monty Python's purpose — Echo is tense action)
+- Brown/aged-dominant palette (1970s TV color)
+- Exaggerated body distortion (Echo characters maintain action proportions)
 
-**취하는 것 (Akira):**
-- 오토바이·이동 물체의 모션 블러 표현 (마그레브 Stage 3 배경)
-- 파괴된 도시의 잔해 미학 (콜라주 부패 레이어 참조)
-- 붉은·노랑 에너지 폭발 (보스 격파 VFX — 단, Echo 팔레트로 재해석)
+**Application:** ECHO movement animation structure, enemy destruction effects, boss phase transition cuts
 
-**취하는 것 (Ghost in the Shell):**
-- 사이보그·임플란트의 시각 언어 (ECHO의 REWIND Core 장치 디자인)
-- 도시 인프라가 곧 적이 되는 공간 구성 (VEIL이 NEXUS를 무기화)
-- 정보 레이어 HUD 미학 (VEIL 대사 타이포그래피 환경 배치)
+---
 
-**피하는 것:**
-- 3D 렌더링 사실주의 (이 클러스터의 현대 후속작 스타일)
-- 느린 무드 설정 (Echo는 런앤건 — 정적 분위기 씬 없음)
-- 회색/파란 단색 색감 (콜라주 색 다양성 위반)
+### Reference 3 — Asian Megacity Dystopia Cluster (Blade Runner 1982 / Akira 1988 / Ghost in the Shell 1995)
 
-**적용:** 옥상 배경 사진 텍스처 방향, 패럴랙스 배경 레이어 분위기, 보스 디자인 공간 구성
+**Role:** Collective reference for NEXUS mood, color, and urban spatial grammar
+
+All three works are treated as a single cluster — they all point in the same direction (Asian city-based SF dystopia mood).
+
+**What to take (Blade Runner):**
+- Neon reflections in rain (starting point for NEXUS nightscape palette)
+- Urban layering where advertising and surveillance coexist
+- Concrete darkness + color-point neon contrast
+
+**What to take (Akira):**
+- Motion blur expression for motorcycles and moving objects (Maglev Stage 3 background)
+- Rubble aesthetic of a destroyed city (collage decay layer reference)
+- Red/yellow energy explosions (boss defeat VFX — reinterpreted in Echo's palette)
+
+**What to take (Ghost in the Shell):**
+- Visual language of cyborgs/implants (ECHO's REWIND Core device design)
+- Spatial composition where city infrastructure becomes the enemy (VEIL weaponizing NEXUS)
+- Information layer HUD aesthetic (VEIL dialogue typography environmental placement)
+
+**What to avoid:**
+- 3D rendering realism (modern sequel style of this cluster)
+- Slow mood-building (Echo is run-and-gun — no static atmosphere scenes)
+- Gray/blue monochrome color (violates collage color diversity)
+
+**Application:** Rooftop background photo texture direction, parallax background layer atmosphere, boss design spatial composition
 
 ---
 
 ### Reference 4 — Cuphead (2017, Studio MDHR)
 
-**역할:** 시각 시그니처가 마케팅 자산이 된 인디 선례 (Pillar 3 근거)
+**Role:** Indie precedent where a visual signature became a marketing asset (Pillar 3 rationale)
 
-**취하는 것:**
-- 단일 시각 언어의 완결성이 게임을 즉시 인식 가능하게 만드는 방식
-- 보스 디자인을 비주얼 쇼케이스로 활용하는 전략
-- Steam 캡슐·스크린샷 한 장이 완전한 마케팅 이미지로 작동하는 구성력
-- 프레임 수를 줄이면서도 동작을 생동감 있게 표현하는 스프라이트 전략
+**What to take:**
+- How completeness of a single visual language makes a game instantly recognizable
+- Strategy of using boss design as a visual showcase
+- Compositional power where a single Steam capsule/screenshot functions as a complete marketing image
+- Sprite strategy that expresses lively motion while reducing frame count
 
-**피하는 것:**
-- 1930s 만화 스타일 (루베르 수묵·그레인·필름 손상 효과)
-- 둥글고 귀여운 캐릭터 비율 (Echo는 날카로운 액션 비율)
-- 음악이 비주얼과 동기화된 재즈 리듬 구조 (Anti-Pillar #4 — Tier 1 음악 없음)
-- 3D 배경 위 2D 스프라이트 합성 방식 (Echo는 순수 2D)
+**What to avoid:**
+- 1930s cartoon style (rubber ink/grain/film damage effects)
+- Round and cute character proportions (Echo has sharp action proportions)
+- Jazz rhythm structure where music is synchronized with visuals (Anti-Pillar #4 — no music in Tier 1)
+- 2D sprite composite over 3D background method (Echo is pure 2D)
 
-**적용:** Steam 캡슐 이미지 구성 원칙, 보스 스프라이트 쇼케이스 비중, 마케팅 스크린샷 구도 기준 (Tier 1 첫 번째 마케팅 이미지 1장 제작 시 Cuphead 캡슐 구도 연구 필수)
+**Application:** Steam capsule image composition principles, boss sprite showcase weight, marketing screenshot framing standard (Cuphead capsule composition study required when producing first Tier 1 marketing image)
 
 ---
 
 *Art Bible — 9 sections complete. 2026-05-09.*
 *v0 hex codes lock at first concept-art round.*
-*Q2 (사진 출처), Q5 (ECHO 성별)는 각 트리거 이벤트 후 해당 섹션 업데이트.*
+*Q2 (photo sources) and Q5 (ECHO gender) updated in respective sections after each trigger event.*

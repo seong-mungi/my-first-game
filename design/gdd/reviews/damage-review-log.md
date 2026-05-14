@@ -1,10 +1,10 @@
 # Damage GDD Review Log
 
-`design/gdd/damage.md` 디자인 리뷰 이력. 신규 리뷰 시 *위*에 prepend.
+Design review history for `design/gdd/damage.md`. Prepend new reviews *above*.
 
 ---
 
-## Review — 2026-05-09 (Round 4) — Verdict: LOCK & PROTOTYPE → 적용 완료
+## Review — 2026-05-09 (Round 4) — Verdict: LOCK & PROTOTYPE → Applied
 
 Scope signal: **L** — 39 ACs unchanged, 3 surgical fixes applied (2 AC-text + 1 spec off-by-one correction). creative-director meta-verdict: "Pillar 5 'small success > big ambition' is being violated by *continuing to review*, not by stopping."
 Specialists consulted: qa-lead (sync), godot-specialist (async ✓), game-designer (async ✓), systems-designer (async ✓ — post-lock return triggered "Locked Decision empirical falsification" exception)
@@ -58,7 +58,7 @@ Prior verdict resolved: Round 3 NEEDS REVISION (4 BLOCKING applied) — Round 4 
 
 ---
 
-## Review — 2026-05-09 (Round 3) — Verdict: NEEDS REVISION → 적용 완료
+## Review — 2026-05-09 (Round 3) — Verdict: NEEDS REVISION → Applied
 
 Scope signal: **L (bordering XL)** — 39 ACs, 9 signals, 5+5 cross-system touchpoints, 3 ADRs queued. creative-director meta-observation: "AAA-studio specification density for a Tier 1 combat subsystem."
 Specialists: game-designer, systems-designer, qa-lead, godot-specialist
@@ -85,79 +85,79 @@ creative-director synthesis demoted 14 specialist findings (RECOMMENDED) to defe
 
 ### Cross-GDD Sync
 
-- `state-machine.md` F.1 row #8: `damage.start_hazard_grace()` invocation obligation in `RewindingState.exit()` documented (Round 2 미완 의무 해소).
-- `time-rewind.md` Rule 11: DEC-6 cross-link added (Round 2 미완 의무 해소).
+- `state-machine.md` F.1 row #8: `damage.start_hazard_grace()` invocation obligation in `RewindingState.exit()` documented (Round 2 incomplete obligation resolved).
+- `time-rewind.md` Rule 11: DEC-6 cross-link added (Round 2 incomplete obligation resolved).
 
-### ADR Queue (3건 — Round 2의 2건 + 신규 1건)
+### ADR Queue (3 items — 2 from Round 2 + 1 new)
 
-1. **OQ-DMG-8 → ADR `boss-phase-advance-monotonicity`** — D.2.3 monotonic +1 lock (Boss Pattern GDD #11 작성 직전)
-2. **OQ-DMG-9 → ADR `signal-emit-order-determinism`** — F.4.1/F.4.2 결정론 contract (Tier 1 prototype 시작 직전)
-3. **신규** — ADR-0003 `physics_step_ordering` 사다리에 Damage=2 1-line 추가 (Boss Pattern GDD 작성 시 OQ-DMG-9와 함께 처리)
+1. **OQ-DMG-8 → ADR `boss-phase-advance-monotonicity`** — D.2.3 monotonic +1 lock (before Boss Pattern GDD #11 authoring)
+2. **OQ-DMG-9 → ADR `signal-emit-order-determinism`** — F.4.1/F.4.2 determinism contract (before Tier 1 prototype start)
+3. **New** — ADR-0003 `physics_step_ordering` ladder: Damage=2 1-line addition (handle at Boss Pattern GDD authoring time together with OQ-DMG-9)
 
-### Deferred Recommendations (18건 — 의도적)
+### Deferred Recommendations (18 items — intentional)
 
-creative-director 권고: 다음 리뷰는 "Round 4 design-review"가 아니라 *Tier 1 prototype의 ambiguity discovery*일 때만 발동. 주요 deferred items:
-- DEC-6 hazard grace player-readable 시그널 (B.3 fantasy contract — playtest 결정)
+creative-director recommendation: the next review is not "Round 4 design-review" — it fires only when *Tier 1 prototype ambiguity discovery* occurs. Key deferred items:
+- DEC-6 hazard grace player-readable signal (B.3 fantasy contract — playtest decision)
 - DEC-5 `is_last_hit` boolean lock vs anti-counter AC (solo-dev self-discipline mitigates)
-- AC-21 grep 정규식 robustness (90% 솔루션 수용)
-- AC-30 Steam Deck CPU 프로파일 split (실측 시 정밀화)
-- HurtBox.monitoring=true 디폴트 vs PhysicsServer2D 비용 (실측 시 결정)
-- AC-28 `get_connections()[0]` 행동 검증 idiom 변경
-- AC-25 `await physics_frame` → `process_frame` 변경
-- 외 11건 (각각 Tier 1 prototype 발견 시 단발 갱신)
+- AC-21 grep regex robustness (90% solution accepted)
+- AC-30 Steam Deck CPU profile split (refine on actual measurement)
+- HurtBox.monitoring=true default vs PhysicsServer2D cost (decide on actual measurement)
+- AC-28 `get_connections()[0]` behavior verification idiom change
+- AC-25 `await physics_frame` → `process_frame` change
+- 11 additional items (each a one-off update on Tier 1 prototype discovery)
 
 Prior verdict resolved: Round 2 verdict (MAJOR REVISION) — Round 3 confirmed Round 2's 8 BLOCKING all addressed; Round 3 found 4 *new* structural defects.
 
 ---
 
-## Review — 2026-05-09 (Round 2) — Verdict: MAJOR REVISION NEEDED → 적용 완료
+## Review — 2026-05-09 (Round 2) — Verdict: MAJOR REVISION NEEDED → Applied
 
-Scope signal: **XL** (5 upstream + 5 downstream + 9 시그널 + 신규 ADR 2건 queued)
+Scope signal: **XL** (5 upstream + 5 downstream + 9 signals + 2 new ADRs queued)
 Specialists: game-designer, systems-designer, qa-lead, godot-specialist, godot-gdscript-specialist, ai-programmer, performance-analyst
 Senior: creative-director (synthesis)
 Blocking items: **8** | Recommended: **12** | Resolved: **20/20** in same session
 
 ### Summary
 
-7-specialist 적대적 리뷰가 5개 BLOCKING 합의를 식별: (1) `monitoring`/`monitorable` 7개 사이트 일관성 결함, (2) E.13 hazard 영구 거주가 Pillar 1 직접 위반, (3) D.1.4 Example 3 mask `0b101100` typo, (4) emit 순서 결정론 contract 부재, (5) AC 4건 커버리지 갭 + AC-9/15/22 broken. creative-director 시놉시스가 MAJOR REVISION 권고. 사용자 4개 디자인 결정 widget 처리 후 일괄 수정 적용:
+7-specialist adversarial review identified 5 BLOCKING consensus items: (1) `monitoring`/`monitorable` inconsistency across 7 sites, (2) E.13 hazard permanent residence directly violates Pillar 1, (3) D.1.4 Example 3 mask `0b101100` typo, (4) missing emit-order determinism contract, (5) 4 AC coverage gaps + AC-9/15/22 broken. creative-director synopsis recommended MAJOR REVISION. User processed 4 design decision widgets and batch-applied all fixes:
 
-- DEC-5 (`boss_hit_absorbed` 2-arg, hits_remaining 제거 — binary contract architectural 보호)
-- DEC-6 (REWINDING.exit() 직후 12프레임 hazard-only grace — Pillar 1 보호)
-- 신규 시그널 `boss_pattern_interrupted` (in-flight pattern cleanup)
-- 신규 invocation API `start_hazard_grace`
-- D.2.3 monotonic +1 phase advance를 ADR로 격상 (queued)
-- emit 순서 결정론 contract (F.4.1 / F.4.2)
-- AC 8건 신규 (AC-28~35) + AC-6 분할 (6a~6d) + AC-18 분할 (18a/b) → 27 → 39 ACs
-- B.2 "Mirror Principle" → "Threat Symmetry"로 재명명 + 회복 비대칭 명시
-- Steam Deck 멀티플라이어 명시 + frame budget 1.0ms knob 추가
-- monitoring → monitorable 7개 사이트 일괄 정정
-- D.1.4 mask typo 정정 (0b101100 → 0b100100)
+- DEC-5 (`boss_hit_absorbed` 2-arg, hits_remaining removed — binary contract architectural protection)
+- DEC-6 (12-frame hazard-only grace immediately after REWINDING.exit() — Pillar 1 protection)
+- New signal `boss_pattern_interrupted` (in-flight pattern cleanup)
+- New invocation API `start_hazard_grace`
+- D.2.3 monotonic +1 phase advance elevated to ADR (queued)
+- Emit-order determinism contract (F.4.1 / F.4.2)
+- 8 new ACs (AC-28~35) + AC-6 split (6a~6d) + AC-18 split (18a/b) → 27 → 39 ACs
+- B.2 "Mirror Principle" → "Threat Symmetry" rename + recovery asymmetry stated explicitly
+- Steam Deck multiplier stated explicitly + frame budget 1.0ms knob added
+- monitoring → monitorable 7-site batch correction
+- D.1.4 mask typo corrected (0b101100 → 0b100100)
 
-Prior verdict resolved: First review (Round 1 design 기반)
+Prior verdict resolved: First review (Round 1 design basis)
 
-### Architecture Registry 동기화
+### Architecture Registry Sync
 
 `docs/registry/architecture.yaml`:
-- `interfaces.damage_signals.signal_signature`: `boss_hit_absorbed` 2-arg + `boss_pattern_interrupted` 신규
-- `interfaces.damage_signals.invocation_api`: `start_hazard_grace` 추가
-- `interfaces.damage_signals.emit_ordering_contract`: 신규 키 (F.4.1)
+- `interfaces.damage_signals.signal_signature`: `boss_hit_absorbed` 2-arg + new `boss_pattern_interrupted`
+- `interfaces.damage_signals.invocation_api`: `start_hazard_grace` added
+- `interfaces.damage_signals.emit_ordering_contract`: new key (F.4.1)
 - `last_updated`: 2026-05-09 Round 2
 
 ### Cross-GDD Sync
 
-- `state-machine.md`: RewindingState.exit()에서 `damage.start_hazard_grace()` 호출 1줄 추가 의무
-- `time-rewind.md`: Rule 11 보강 (DEC-6 hazard grace 명시 가능)
+- `state-machine.md`: obligation to add 1 line calling `damage.start_hazard_grace()` in RewindingState.exit()
+- `time-rewind.md`: Rule 11 reinforcement (DEC-6 hazard grace can be stated explicitly)
 - `systems-index.md`: System #8 Status → "Designed (Round 2 reviewed)"
 
-### ADR Queue (2건)
+### ADR Queue (2 items)
 
-1. **OQ-DMG-8 → ADR `boss-phase-advance-monotonicity`** — D.2.3 monotonic +1 lock (Boss Pattern GDD #11 작성 직전)
-2. **OQ-DMG-9 → ADR `signal-emit-order-determinism`** — F.4.1/F.4.2 결정론 contract architecture-level 격상 (Tier 1 prototype 시작 직전)
+1. **OQ-DMG-8 → ADR `boss-phase-advance-monotonicity`** — D.2.3 monotonic +1 lock (before Boss Pattern GDD #11 authoring)
+2. **OQ-DMG-9 → ADR `signal-emit-order-determinism`** — F.4.1/F.4.2 determinism contract elevated to architecture level (before Tier 1 prototype start)
 
-### 미완 의무 (Round 2 후속)
+### Outstanding Obligations (Round 2 follow-up)
 
-- `state-machine.md` RewindingState.exit() invocation 1줄 추가
-- `time-rewind.md` Rule 11 DEC-6 cross-link 추가
-- ADR 2건 작성
+- `state-machine.md` RewindingState.exit() — add 1-line invocation
+- `time-rewind.md` Rule 11 — add DEC-6 cross-link
+- Author 2 ADRs
 
 ---

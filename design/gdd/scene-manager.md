@@ -1,8 +1,8 @@
 # Scene / Stage Manager
 
-> **Status**: In Design
+> **Status**: Approved · 2026-05-13
 > **Author**: seong-mungi + game-designer / systems-designer / gameplay-programmer / engine-programmer (per `.claude/skills/design-system` Section 6 routing for Foundation/Infrastructure)
-> **Last Updated**: 2026-05-11
+> **Last Updated**: 2026-05-14 — Menu/Pause #18 approval mirror
 > **Implements Pillars**: Pillar 1 (Learning Tool — < 1s restart non-negotiable) · Pillar 2 (Determinism — boot-time RNG forbidden) · Pillar 4 (5-Minute Rule — Press-any-key gate forbidden) · Pillar 5 (Small Wins — Tier 1 single-stage slice only)
 > **Engine**: Godot 4.6 / GDScript (statically typed)
 > **Review Mode**: lean (CD-GDD-ALIGN gate skipped per `production/review-mode.txt`)
@@ -65,7 +65,7 @@ Scene Manager is a single `SceneManager` autoload node that owns the scene lifec
 
 **[`scene_will_change` Subscribers — PM Direct Subscription Forbidden]**
 
-**Rule 5.** The only systems permitted to subscribe to `scene_will_change` are **TRC · EchoLifecycleSM · AudioManager**. `PlayerMovement` must **not** directly subscribe to `scene_will_change`; PM's 8-var ephemeral state (player-movement.md F.4.2 row #2: 4 coyote/buffer + 4 facing Schmitt flags) is cleared only through EchoLifecycleSM's O6 cascade. AudioManager subscribes independently for BGM hard cut + DUCKED state clear purposes (audio.md Rule 7).
+**Rule 5.** Core lifecycle subscribers to `scene_will_change` are **TRC · EchoLifecycleSM · AudioManager**. Presentation-local subscribers are permitted only for reviewed local cleanup/reset contracts: HUD #13 may reset HUD-local prompt latches, VFX #14 may clear VFX-owned particles, and Collage #15 may clear Collage-owned registries/strong refs. `PlayerMovement` must **not** directly subscribe to `scene_will_change`; PM's 8-var ephemeral state (player-movement.md F.4.2 row #2: 4 coyote/buffer + 4 facing Schmitt flags) is cleared only through EchoLifecycleSM's O6 cascade. AudioManager subscribes independently for BGM hard cut + DUCKED state clear purposes (audio.md Rule 7).
 *Rationale*: ADR-0001 + single-layer cascade design — PM owns only the *content* of ephemeral clear and delegates *timing* to EchoLifecycleSM. Direct subscription would give PM implicit knowledge of scene boundary timing, causing cross-cutting concern leakage.
 *Resolves*: **OQ-PM-1 (PM #6)** — SM emit → EchoLifecycleSM `_on_scene_will_change()` → PM `_clear_ephemeral_state()` cascade.
 
@@ -120,7 +120,7 @@ Scene Manager is a single `SceneManager` autoload node that owns the scene lifec
 
 **Rule 12.** `SceneManager` subscribes to `boss_killed(boss_id: StringName)` signal to trigger the stage clear scene transition. This subscription is SM's **only** Damage signal subscription. The detailed wiring of the stage clear flow (next scene determination, timing, fade) is defined in C.3.
 *Rationale*: damage.md F.4 9-signal contract single-source (AC-13 BLOCKING) — `boss_killed` is the single signal emitted at the final phase's last hit. damage.md F.4 row states: `boss_killed → #2 Scene Manager (stage clear trigger)`.
-*Cross-doc drift flag*: `time-rewind.md` (Rules 15/16, E-05/06, AC-B2/B3/B5, F.1 row #11, F.4.1) + `state-machine.md` (B.2, C.2.2 O5, F.3 row, line 499) contain **stale `boss_defeated`** references — presumed carry-over from before damage.md Round 4 LOCK. **Post-C.1 housekeeping batch recommended**: bulk replace `boss_defeated` → `boss_killed` (time-rewind.md 13 sites + state-machine.md 4 sites = **17 simple replacements**, non-destructive simple substitution — `grep -c boss_defeated` HEAD measurement 2026-05-11).
+*Closed historical note*: earlier drafts of `time-rewind.md` and `state-machine.md` carried stale `boss_defeated` references from before damage.md Round 4 LOCK. The active contract is now `boss_killed`; no open cross-doc replacement batch remains.
 
 ---
 
@@ -152,7 +152,7 @@ Scene Manager is a single `SceneManager` autoload node that owns the scene lifec
 
 | Drift | Affected GDD | Estimated sites | Recommendation |
 |---|---|---|---|
-| Unify `boss_defeated` → `boss_killed` | time-rewind.md + state-machine.md | TR 13 + SM 4 = **17 simple replacements** (HEAD `grep -c` measurement 2026-05-11) | damage.md F.4 (LOCKED + AC-13 BLOCKING) is the single-source authority. This GDD uses `boss_killed`. Bulk-replace the two downstream GDDs separately (Session 19 follow-up or Session 20 housekeeping) |
+| Historical `boss_defeated` → `boss_killed` drift | time-rewind.md + state-machine.md | Closed before 2026-05-13 since-last-review rerun | damage.md F.4 (LOCKED + AC-13 BLOCKING) is the single-source authority. This GDD and active downstream docs use `boss_killed`; no open replacement batch remains. |
 
 **Tier 2 revision triggers (pre-registered)**
 
@@ -190,7 +190,7 @@ PRE-EMIT is a **co-tick** with the first tick of SWAPPING (Rule 4: `scene_will_c
 
 #### C.2.2 Stage / Encounter Boundary State Diagram (Tier 1 minimal)
 
-Tier 1 = single stage slice. The SM owns **scene boundaries only**; the stage-internal encounter flow is owned by Stage / Encounter System #12 (Not Started).
+Tier 1 = single stage slice. The SM owns **scene boundaries only**; the stage-internal encounter flow is owned by Stage / Encounter System #12 (Approved 2026-05-13).
 
 | Boundary State | Owner | Entry Trigger | Next Action |
 |---|---|---|---|
@@ -228,7 +228,7 @@ State entry/exit is handled by synchronous phase progression in the `_trigger_tr
 - **SM owns**: scene boundaries, transition lifecycle (5 phases), `scene_will_change` emit, checkpoint anchor registration, `boss_killed` subscription, 4-state boundary diagram (BOOT_INTRO / ACTIVE / RESTART_PENDING / CLEAR_PENDING).
 - **SM does not own**: in-stage encounter flow (Stage #12), enemy spawning (Stage #12), boss phase advance (damage.md D.2.1), token economy (TR #9 — Rule 7 preservation obligation only), HUD updates (HUD #13 — directly subscribes to TR/Damage signals).
 
-**Tier 1 boundary state evolution (RR6 surfaced)**: C.2.2 says `ACTIVE` entry is owned by Stage #12 (Tier 1 deferred). Consequently, **in Tier 1 production `_boundary_state` never reaches ACTIVE** — the evolution path is BOOT_INTRO → (stays BOOT_INTRO after cold-boot transition close) → RESTART_PENDING (permanent after first DEAD) → CLEAR_PENDING (after boss_killed). The `_on_state_changed(_, &"alive")` handler only sets `_phase = READY` and leaves `_boundary_state` unchanged (C.3.3 pattern). This is not a contract bug but an *incomplete state machine* — when Stage #12 is introduced the ACTIVE slot owner is filled, and the evolution path normalizes to BOOT_INTRO → ACTIVE → RESTART_PENDING/CLEAR_PENDING → ACTIVE. Tier 1 ACs (especially AC-H18) rely on the handler's state-agnostic nature to verify the contract without mocking ACTIVE state — both AC-H11 and AC-H18 require only "SM is IDLE" as Given.
+**Tier 1 boundary state evolution (RR6 surfaced)**: C.2.2 says `ACTIVE` entry is owned by Stage #12. With Stage / Encounter #12 now designed, the intended evolution path is BOOT_INTRO → ACTIVE → RESTART_PENDING/CLEAR_PENDING → ACTIVE. Until Stage #12 is implemented, Scene Manager tests may still validate the handler's state-agnostic behavior without mocking ACTIVE state — both AC-H11 and AC-H18 require only "SM is IDLE" as Given.
 
 ### C.3 Interactions with Other Systems
 
@@ -249,7 +249,7 @@ State entry/exit is handled by synchronous phase progression in the `_trigger_tr
 | `state_changed(_, &"alive")` | from EchoLifecycleSM | state-machine.md C.2.1 framework | SM transitions POST-LOAD → READY phase (lifecycle close) |
 | `state_changed(_, &"dead")` | from EchoLifecycleSM | state-machine.md C.2.2 (DYING → DEAD transition) | SM → boundary RESTART_PENDING → enter C.2.1 PRE-EMIT (subject to C.3.3 same-tick priority policy taking precedence) |
 
-HUD #13, VFX #14, Camera #3 do **not directly subscribe** to SM's signals — each independently subscribes to TR / Damage / EchoLifecycleSM signals (separation of obligations; SM is the scene boundary owner, not a presentation distribution hub). Audio #4 is the exception — directly subscribes to `scene_will_change` for BGM hard-cut purposes (Rule 5 permitted, audio.md Rule 7).
+HUD #13 does not use Scene Manager as a presentation distribution hub, but it may subscribe directly to `scene_will_change()` for HUD-local prompt-latch reset per `hud.md` Rule 6. VFX #14 may subscribe directly only for VFX-owned particle cleanup per `vfx-particle.md` C.9 / AC-VFX-18. Collage #15 may subscribe directly only for Collage-owned registry/strong-ref cleanup per `collage-rendering.md` C.8 / AC-COL-07; gameplay presentation still comes from TR / Damage / Enemy / Boss signals. Camera #3 does **not directly subscribe** to SM's signals for Tier 1 presentation. Audio #4 directly subscribes to `scene_will_change` for BGM hard-cut purposes (Rule 5 permitted, audio.md Rule 7).
 
 #### C.3.2 Checkpoint Restart Wiring (DEAD → ALIVE in ≤ 60 ticks)
 
@@ -323,7 +323,7 @@ The C.2.1 POST-LOAD phase **emits the `scene_post_loaded(anchor: Vector2, limits
 |---|---|---|---|
 | **Camera #3** | Camera snap-to-anchor on new scene entry (instant alignment without cut on checkpoint restart) + stage limit set | POST-LOAD entry → expose checkpoint_anchor `global_position` + stage `Rect2` | `scene_post_loaded(anchor: Vector2, limits: Rect2)` — **Active 2026-05-12 (Camera #3 Approved RR1 PASS first-use)** |
 | Stage / Encounter #12 | Timing for encounter trigger node wiring | Immediately after anchor registration in POST-LOAD (same signal) | Reuse same signal (no signature change) — add subscription when Stage #12 GDD is authored |
-| HUD #13 (Tier 2) | HUD fade-out timing on victory screen transition | Can be replaced by signal exposure in POST-LOAD or direct `state_changed(_, &"dead")` subscription | TBD (Tier 2 HUD GDD decision) |
+| HUD #13 | HUD-local prompt reset on scene boundary; death/victory overlay remains minimal | Direct `scene_will_change()` subscription for latch reset only; no POST-LOAD signal or Camera dependency | Resolved by HUD #13 approval 2026-05-13 |
 
 **Tier 1 status (2026-05-12)**: POST-LOAD signal exposure **Active** — Camera #3 is the first-use trigger. Signal signature `scene_post_loaded(anchor: Vector2, limits: Rect2)` was decided as 2-arg (`anchor` + `limits`) at Camera #3 GDD authoring time to satisfy Camera-side R-C1-10 / R-C1-12 + AC-CAM-H5-01/02 obligations (`limits: Rect2` absorbs per-stage variability + reuses same signal upon Tier 2 multi-room entry). This closure flips the Camera #3 row obligation status to "Active" in F.4.2 (obligation upon subsequent GDD authoring), and both OQ-SM-A1 + DEC-SM-9 are resolved.
 
@@ -343,7 +343,7 @@ Signal contracts newly added or changed by this GDD must be reflected in the fol
 | `design/registry/entities.yaml` | 2 new constants: `restart_window_max_frames = 60` (= 1.000 s @ 60 Hz Pillar 1 non-negotiable — Rule 9 contract); `cold_boot_max_seconds = 300` (Pillar 4 5-minute rule — Rule 13 contract) | constants section |
 | `design/gdd/systems-index.md` | Row #2 Scene / Stage Manager: Status Not Started → Designed (or Approved post-review); add Design Doc link + add dependency to empty Depends On cell (None — Foundation) | Row #2 |
 
-**Cross-doc drift housekeeping** (C.1 Rule 12 discovery): `boss_defeated` → `boss_killed` bulk replacement — time-rewind.md 13 sites (Rules 15/16, E-05/06, AC-B2/B3/B5, F.1 row #11, F.4.1) + state-machine.md 4 sites (B.2, C.2.2 O5, F.3 row #11, line 499) = **17 simple replacements** (HEAD `grep -c` measured 2026-05-11). damage.md F.4 LOCKED + AC-13 BLOCKING is single-source authority. **Recommended as separate housekeeping batch outside Phase 5d** (17 simple replacements, non-destructive; Session 19 follow-up commit or Session 20).
+**Closed cross-doc drift note** (C.1 Rule 12 discovery): historical `boss_defeated` references in time-rewind.md and state-machine.md were replaced by the locked `boss_killed` contract before the 2026-05-13 since-last-review rerun. damage.md F.4 LOCKED + AC-13 BLOCKING remains the single-source authority.
 
 ## D. Formulas
 
@@ -667,11 +667,11 @@ Bug: _on_state_changed fires twice in one tick (duplicate signal connect)
 | **#6** | Player Movement | Approved | (via #5 cascade — PM does not directly subscribe; player-movement.md F.4.2 row #2) | **Hard (via cascade)** | OQ-PM-1 closure: SM emit → EchoLifecycleSM cascade → PM 8-var clear. PM does not directly depend on SM. |
 | **#8** | Damage / Hit Detection | LOCKED | `boss_killed(boss_id: StringName)` subscribed by SM (damage.md F.4) | **Hard** | Damage emit → SM CLEAR_PENDING → stage clear lifecycle (Rule 12 + C.3.3) |
 | **#9** | Time Rewind System | Approved | `scene_will_change()` → TRC `_buffer_invalidate()` (time-rewind.md F.1 row #2 + E-16) | **Hard** | Single trigger for ring buffer invalidation; `_tokens` preserved |
-| **#12** | Stage / Encounter System | Not Started | `scene_post_loaded(anchor: Vector2, limits: Rect2)` (signature locked 2026-05-12 via Camera #3 first-use; Stage GDD decides `limits: Rect2` exposure pattern from stage root) + `boss_killed` (stage clear router) | **Hard** | Stage #12 = SM's primary downstream client; SM owns boundary, Stage #12 owns in-stage encounter flow. See F.4.2 Stage #12 row obligation. |
-| **#13** | HUD System | Not Started | (Tier 2 decision) direct `state_changed(_, &"dead")` subscription vs `scene_will_change()` subscription | **Soft** | HUD independently subscribes to TR / Damage / EchoLifecycleSM signals |
-| **#15** | Collage Rendering Pipeline | Not Started | (Tier 2+) `scene_will_change()` → explicit texture cache release | **Soft (Tier 2)** | Explicit release unnecessary in Tier 1 single stage; revise this GDD upon Tier 2 entry |
-| **#17** | Story Intro Text System | Not Started | SM instantiates intro text node inside stage_1 PackedScene (scene-internal wiring); no separate signal | **Soft** | Pillar 4 5-minute rule — intro 5-line typewriter waits for first input after self-completion |
-| **#18** | Menu / Pause System | Not Started | (Tier 2 decision) SM `_phase` freeze policy on Pause | **Soft** | Pause changes process_mode; SM operates normally only in IDLE phase |
+| **#12** | Stage / Encounter System | Approved 2026-05-13 | `scene_post_loaded(anchor: Vector2, limits: Rect2)` (signature locked 2026-05-12 via Camera #3 first-use; Stage GDD uses stage root `stage_camera_limits: Rect2`) + `boss_killed` / final-gate handoff | **Hard** | Stage #12 = SM's primary downstream client; SM owns boundary, Stage #12 owns in-stage encounter flow. |
+| **#13** | HUD System | Approved 2026-05-13 | `scene_will_change()` → HUD-local `_first_rewind_success_latched = false`; HUD otherwise independently consumes TR / Damage / EchoLifecycleSM signals | **Soft** | HUD #13 does not use SM as a presentation hub and requests no new SM signal |
+| **#15** | [Collage Rendering Pipeline](collage-rendering.md) | Approved 2026-05-13 | Tier 1 `scene_will_change()` → clear Collage-owned registries/strong refs only; Tier 2+ explicit texture cache release requires ADR before multi-stage implementation | **Soft presentation / memory gate** | Tier 1 single stage does not use global ResourceLoader cache release; Collage #15 owns the Tier 2 texture-release ADR trigger. |
+| **#17** | Story Intro Text System | Approved 2026-05-13 | Passive cold-boot intro presentation scene; no separate signal, no new InputMap action, and no direct scene-transition API calls from Story Intro | **Soft** | Pillar 4 5-minute rule — five-line typewriter may be interrupted by the approved first-input cold-boot route |
+| **#18** | [Menu / Pause System](menu-pause.md) | Approved 2026-05-14 | Pause overlay may request checkpoint restart through approved Scene Manager API only; title-shell/return-to-title routing is deferred; no raw SceneTree calls | **Soft** | Pause UI runs `PROCESS_MODE_ALWAYS`; SM does not create UI and accepts transition requests only from stable boundary paths. |
 
 ### F.2 Upstream Dependencies (systems SM depends on)
 
@@ -703,9 +703,9 @@ Detailed table in C.3.5 — 7 GDD edits + 2 registry batch (entities.yaml + arch
 - `design/registry/entities.yaml` — 2 new constants (`restart_window_max_frames=60`, `cold_boot_max_seconds=300`)
 - `design/gdd/systems-index.md` row #2 — In Design → Designed (Phase 5d) → Approved (post-review)
 
-**Cross-doc drift housekeeping** (C.1 Rule 12 discovery): `boss_defeated` → `boss_killed` bulk replacement — time-rewind.md 13 sites + state-machine.md 4 sites = **17 simple replacements** (HEAD `grep -c` measured 2026-05-11). damage.md F.4 LOCKED + AC-13 BLOCKING is single-source authority. Split to Session 19 follow-up housekeeping batch (17 simple replacements, non-destructive).
+**Closed cross-doc drift note** (C.1 Rule 12 discovery): historical `boss_defeated` references in time-rewind.md and state-machine.md have already been replaced by the locked `boss_killed` contract. damage.md F.4 LOCKED + AC-13 BLOCKING remains the single-source authority.
 
-> **⚠️ Approved promotion gate (BLOCKING)**: F.4.1 Phase 5d batch must be applied before promoting this GDD from "Designed (pending re-review)" → **Approved**. If not applied, F.3 bidirectional verification items remain stale and are detected as cross-review lint signals (verified at HEAD 2026-05-11 re-review #4: PM F.1 row line 978 still `*(provisional re #2 Not Started)*`; PM F.4.2 row line 531 still `*(provisional)*` + `TBD` wiring). Phase 5d 7-GDD batch + 2 registry batch are part of the Approved gate and can be split into separate commits but must be completed before passing the gate. Housekeeping batch (17-site `boss_defeated → boss_killed`) is a separate commit and is NOT BLOCKING for the Approved gate (damage.md single-source authority is guaranteed).
+> **✅ Approved promotion gate closed**: F.4.1 Phase 5d batch has been applied and this GDD is Approved as of 2026-05-13. Historical `boss_defeated → boss_killed` housekeeping is closed; damage.md remains the single-source authority for the `boss_killed` signal.
 
 #### F.4.2 Future GDD obligations (obligations when target GDD is authored)
 
@@ -715,11 +715,11 @@ Each target GDD's H section must include a reciprocal AC when authored — not a
 |---|---|---|
 | ~~**Camera #3**~~ ✅ **Closed 2026-05-12 (Camera #3 Approved RR1 PASS)** | ~~(1) add `scene_post_loaded(anchor: Vector2)` signal — requires this GDD revision; (2) Camera snap-to-anchor on POST-LOAD entry; (3) AC: camera alignment complete within 1 tick after checkpoint restart~~ → **Resolved**: signal signature finalized as `scene_post_loaded(anchor: Vector2, limits: Rect2)` (2-arg — limits added for stage-by-stage variability absorption per camera.md C.3.3 + R-C1-12 single-source). C.2.1 POST-LOAD body now emits the signal after `checkpoint_anchor` registration + boot-time `assert(limits.size > 0)` (E-CAM-7). Camera handler R-C1-10 cost ≤ 1 tick (snap + 4 limit setters + reset_smoothing); fits within SM 60-tick restart budget without additional accounting. Camera AC-CAM-H5-01 (snap correctness) + AC-CAM-H5-02 (60-tick budget) verify the integration. Phase 5 cross-doc batch landed 2026-05-12. | Camera #3 GDD authoring (Closed) |
 | ~~**Audio #4**~~ ✅ **Closed 2026-05-12 (Audio #4 Approved)** | ~~(1) `scene_will_change()` → bus reset (Tier 2 only); (2) `boss_killed` → stage clear SFX trigger; (3) AC: no audible crackle on SFX bus transition~~ → **Resolved**: Rule 7 active in Tier 1 (BGM hard cut + DUCKED state clear, audio.md Rule 7). `boss_killed` Tier 1 stub registered (audio.md Rule 13). Bus reset deferred to Tier 2. | Audio #4 GDD authoring (Closed) |
-| **Stage / Encounter #12** | (1) use `scene_post_loaded(anchor: Vector2, limits: Rect2)` 2-arg signal — encounter trigger node wiring + decide `limits: Rect2` exposure pattern from stage root (export var `stage_camera_limits: Rect2` or `Marker2D` child node query) — signature locked 2026-05-12 via Camera #3 first-use; (2) `boss_killed` next PackedScene routing — revise this GDD's `change_scene_to_packed` argument decision logic upon Tier 2 entry; (3) AC: all encounter triggers registered on stage entry + `limits.size > 0` boot assert passes (E-CAM-7) | Stage #12 GDD authoring |
-| **HUD #13** | (1) decide direct `state_changed(_, &"dead")` subscription vs `scene_will_change()` subscription; (2) AC: determinism of HUD fade-out timing on stage clear | HUD #13 GDD authoring |
-| **VFX #14** | (1) active particle cleanup policy on `scene_will_change()` (immediate free vs natural expiry); (2) AC: 0 leftover particles on scene transition | VFX #14 GDD authoring |
-| **Collage Rendering #15** | Upon Tier 2 entry: (1) `scene_will_change()` → explicit texture cache release; (2) AC: memory 1.5 GB ceiling not violated + new scene GPU texture load complete verified | Collage Rendering #15 GDD authoring (Tier 2 gate) |
-| **Menu / Pause #18** | (1) SM `_phase` freeze policy on Pause; (2) AC: `change_scene_to_packed` not triggered during pause | Menu #18 GDD authoring |
+| **Stage / Encounter #12** | ✅ Approved 2026-05-13: uses `scene_post_loaded(anchor: Vector2, limits: Rect2)` timing, stage root `stage_camera_limits: Rect2`, deterministic encounter trigger wiring, and preflight validation that `limits.size > 0`. Boss Pattern #11 still owns final boss phases / `boss_killed` production. | Closed by Stage #12 approval; re-check only if future Stage revisions change lifecycle contracts. |
+| ~~**HUD #13**~~ ✅ **Closed 2026-05-13 (HUD #13 Approved)** | ~~(1) decide direct `state_changed(_, &"dead")` subscription vs `scene_will_change()` subscription; (2) AC: determinism of HUD fade-out timing on stage clear~~ → **Resolved**: HUD subscribes directly to `scene_will_change()` only for prompt-latch reset, consumes TR / Damage / EchoLifecycleSM for gameplay presentation, and keeps Tier 1 death/victory overlay minimal. HUD requests no new SM signal. | Closed by `design/gdd/hud.md` approval |
+| **VFX #14** | ✅ Closed by `vfx-particle.md` (2026-05-13): active VFX-owned particles stop/free immediately on `scene_will_change()`; AC-VFX-18 requires registry count 0 after scene transition. | Re-check after VFX design-review |
+| **Collage Rendering #15** | ✅ Approved 2026-05-13: Tier 1 clears Collage-owned registries/strong refs on `scene_will_change()` and relies on scene unload for nodes; global ResourceLoader cache release is explicitly deferred behind a Tier 2 ADR before multi-stage implementation. | Re-check before Tier 2 texture-release ADR |
+| ~~**Menu / Pause #18**~~ ✅ **Closed 2026-05-14 (Menu/Pause #18 Approved)** | ~~(1) SM `_phase` freeze policy on Pause; (2) AC: `change_scene_to_packed` not triggered during pause~~ → **Resolved**: #18 pause UI runs `PROCESS_MODE_ALWAYS`, PauseHandler/SM `can_pause()` owns initiation veto, and Menu/Pause may only request checkpoint restart through Scene Manager in Tier 1. Title-shell/return-to-title routing is deferred until Scene Manager has an explicit production route. AC-MENU-04/08 forbid raw SceneTree swaps and double-submit transition requests. | Closed by `design/gdd/menu-pause.md`; re-checked during #18 design-review 2026-05-14. |
 | **Save Persistence #21** | (Tier 2+) (1) invalid scene reference fallback → SM requests stage 1; (2) AC: corrupt save file → game boots normally | Save #21 GDD authoring (Tier 2 gate) |
 
 ## G. Tuning Knobs
@@ -739,7 +739,7 @@ SM is a contract-driven Foundation system. Pillar 1 (< 1s restart) + Pillar 4 (5
 
 | Knob | Default | Safe range | Affects | Out-of-range behaviour |
 |---|---|---|---|---|
-| `intro_screen_duration_seconds` | 8.0 | 5.0 – 30.0 | Directly affects Pillar 4 5-minute rule. 8.0 s is display time for 5-line intro typewriter + first input guidance. | < 5.0 → player enters game before reading intro text; > 30.0 → risk of Pillar 4 violation (erodes cold_boot budget) |
+| `intro_screen_duration_seconds` | 8.0 | 5.0 – 30.0 | Directly affects Pillar 4 5-minute rule. 8.0 s is display time for Story Intro #17's five-line typewriter with no explicit input prompt. | < 5.0 → player may enter game before reading intro text; > 30.0 → risk of Pillar 4 violation (erodes cold_boot budget) |
 | `multiple_anchors_warning_n` | 2 | 1 – 10 | Rule 8 / D.3 — fires `push_warning` when `N > threshold`. Default 2 = "warn if 2 or more". | 1 → always warns (fires even with 1 anchor — wrong signal); ≥ 10 → effectively no warning (ignores intentional multi-anchor patterns in large scenes) |
 | `victory_screen_packed` | `preload("res://scenes/victory_screen.tscn")` | (PackedScene resource path) | `change_scene_to_packed` argument on stage clear (Tier 1 single stage). Revise this knob to `next_stage_packed` dynamic lookup upon Tier 2 entry. | `null` → E.1 panic path; wrong PackedScene → E.2 anchor-absent panic on new scene entry |
 | `stage_1_packed` | `preload("res://scenes/stage_1.tscn")` | (PackedScene resource path) | First `change_scene_to_packed` argument on cold boot. Tier 1 single stage. | `null` → E.1 panic; wrong path → build export missing E.8 |
@@ -766,13 +766,13 @@ Scene Manager is a Foundation/Infrastructure system and does not directly own pr
 
 | Visual/audio element | Trigger signal (SM emit) | Single-owner GDD | Tier |
 |---|---|---|---|
-| Intro 5-line typewriter (text + SFX) | None — scene-internal wiring | **Story Intro Text System #17** | Tier 1 |
-| Intro → stage_1 fade-in transition | None — after Story Intro #17 completes, first input → SM `change_scene_to_packed` | Story Intro #17 (visual) | Tier 1 |
+| Intro 5-line typewriter (text; no required SFX) | None — scene-internal passive renderer | **Story Intro Text System #17** | Tier 1 |
+| Intro → stage_1 fade-in transition | Existing cold-boot first-input route → SM `change_scene_to_packed`; Story Intro does not own the transition | Story Intro #17 (visual only) | Tier 1 |
 | Checkpoint restart fade-out / fade-in | (Tier 2 decision) can subscribe to `scene_will_change()` | **HUD #13** (Tier 2 gate) | Tier 2 |
 | Stage clear victory screen entry fade | `boss_killed` → SM CLEAR_PENDING → `change_scene_to_packed(victory_screen)` | HUD #13 (Tier 1 minimal; Tier 2 full design) | Tier 1 minimal |
 | Audio bus reset on scene transition (crackle prevention) | `scene_will_change()` subscription (Tier 2) | **Audio #4** | Tier 2 |
 | Stage clear SFX | `boss_killed` subscription | Audio #4 | Tier 1 stub |
-| Active particle cleanup on scene transition (prevent visual leftovers) | `scene_will_change()` subscription | **VFX #14** | Tier 1 |
+| Active particle cleanup on scene transition (prevent visual leftovers) | `scene_will_change()` subscription | **VFX #14** (`vfx-particle.md` C.9 / AC-VFX-18) | Tier 1 |
 
 **Tier 1 SM-owned visual/audio scope**: None. All presentation delegated downstream. In Tier 1, SM only performs signal emit and PackedScene swap; the visual transition (fade) itself proceeds from the PackedScene's internal node `_ready()` chain or is handled by Story Intro #17 / HUD #13 via separate subscriptions.
 
@@ -786,35 +786,35 @@ Scene Manager does not directly own UI. SM's signals trigger UI system behavior,
 
 | UI surface | SM involvement | Single-owner GDD | Tier |
 |---|---|---|---|
-| Cold boot intro screen (5-line typewriter) | SM instantiates intro node immediately before loading `stage_1_packed` | **Story Intro Text System #17** | Tier 1 |
+| Cold boot intro screen (5-line typewriter) | Passive cold-boot scene presentation; first-input route may interrupt it before completion | **Story Intro Text System #17** | Tier 1 |
 | Stage clear victory screen | SM calls `change_scene_to_packed(victory_screen_packed)` — UI content is a separate PackedScene | **HUD #13** (Tier 1 minimal) | Tier 1 minimal |
-| Pause menu | SM freezes `_phase` in paused state (F.4.2 Menu #18 obligation) — Menu UI is a separate system | **Menu / Pause System #18** | Tier 2 |
+| Pause menu | Menu/Pause requests Scene Manager checkpoint restart only through approved Tier 1 API; title/return-to-title route is deferred; SM itself creates no pause UI | **Menu / Pause System #18** | Tier 1 |
 | Loading screen | Tier 1 = no loading screen needed with synchronous `change_scene_to_packed` (completes within 60-tick budget). Introduce upon Tier 2 async load entry. | (Tier 2 decision — HUD #13 or Menu #18) | Tier 2 |
 | Game-over screen | Tier 1 = immediate checkpoint restart (Pillar 1 < 1s non-negotiable) — no game-over screen. | — (Tier 1 N/A) | — |
-| Quit-to-desktop confirm dialog | Not SM's concern — determined by input.md C.5 Esc router (E.7) | Menu #18 | Tier 2 |
+| Quit-to-desktop confirm dialog | Not SM's concern — quit routing belongs to Menu/Pause/platform policy | Menu #18 | Tier 1 minimal; confirmation deferred |
 
 **Tier 1 SM-owned UI scope**: None. SM is only a signal producer + scene swap executor; all UI surfaces delegated downstream.
 
 **UX flow accessibility note**: Due to Pillar 1 non-negotiable (< 1s restart) + Pillar 4 5-minute rule (no Press-any-key), SM creates no UI elements directly perceived by the user — all SM actions are *invisible*. From an accessibility standpoint, this system has no direct impact on screen reader / colorblind mode / input remapping (handled by F.4.2 Audio #4 / HUD #13 / Menu #18 respectively).
 
-> **📌 UX Flag — Scene Manager**: This system has no direct UI requirements. When authoring UX specs during Phase 4 (Pre-Production), SM is not a `/ux-design` target — instead, Story Intro #17, HUD #13 (victory screen), and Menu #18 (pause) each run `/ux-design` when their GDDs are authored.
+> **📌 UX Flag — Scene Manager**: This system has no direct UI requirements. When authoring UX specs during Phase 4 (Pre-Production), SM is not a `/ux-design` target — instead, Story Intro #17 (now Designed), HUD #13 (victory screen), and Menu #18 (pause) each run `/ux-design` from their own GDDs.
 
 ## H. Acceptance Criteria
 
 ### H.0 Preamble
 
-**Total ACs: 30**
+**Total ACs: 31**
 
 | Classification | Count | Gate |
 |---|---|---|
-| Logic (automated unit test — GUT) | 17 | BLOCKING |
+| Logic (automated unit test — GUT) | 18 | BLOCKING |
 | Integration (automated integration test OR documented playtest) | 11 | BLOCKING |
 | Visual/Feel | 0 | — |
 | UI | 0 | — |
-| **BLOCKING total** | **28** | |
+| **BLOCKING total** | **29** | |
 | Manual only (`[MANUAL]`) | 2 | ADVISORY |
 
-Scene Manager owns no presentation surface — Visual/Feel and UI counts are 0 by design (see UI Requirements section). Two ACs are `[MANUAL]` (AC-H2b, AC-H23) due to Steam Deck Gen 1 hardware dependency; all others are automatable in CI. Logic AC enumeration: AC-H3a, AC-H3b, AC-H4..AC-H14, AC-H24, AC-H26, AC-H27, AC-H28. Integration AC enumeration (BLOCKING): AC-H1, AC-H2a, AC-H15..AC-H22, AC-H25. Integration ADVISORY: AC-H2b, AC-H23.
+Scene Manager owns no presentation surface — Visual/Feel and UI counts are 0 by design (see UI Requirements section). Two ACs are `[MANUAL]` (AC-H2b, AC-H23) due to Steam Deck Gen 1 hardware dependency; all others are automatable in CI. Logic AC enumeration: AC-H3a, AC-H3b, AC-H3c, AC-H4..AC-H14, AC-H24, AC-H26, AC-H27, AC-H28. Integration AC enumeration (BLOCKING): AC-H1, AC-H2a, AC-H15..AC-H22, AC-H25. Integration ADVISORY: AC-H2b, AC-H23.
 
 ---
 
@@ -871,6 +871,18 @@ These three ACs fulfil the Section B "each invariant is encoded 1:1 in Section H
 - **Then** `scene_will_change` is emitted exactly once, and all subscriber handlers (`_buffer_invalidate`, `_on_scene_will_change`) complete before `change_scene_to_packed` is called within the same physics tick
 
 **Test mechanism**: GUT unit test `test_scene_will_change_emits_before_scene_swap` — spy both `scene_will_change.emit()` call order and `SceneTree.change_scene_to_packed` call order using mocked SM; assert emit tick == swap tick and emit call-index < swap call-index.
+
+---
+
+**AC-H3c — Same-tick scene boundary + lethal hit produces `buffer_invalidated` denial**
+**Classification**: Logic — BLOCKING
+**Covers**: Rule 15 · time-rewind.md Rule 7 / Rule 13-bis · B-Inv-3
+
+- **Given** TRC has `_tokens > 0` and `_buffer_primed == true`, SM is IDLE, and EchoLifecycleSM can enter DYING from `player_hit_lethal`
+- **When** Scene Manager emits `scene_will_change()` in tick T and a same-tick or next-tick lethal hit opens DYING before a new ring buffer is primed
+- **Then** TRC `_buffer_invalidate()` sets `_buffer_primed == false`, `try_consume_rewind()` returns `false`, token count remains unchanged, and the denial cue is emitted exactly once with reason `buffer_invalidated`
+
+**Test mechanism**: GUT unit test `test_scene_boundary_lethal_hit_rewind_denies_with_buffer_invalidated` — inject TRC / EchoLifecycleSM / AudioManager spies, emit `scene_will_change`, inject lethal-hit signal, invoke rewind input during DYING, assert invalidation, no token decrement, no silent return, and exactly one denial cue.
 
 ---
 
@@ -1327,7 +1339,7 @@ The 3 OQs (OQ-4 / OQ-PM-1 / OQ-SM-2) carried over at the time of authoring this 
 | ~~**OQ-SM-A1**~~ ✅ **Resolved 2026-05-12 (Camera #3 first-use)** | ~~POST-LOAD phase signal exposure — when to add `scene_post_loaded(anchor: Vector2)` signal~~ → **Resolved**: signal added 2026-05-12 with 2-arg signature `scene_post_loaded(anchor: Vector2, limits: Rect2)` (Camera #3 GDD authoring + Approved RR1 PASS). C.2.1 POST-LOAD body emit + C.3.1 SM emits matrix entry + C.3.4 Q2 closure section. F.4.2 row Camera #3 status: Active. | (Closed) | (Closed) | — | — |
 | **OQ-SM-A2** | In-place checkpoint reset pattern (resetting enemies/projectiles without scene swap) — introduce when Tier 2 memory efficiency improvements are needed | Stage / Encounter #12 GDD (Tier 2) | Tier 2 gate passed + memory measurement results approach 1.5 GB ceiling | MEDIUM (Tier 2) | Tier 1: Rule 11 "scene swap handles reset" assumption valid — single stage slice |
 | **OQ-SM-A3** | Revision of D.1 60-tick budget formula when async load (`ResourceLoader.load_threaded_request`) is introduced | this GDD revision (Tier 2 gate) | Tier 2 entry + async load adoption decision | MEDIUM (Tier 2) | Tier 1: Rule 3 (sync only) valid; roll forward early if Steam Deck Gen 1 measurement shows consistent 60-tick violations |
-| **OQ-SM-A4** | Explicit memory release (`ResourceLoader.load` cache release) — for Tier 3 5-stage × 300MB collage texture handling | Collage Rendering #15 GDD (Tier 2 gate) | Tier 2 entry + collage texture memory measurement | MEDIUM (Tier 2/3) | Tier 1: explicit memory release not needed in single stage |
+| **OQ-SM-A4** | **PARTIALLY RESOLVED 2026-05-13 by `collage-rendering.md`** — Tier 1 clears local Collage refs only; explicit `ResourceLoader` cache release remains a Tier 2 ADR gate for multi-stage texture handling. | Collage Rendering #15 / future ADR | Tier 2 entry + collage texture memory measurement | MEDIUM (Tier 2/3) | Tier 1: explicit memory release not needed in single stage; AC-COL-09/20 carry the gate. |
 | **OQ-SM-A5** | Multi-anchor checkpoint pattern — support N>1 anchor as a normal pattern when Tier 2 mid-stage checkpoints are introduced | Stage / Encounter #12 GDD (Tier 2) | Tier 2 entry + multi-anchor use cases arise | LOW (Tier 2) | Tier 1: D.3 `push_warning` policy valid; recommend raising `multiple_anchors_warning_n` knob |
 
 **Resolved this session (Session 19)**:
@@ -1401,10 +1413,10 @@ Items pre-registered for revision when this GDD passes the Tier 2 gate, per the 
 | Trigger | This GDD revision area | Owner GDD (closure) |
 |---|---|---|
 | Multi-stage (≥ 2 stages) introduction | C.1 Rule 3 — allow async load + explicit memory release | this GDD (Tier 2 revision) |
-| In-place checkpoint pattern (reset without scene swap) | C.1 Rule 11 — specify per-group reset cascade | Stage / Encounter #12 GDD |
+| In-place checkpoint pattern (reset without scene swap) | C.1 Rule 11 remains Tier 2; Stage #12 keeps Tier 1 scene-reload restart and defers in-place reset to OQ-STG-5 / OQ-SM-A2 | Tier 2 gate |
 | ~~`scene_post_loaded` first use case arises~~ ✅ **Fired 2026-05-12 (DEC-SM-9 / OQ-SM-A1 / Camera #3 RR1 PASS)**: signal active per C.3.4 | ~~C.2.1 POST-LOAD signal exposure addition (Q2 closure)~~ → Applied; AC-H28 added (RR8) | ~~Camera #3 OR Stage #12 GDD~~ |
-| `boss_killed` → next stage PackedScene routing | C.3.3 victory_screen → next_stage dynamic lookup | Stage #12 GDD |
-| Memory 1.5 GB ceiling reaches 75% | E.3 — `OS.get_static_memory_usage()` monitoring + push_warning | Collage Rendering #15 GDD |
+| `boss_killed` → next stage PackedScene routing | Stage #12 defines final-gate handoff; Boss Pattern #11 still must define production `boss_killed` timing before full stage-clear proof | Boss Pattern #11 GDD |
+| Memory 1.5 GB ceiling reaches 75% | E.3 — memory monitoring + push_warning | Collage Rendering #15 GDD AC-COL-20 |
 | Steam Deck Gen 1 measured 60-tick consistent violation | D.1 worked example update with measured values + roll forward async load early if needed | this GDD (Tier 1 Week 1 playtest results) |
 
 ### A.6 Session 19 Status Header Update Queue (Phase 5d applied)
@@ -1414,5 +1426,5 @@ After this GDD reaches Designed status, update systems-index.md Row #2 status as
 - Status: **In Design (Session 19, A+B+C complete)** → **Designed (Session 19 — All 11 sections + Appendix complete)**
 - Design Doc: keep `[scene-manager.md](scene-manager.md)` link
 - Depends On: `—` (Foundation; no upstream)
-- Last Updated narrative: "Session 19 GDD authoring complete — **original 25 ACs** (23 BLOCKING / 2 ADVISORY); **post-RR cumulative HEAD state: 29 ACs / 27 BLOCKING / 2 ADVISORY** (RR2 added AC-H26 PANIC terminality; RR3 enhanced AC-H14 with PANIC entry post-condition; RR4 added AC-H27 swap-call cardinality). 3 carried OQs resolved (OQ-4 / OQ-PM-1 / OQ-SM-2), 5 new SM-specific OQs registered (Tier 2 deferred), cross-doc drift `boss_defeated → boss_killed` follow-up housekeeping batch queued."
+- Last Updated narrative: "Session 19 GDD authoring complete — **original 25 ACs** (23 BLOCKING / 2 ADVISORY); **post-RR cumulative HEAD state: 29 ACs / 27 BLOCKING / 2 ADVISORY** (RR2 added AC-H26 PANIC terminality; RR3 enhanced AC-H14 with PANIC entry post-condition; RR4 added AC-H27 swap-call cardinality). 3 carried OQs resolved (OQ-4 / OQ-PM-1 / OQ-SM-2), 5 new SM-specific OQs registered (Tier 2 deferred), historical cross-doc drift `boss_defeated → boss_killed` cleanup closed."
 - Progress Tracker: Designed 5 → 5 (no change yet — pending fresh-session `/design-review`); Designed (pending re-review) 0 → 1 if user wants intermediate state, otherwise hold.

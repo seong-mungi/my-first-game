@@ -1,73 +1,73 @@
 # Input System
 
-> **Status**: In Design
+> **Status**: Approved · 2026-05-11
 > **Author**: User + game-designer / godot-gdscript-specialist / ux-designer / accessibility-specialist (Phase 4 specialists per skill routing)
-> **Last Updated**: 2026-05-10
-> **Implements Pillar**: Pillar 2 (deterministic patterns — primary; input is the sole non-deterministic gameplay surface and must be normalized into per-tick deterministic snapshots), Pillar 4 (5분 룰 — secondary; sane Steam Deck defaults out-of-the-box), Pillar 1 (학습 도구 — supporting; `rewind_consume` delivery latency directly affects forgiveness window)
+> **Last Updated**: 2026-05-14 — Menu/Pause #18 approval mirror
+> **Implements Pillar**: Pillar 2 (deterministic patterns — primary; input is the sole non-deterministic gameplay surface and must be normalized into per-tick deterministic snapshots), Pillar 4 (5-min rule — secondary; sane Steam Deck defaults out-of-the-box), Pillar 1 (learning tool — supporting; `rewind_consume` delivery latency directly affects forgiveness window)
 > **Engine**: Godot 4.6 / GDScript
 > **ADR References**: ADR-0003 (determinism strategy — Input must poll in `_physics_process`, no wall-clock APIs)
 > **Cross-doc obligations** (resolved in this GDD per F.4.1 of upstream GDDs): player-movement.md C.5.3 (4 items) + F.4.2 (AimLock-jump exclusivity + deadzone) · state-machine.md OQ-SM-3 (`rewind_consume` action name) · time-rewind.md C.3 #1 (gamepad LT + KB+M Shift + single-button-no-chord) · time-rewind.md OQ-15 (Tier 3 chord policy)
 
 ## A. Overview
 
-Input은 Echo의 모든 OS 입력 소스(KB+M, 게임패드, Steam Deck 내장 컨트롤)를 결정론적 InputMap action으로 정규화하고, 모든 게임플레이 소비자가 `_physics_process` 안에서 동일한 deadzone-applied action 상태를 읽도록 보장하는 Foundation 레이어다. 본 GDD는 (a) action 카탈로그(`move_left/right/up/down`, `jump`, `aim_lock`, `shoot`, `rewind_consume`, `pause`)와 각 action의 detect mode(analog axis · edge-trigger · hold), (b) 게임패드 stick deadzone 정책(Tier 1 = 0.2, 단일 출처), (c) Steam Deck-aware 디폴트 키맵(KB+M + Gamepad + Deck 트리거 호환), (d) Tier 1 single-button/no-chord 제약과 Tier 3 remap 정책 사이의 게이트를 단일 출처로 보유한다.
+Input is the Foundation layer that normalizes all OS input sources in Echo (KB+M, gamepad, Steam Deck built-in controls) into deterministic InputMap actions, and guarantees that all gameplay consumers read the same deadzone-applied action state inside `_physics_process`. This GDD is the single source of truth for: (a) the action catalog (`move_left/right/up/down`, `jump`, `aim_lock`, `shoot`, `rewind_consume`, `pause`) and each action's detect mode (analog axis · edge-trigger · hold), (b) gamepad stick deadzone policy (Tier 1 = 0.2, single source), (c) Steam Deck-aware default keymap (KB+M + Gamepad + Deck trigger compatible), (d) the gate between the Tier 1 single-button/no-chord constraint and the Tier 3 remap policy.
 
-**ADR-0003 결정론 계약 정합성**: 본 시스템은 ADR-0003 `determinism_clock`(모든 입력 시점은 `Engine.get_physics_frames()` 기준)과 `process_physics_priority` 사다리(player=0 / TRC=1 / enemies=10 / projectiles=20)를 위반하지 않도록, 게임플레이 소비자가 `_physics_process` 진입 후 *Phase 2 input snapshot* 시점에서만 `Input.is_action_*` / `Input.get_vector` 폴링하는 패턴을 강제한다. `_input` / `_unhandled_input` 콜백에 게임플레이 로직을 binding하면 wall-clock latency + 시점 mismatch가 발생하므로 금지(player-movement.md C.6 row 470 ✓ 단일 출처) — 본 GDD가 이 금지를 architecture.yaml `forbidden_patterns`에 등록 후보(F.4.1 의무)로 승격한다. UI/메뉴 입력은 본 금지의 *예외 허용 영역*이며 별도 시스템(#18 Menu/Pause)이 `_input` 콜백을 사용한다.
+**ADR-0003 Determinism Contract Conformance**: To avoid violating ADR-0003 `determinism_clock` (all input timestamps are based on `Engine.get_physics_frames()`) and the `process_physics_priority` ladder (player=0 / TRC=1 / enemies=10 / projectiles=20), this system enforces the pattern that gameplay consumers poll `Input.is_action_*` / `Input.get_vector` only at the *Phase 2 input snapshot* point after entering `_physics_process`. Binding gameplay logic to `_input` / `_unhandled_input` callbacks is forbidden because it causes wall-clock latency + timing mismatch (player-movement.md C.6 row 470 ✓ single source) — this GDD promotes that prohibition to a `forbidden_patterns` candidate in architecture.yaml (F.4.1 obligation). UI/menu input is an *explicitly permitted exception* to this prohibition; the separate system (#18 Menu/Pause) uses `_input` callbacks.
 
-**플레이어 가시성**: Tier 1 = 없음(자동 기본 매핑); Tier 3 = 간접(리매핑 메뉴 #23, Anti-Pillar #6 deferred). 플레이어가 Input을 *경험*하는 것은 PM의 jump-buffer 관용(C.5.2, 6 frames), SM의 `rewind_consume` 입력 윈도우(D.2, `B + D = 16 frames`), Pillar 4 5분-룰 즉시 코어 루프 진입을 통해서다 — Input은 그 경험의 *기반*이지 *주체*가 아니다.
+**Player Visibility**: Tier 1 = none (automatic default mapping); Tier 3 = indirect (remapping menu #23, Anti-Pillar #6 deferred). Players *experience* Input through PM's jump-buffer forgiveness (C.5.2, 6 frames), SM's `rewind_consume` input window (D.2, `B + D = 16 frames`), and Pillar 4 5-min-rule immediate core-loop entry — Input is the *foundation* of that experience, not the *subject*.
 
-**본 GDD가 *소유하지 않는* 것** (각 항목 단일 출처):
-- `jump_buffer_frames` / `coyote_frames` 시간 윈도우 → player-movement.md C.5.2 + G
-- `rewind_consume` 입력 윈도우 술어(`F_input ≥ F_lethal − B`) → state-machine.md D.2 + time-rewind.md Rule 5
-- `pause` swallow 정책 (어느 SM 상태에서 무시되는가) → state-machine.md C.2.2 O2
-- 사격/조준 발사 로직 → Player Shooting #7
-- Sprite2D 방향 시각화·애니메이션·VFX·오디오 반응 → 각 소비자 GDD
-- 인풋 리매핑 UI 위젯 자체 → 시스템 #23 (Tier 3, Anti-Pillar #6)
+**What This GDD Does *Not* Own** (single source for each item):
+- `jump_buffer_frames` / `coyote_frames` time windows → player-movement.md C.5.2 + G
+- `rewind_consume` input window predicate (`F_input ≥ F_lethal − B`) → state-machine.md D.2 + time-rewind.md Rule 5
+- `pause` swallow policy (which SM states suppress it) → state-machine.md C.2.2 O2
+- Shooting/aiming fire logic → Player Shooting #7
+- Sprite2D directional visualization, animation, VFX, audio responses → each consumer GDD
+- Input remapping UI widget itself → System #23 (Tier 3, Anti-Pillar #6)
 
-**Tier 범위**:
-- **Tier 1**: 9 action × 2 디바이스 디폴트 매핑(KB+M + 게임패드, Steam Deck 자동 호환) + 0.2 deadzone + 폴링 디시플린 + 게임플레이/UI 콜백 분리.
-- **Tier 2**: Easy/Hard 토글이 영향을 주는 영역(시스템 #20 Difficulty Toggle이 owner — Input은 토큰 수만 변경, 액션 매핑 불변).
-- **Tier 3**: 풀 리매핑 + Accessibility(Anti-Pillar #6, 시스템 #23/#24 owner). 본 GDD는 Tier 3 권한이 *Tier 1 결정성을 깨지 않는다*는 invariant만 명시.
+**Tier Scope**:
+- **Tier 1**: 9 actions × 2 device default mappings (KB+M + gamepad, Steam Deck auto-compatible) + 0.2 deadzone + polling discipline + gameplay/UI callback separation.
+- **Tier 2**: Area affected by Easy/Hard toggle (System #20 Difficulty Toggle is owner — Input changes token count only, action mapping unchanged).
+- **Tier 3**: Full remapping + Accessibility (Anti-Pillar #6, Systems #23/#24 owner). This GDD only specifies the invariant that Tier 3 permissions *do not break Tier 1 determinism*.
 
-**위험·우려**: (a) Steam Deck 1세대 스틱 드리프트(공식 RMA 0.05–0.18 raw range)가 0.2 deadzone 하한과 충돌할 가능성 — Tier 1 검증 필요(OQ); (b) Godot 4.6 SDL3 게임패드 드라이버(4.5+) 트리거 축 시맨틱 미검증 — `JOY_AXIS_TRIGGER_LEFT` threshold 0.5 (time-rewind.md C.3 #1 수용 의무) 회귀 테스트 필요(OQ); (c) Tier 1 single-button-no-chord 제약과 Tier 3 chord remap 정책 사이의 forward-compat 정의(OQ-15 reconciliation).
+**Risks and Concerns**: (a) Steam Deck 1st-gen stick drift (official RMA 0.05–0.18 raw range) may conflict with the 0.2 deadzone lower bound — Tier 1 verification required (OQ); (b) Godot 4.6 SDL3 gamepad driver (4.5+) trigger axis semantics unverified — `JOY_AXIS_TRIGGER_LEFT` threshold 0.5 (time-rewind.md C.3 #1 acceptance obligation) regression test required (OQ); (c) forward-compat definition between the Tier 1 single-button-no-chord constraint and the Tier 3 chord remap policy (OQ-15 reconciliation).
 
 ## B. Player Fantasy
 
-> Input은 게임플레이 표면에 보이지 않지만, 본 시스템이 깨지는 순간 Echo의 모든 약속이 함께 깨진다. 본 섹션은 Input이 *플레이어에게* 무엇을 약속하는지(B.1)와 *소비자 시스템에게* 무엇을 약속하는지(B.2)를 분리해 명시한다. Foundation 레이어 관습(state-machine.md B "systemic invariant" 패턴)을 따른다.
+> Input is invisible on the gameplay surface, but the moment this system breaks, every promise Echo makes breaks with it. This section separately specifies what Input promises *to the player* (B.1) and what it promises *to consumer systems* (B.2). Follows the Foundation layer convention (state-machine.md B "systemic invariant" pattern).
 
 ### B.1 The Pact — Intent Is Sacred
 
-플레이어가 보지 못하는 약속이지만 가장 무거운 약속이다. **Pillar 2 ("운(luck)은 적이다, 모든 죽음은 플레이어의 실수")** 는 Input이 *언제 어디서도 입력 한 프레임을 잃지 않는다*는 보장 위에서만 사실이 된다.
+This is a promise the player never sees, but it is the heaviest promise of all. **Pillar 2 ("luck is the enemy; every death is the player's mistake")** is only true when Input guarantees that *not a single input frame is ever lost, anywhere, anytime*.
 
-플레이어가 보스에게 죽고 토큰을 쓸 타이밍을 2프레임 놓쳐 다시 죽었다면, 그 죽음은 *플레이어의 실수*다 — Pillar 2의 약속이 지켜진다. 그러나 만약 Input이 한 프레임 입력을 silently 드롭했다면, 같은 외형의 죽음은 *시스템의 배신*이 된다. Pillar 2는 즉시 거짓이 된다.
+If a player dies to a boss and misses the token timing by 2 frames and dies again, that death is *the player's mistake* — Pillar 2's promise holds. But if Input silently dropped a single input frame, the same-looking death becomes *a betrayal by the system*. Pillar 2 instantly becomes false.
 
-본 시스템의 fantasy는 이 거짓을 *결코 발생시키지 않는 것*이다. 플레이어가 죽음 후 컨트롤러를 내려놓지 않고 다시 시도하는 이유는, 그가 *자신의 실수*를 신뢰하기 때문이다. 그 신뢰는 Input 레이어에서 매 프레임 만들어지거나 깨진다.
+This system's fantasy is *never letting that falsehood occur*. The reason a player doesn't put down their controller after dying and tries again is that they *trust their own mistake*. That trust is built or broken every frame in the Input layer.
 
-> **Anchor moment**: 보스 패턴 학습 5번째 시도. 플레이어가 LT(`rewind_consume`)를 보스 공격 후 2프레임 늦게 누른다. 캐릭터가 죽는다. 플레이어는 화면에 욕하지 않는다. 그는 *"내가 늦었다"* 라고 말한다 — 다음 시도에서 1프레임 더 빨리 누른다. 그 *말*이 Pillar 2의 진실 여부를 결정한다. Input의 invariant은 그 말이 항상 사실이게 만드는 것이다.
+> **Anchor moment**: 5th attempt learning a boss pattern. The player presses LT (`rewind_consume`) 2 frames too late after the boss attack. The character dies. The player doesn't curse at the screen. They say *"I was too slow"* — and on the next attempt, press 1 frame earlier. That *statement* determines whether Pillar 2 is true. Input's invariant is what makes that statement always accurate.
 
-### B.2 The Cascade — 같은 프레임, 같은 진실
+### B.2 The Cascade — Same Frame, Same Truth
 
-Input은 다중 소비자(PM #6, SM #5, TRC #9, Player Shooting #7, Menu #18)에게 *동일한 물리 프레임 동안 동일한 입력 사실*을 제공한다. 이 단일성은 ADR-0003 결정성 계약과 모든 상위 invariant의 토대다.
+Input provides *the same input truth during the same physics frame* to multiple consumers (PM #6, SM #5, TRC #9, Player Shooting #7, Menu #18). This unity is the foundation of the ADR-0003 determinism contract and all higher-level invariants.
 
-**구체 cascade — `rewind_consume` 한 번 누름**:
-- PM이 `_physics_process` Phase 2에서 폴링(jump_buffer 등록 가능 — player-movement.md D.3 Formula 5).
-- TRC가 `process_physics_priority=1` 슬롯에서 동일한 입력 값 폴링.
-- SM `AliveState`/`DyingState`가 `physics_update`에서 동일 값 관찰 → `_rewind_input_pressed_at_frame` 갱신(state-machine.md D.2).
-- Damage가 `lethal_hit_detected`를 emit하면 같은 emit 사이클에서 SM의 D.2 술어가 *세 소비자가 본 동일 입력*을 평가.
+**Concrete cascade — one `rewind_consume` press**:
+- PM polls in `_physics_process` Phase 2 (jump_buffer registration possible — player-movement.md D.3 Formula 5).
+- TRC polls the same input value in the `process_physics_priority=1` slot.
+- SM `AliveState`/`DyingState` observes the same value in `physics_update` → updates `_rewind_input_pressed_at_frame` (state-machine.md D.2).
+- When Damage emits `lethal_hit_detected`, SM's D.2 predicate evaluates *the same input all three consumers saw* in the same emit cycle.
 
-세 소비자가 다른 진실을 보면 16프레임 `rewind_consume` 윈도우(`B + D = 4 + 12`, state-machine.md D.2 + time-rewind.md Rule 5)는 무너진다. 본 시스템의 invariant은 *어떤 두 소비자도 동일 프레임 내에서 다른 입력 진실을 보지 않는다*는 것이다.
+If the three consumers see different truths, the 16-frame `rewind_consume` window (`B + D = 4 + 12`, state-machine.md D.2 + time-rewind.md Rule 5) collapses. This system's invariant is that *no two consumers ever see different input truth within the same frame*.
 
-**Pillar 4 (5분-룰) 파생 fantasy**: 위 invariant의 *부산물*로, 플레이어는 게임 시작 후 어떤 메뉴·리매핑·디바이스 인식 화면도 거치지 않고 ECHO를 즉시 움직인다. Steam Deck을 켜고 30초 안에 첫 점프, 60초 안에 첫 사격, 5분 안에 첫 `rewind_consume` 발동. Tier 1 디폴트 매핑(C.4 단일 출처)이 이 fantasy를 *코드 한 줄 없이* 보장한다.
+**Pillar 4 (5-min rule) derived fantasy**: As a *byproduct* of the above invariant, the player moves ECHO immediately after starting the game without going through any menus, remapping, or device recognition screens. Turn on Steam Deck and get the first jump within 30 seconds, first shot within 60 seconds, first `rewind_consume` activation within 5 minutes. Tier 1 default mapping (C.4 single source) guarantees this fantasy *without a single line of code*.
 
-### B.3 Anti-Fantasy — 본 시스템이 *제공하지 않는* 것
+### B.3 Anti-Fantasy — What This System Does *Not* Provide
 
-- **"feels good" 자체로 종결되는 입력**: Input은 PM의 jump-buffer 관용(C.5.2 6 frames)과 SM의 rewind 윈도우(D.2 16 frames)를 *가능하게* 할 뿐, 그 *느낌*을 직접 제공하지 않는다. 입력 늘어남(buffer)은 PM/SM 영역.
-- **플레이어 개인화**: Tier 1에서 Input은 *디폴트만* 제공한다. 리매핑은 시스템 #23(Tier 3, Anti-Pillar #6 deferred). Input은 디폴트가 *옳다*는 약속만 한다.
-- **컨트롤러 인식 UI**: "Press A to start"식 디바이스 confirmation 화면 없음 — Pillar 4 위반. SDL3 게임패드 드라이버(Godot 4.5+)와 Godot 4.6 InputMap이 자동 처리.
+- **Input that concludes with "feels good" as its own justification**: Input only *enables* PM's jump-buffer forgiveness (C.5.2 6 frames) and SM's rewind window (D.2 16 frames); it does not directly provide that *feel*. Input buffering is PM/SM territory.
+- **Player personalization**: In Tier 1, Input provides *defaults only*. Remapping is System #23 (Tier 3, Anti-Pillar #6 deferred). Input only promises that the defaults are *correct*.
+- **Controller recognition UI**: No "Press A to start" device confirmation screen — that would violate Pillar 4. SDL3 gamepad driver (Godot 4.5+) and Godot 4.6 InputMap handle it automatically.
 
-### B.4 Player Type 매칭
+### B.4 Player Type Match
 
-Echo target audience(Achievers; Hotline Miami / Katana Zero / Cuphead 팬, 게임-컨셉 Player Type Appeal)는 *입력 정확성*에 가장 민감한 그룹이다. 그들이 본 시스템에서 받는 가장 큰 가치는 **"내가 늦었다"가 항상 사실인 것** — 그 신뢰가 reps(데스리스 도전, 타임어택, Tier 3)를 만든다. 입력 한 프레임의 무결성이 retention hook이다.
+Echo's target audience (Achievers; Hotline Miami / Katana Zero / Cuphead fans, game-concept Player Type Appeal) is the group most sensitive to *input accuracy*. The greatest value they receive from this system is **"I was too slow" always being true** — that trust creates reps (deathless challenges, time attacks, Tier 3). The integrity of a single input frame is the retention hook.
 
 ## C. Detailed Design
 
@@ -75,54 +75,54 @@ Echo target audience(Achievers; Hotline Miami / Katana Zero / Cuphead 팬, 게�
 
 #### C.1.1 Action Catalog (9 actions, single source)
 
-본 표는 `project.godot` `[input]` 블록 + `InputActions` 상수 클래스(C.4)의 단일 출처다. PM C.5.1 / state-machine.md D.2 / time-rewind.md C.3 #1이 본 표를 참조하며, 본 GDD 작성으로 그 *(provisional)* 플래그가 모두 클리어된다.
+This table is the single source of truth for the `project.godot` `[input]` block + `InputActions` constants class (C.4). PM C.5.1 / state-machine.md D.2 / time-rewind.md C.3 #1 reference this table, and authoring this GDD clears all their *(provisional)* flags.
 
 | # | Action | Detect Mode | Tier | Buffer Owner | Polled In | Notes |
 |---|---|---|---|---|---|---|
 | 1 | `move_left` | analog axis | T1 | — (per-tick poll) | `_physics_process` Phase 2 | `Input.get_vector` neg_x; deadzone radial 0.2 (C.1.3) |
 | 2 | `move_right` | analog axis | T1 | — | Phase 2 | get_vector pos_x |
-| 3 | `move_up` | analog axis | T1 | — | Phase 2 | AimLock 8-way aim only — vertical platforming 없음 |
-| 4 | `move_down` | analog axis | T1 | — | Phase 2 | AimLock 8-way aim only — crouch 없음 |
-| 5 | `jump` | edge `just_pressed` + `just_released` | T1 | PM `jump_buffer_frames=6` (PM C.5.2) | Phase 2 | PM 단독 폴링; variable-cut은 `just_released` |
-| 6 | `aim_lock` | hold `is_action_pressed` | T1 | — | Phase 2 | DEC-PM-2 Cuphead-style; `jump`과 독립 (C.3.3 AC) |
-| 7 | `shoot` | hold (`is_action_pressed`) — locked by Player Shooting #7 §C Rule 1 (2026-05-11) | T1 | Player Shooting #7 | Phase 2 | PM은 read 안 함. Tap-spam은 #7 cooldown counter가 게이트 (FIRE_COOLDOWN_FRAMES=10). |
-| 8 | `rewind_consume` | edge `just_pressed` | T1 | SM `_rewind_input_pressed_at_frame` (state-machine.md D.2) | `physics_update` (AliveState/DyingState) | 단일 버튼 / 노-코드 (Tier 1 invariant). LT chatter는 SM hysteresis(C.5 cross-doc obligation) |
-| 9 | `pause` | edge `just_pressed` | T1 | SM swallow O2 | dual-path: PauseHandler `_unhandled_input` (resume) + SM `_physics_process` (state-aware initiate veto) | C.1.4 단일 출처 |
+| 3 | `move_up` | analog axis | T1 | — | Phase 2 | AimLock 8-way aim only — no vertical platforming |
+| 4 | `move_down` | analog axis | T1 | — | Phase 2 | AimLock 8-way aim only — no crouch |
+| 5 | `jump` | edge `just_pressed` + `just_released` | T1 | PM `jump_buffer_frames=6` (PM C.5.2) | Phase 2 | PM polls exclusively; variable-cut uses `just_released` |
+| 6 | `aim_lock` | hold `is_action_pressed` | T1 | — | Phase 2 | DEC-PM-2 Cuphead-style; independent from `jump` (C.3.3 AC) |
+| 7 | `shoot` | hold (`is_action_pressed`) — locked by Player Shooting #7 §C Rule 1 (2026-05-11) | T1 | Player Shooting #7 | Phase 2 | PM does not read. Tap-spam gated by #7 cooldown counter (FIRE_COOLDOWN_FRAMES=10). |
+| 8 | `rewind_consume` | edge `just_pressed` | T1 | SM `_rewind_input_pressed_at_frame` (state-machine.md D.2) | `physics_update` (AliveState/DyingState) | Single button / no-chord (Tier 1 invariant). LT chatter handled by SM hysteresis (C.5 cross-doc obligation) |
+| 9 | `pause` | edge `just_pressed` | T1 | SM swallow O2 | dual-path: PauseHandler `_unhandled_input` (resume) + SM `_physics_process` (state-aware initiate veto) | C.1.4 single source |
 
-**카탈로그 확장 정책**: Tier 1 = 9 actions exact. `weapon_swap` 후보 등은 **Player Shooting #7** owner — Input은 추가 mapping만 호스팅, detect/buffer는 #7 단일 출처. Tier 3 #23은 player-bound action 추가 가능; *default mapping table 불변* (C.2 invariant).
+**Catalog Extension Policy**: Tier 1 = exactly 9 actions. Candidates like `weapon_swap` are owned by **Player Shooting #7** — Input only hosts the additional mapping; detect/buffer is #7 single source. Tier 3 #23 may add player-bound actions; *default mapping table is immutable* (C.2 invariant).
 
-#### C.1.2 Polling Discipline (B.2 Cascade 규칙화)
+#### C.1.2 Polling Discipline (Formalizing B.2 Cascade)
 
-**핵심 invariant**: 동일 `_physics_process` tick 내 모든 게임플레이 소비자는 동일한 InputMap action 상태를 본다 (B.2 Cascade). ADR-0003 결정성 계약과 SM의 16프레임 `rewind_consume` 윈도우 술어(D.2)의 사실성 보장 필수.
+**Core invariant**: All gameplay consumers within the same `_physics_process` tick see the same InputMap action state (B.2 Cascade). Essential for guaranteeing the truthfulness of the ADR-0003 determinism contract and SM's 16-frame `rewind_consume` window predicate (D.2).
 
-1. **규칙 1 (폴링 시점)**: 게임플레이 시스템(PM #6 / SM #5 / TRC #9 / Player Shooting #7)은 `Input.is_action_*` / `Input.get_vector` / `Input.get_action_strength`를 *오직* `_physics_process` 안에서 호출.
-2. **규칙 2 (콜백 binding 금지)**: `_input` / `_unhandled_input` / `_unhandled_key_input` 콜백에 게임플레이 로직(움직임/사격/시간되감기) binding 금지. **4 명시적 예외** (Tier 1: 3 active + Tier 3 carve-out: 1 reserved):
-    - (a) UI/Menu(#18) — `_input` 콜백 정당 사용처.
-    - (b) PauseHandler 노드(C.1.4) — `PROCESS_MODE_ALWAYS` autoload, `_unhandled_input`.
-    - (c) **ActiveProfileTracker** autoload(D.1.1) — `_input` source classifier (`_input` fires before `_unhandled_input` per E-IN-NEW). profile detection은 입력 *type* 감지가 목적이지 *게임플레이 로직*이 아니므로 본 ban scope 외 (예외 명시화).
-    - (d) **AT bridge nodes (Tier 3 #24 Accessibility) — B22 carve-out 2026-05-11**: Xbox Adaptive Controller / switch access / eye-tracking 등 assistive technology 입력 주입 노드. 본 carve-out은 Tier 1에서 비활성(현재 코드 0건)이지만 `forbidden_patterns.gameplay_input_in_callback` CI gate가 Tier 3 #24를 forever block하지 않도록 *사전 등록*. AT bridge node 식별 marker: (i) `class_name`이 `AssistiveInputBridge` prefix이거나 (ii) `@export var _at_bridge_exempt: bool = true` 자체-선언 marker 보유. forbidden_patterns 스캐너가 둘 중 하나 매치 시 해당 노드를 검사 skip. Tier 3 #24 GDD가 carve-out 활성화 + scanner 구현 책임 (F.4.2 row 신설).
-3. **규칙 3 (Phase 2 mutation 금지)**: Phase 2 입력 폴링 단계에서 *읽기만* — 상태 전이/벨로시티 계산은 Phase 3+ (PM C.3 5-phase 패턴 단일 출처).
-4. **규칙 4 (action_press 주입 — 테스트 한정)**: GUT 픽스처가 `Input.action_press(InputActions.X)` 동기 주입은 같은 tick 내 `is_action_just_pressed` 폴링에 보임. *주입은 `await get_tree().physics_frame` 이전*. `_input`/`_unhandled_input` 경로 테스트는 `Input.parse_input_event(InputEventAction)` 별도 사용. **두 API를 같은 픽스처에서 혼용 금지** (false positive).
-5. **규칙 5 (`forbidden_patterns` 등록 후보 — F.4.1 의무)**: `gameplay_input_in_callback` (게임플레이 폴링이 `_input`에 들어가면 안 됨) + `deadzone_in_consumer` (개별 시스템이 `> 0.2` 형태로 deadzone 재구현 금지).
+1. **Rule 1 (polling timing)**: Gameplay systems (PM #6 / SM #5 / TRC #9 / Player Shooting #7) call `Input.is_action_*` / `Input.get_vector` / `Input.get_action_strength` *only* inside `_physics_process`.
+2. **Rule 2 (callback binding forbidden)**: Binding gameplay logic (movement/shooting/time-rewind) to `_input` / `_unhandled_input` / `_unhandled_key_input` callbacks is forbidden. **4 explicit exceptions** (Tier 1: 3 active + Tier 3 carve-out: 1 reserved):
+    - (a) UI/Menu (#18) — legitimate use of `_input` callback.
+    - (b) PauseHandler node (C.1.4) — `PROCESS_MODE_ALWAYS` autoload, `_unhandled_input`.
+    - (c) **ActiveProfileTracker** autoload (D.1.1) — `_input` source classifier (`_input` fires before `_unhandled_input` per E-IN-NEW). Profile detection aims to sense input *type*, not *gameplay logic*, so it is outside this ban scope (exception explicitly stated).
+    - (d) **AT bridge nodes (Tier 3 #24 Accessibility) — B22 carve-out 2026-05-11**: Assistive technology input injection nodes such as Xbox Adaptive Controller / switch access / eye-tracking. This carve-out is inactive in Tier 1 (currently 0 code entries) but is *pre-registered* so that the `forbidden_patterns.gameplay_input_in_callback` CI gate does not forever block Tier 3 #24. AT bridge node identification markers: (i) `class_name` has `AssistiveInputBridge` prefix, or (ii) node declares `@export var _at_bridge_exempt: bool = true` self-declaration marker. The forbidden_patterns scanner skips inspection when either matches. Tier 3 #24 GDD is responsible for activating the carve-out + implementing the scanner (new F.4.2 row).
+3. **Rule 3 (Phase 2 mutation forbidden)**: Phase 2 input polling phase is *read-only* — state transitions/velocity calculations happen in Phase 3+ (PM C.3 5-phase pattern is single source).
+4. **Rule 4 (action_press injection — tests only)**: GUT fixture's synchronous `Input.action_press(InputActions.X)` injection is visible to `is_action_just_pressed` polling within the same tick. *Injection must occur before `await get_tree().physics_frame`*. Testing `_input`/`_unhandled_input` paths uses `Input.parse_input_event(InputEventAction)` separately. **Mixing both APIs in the same fixture is forbidden** (false positive).
+5. **Rule 5 (`forbidden_patterns` registration candidates — F.4.1 obligation)**: `gameplay_input_in_callback` (gameplay polling must not enter `_input`) + `deadzone_in_consumer` (individual systems must not re-implement deadzone as `> 0.2`).
 
 #### C.1.3 Deadzone Policy
 
-**디폴트**: `project.godot` `[input]` 블록에서 4 move actions × `deadzone = 0.2` 선언. 게임플레이 코드에서 deadzone 산식 재구현 금지(`forbidden_patterns.deadzone_in_consumer`).
+**Default**: Declare 4 move actions × `deadzone = 0.2` in the `project.godot` `[input]` block. Re-implementing the deadzone formula in gameplay code is forbidden (`forbidden_patterns.deadzone_in_consumer`).
 
-**`Input.get_vector` 시맨틱 (verified)**:
-- `Input.get_vector(neg_x, pos_x, neg_y, pos_y, deadzone=-1.0)`은 *radial composite magnitude* deadzone 적용 (per-axis 아님).
-- `deadzone=-1.0` (디폴트) 시 4 actions의 InputMap 개별 deadzone 평균이 radial threshold가 됨.
-- Echo Tier 1: 4 actions 모두 0.2 → composite radial 0.2.
+**`Input.get_vector` semantics (verified)**:
+- `Input.get_vector(neg_x, pos_x, neg_y, pos_y, deadzone=-1.0)` applies *radial composite magnitude* deadzone (not per-axis).
+- With `deadzone=-1.0` (default), the average of each of the 4 actions' individual InputMap deadzones becomes the radial threshold.
+- Echo Tier 1: all 4 actions = 0.2 → composite radial 0.2.
 
-**런타임 변경 (Tier 3 한정)**: `InputMap.action_set_deadzone(...)` 런타임 호출은 *paused tree*에서만 허용 — `SettingsManager.apply_deadzone(value)` 단일 진입점이 `get_tree().paused = true` → mutate → unpause 패턴 강제. 같은 frame race 회피.
+**Runtime change (Tier 3 only)**: `InputMap.action_set_deadzone(...)` runtime calls are only permitted in a *paused tree* — the `SettingsManager.apply_deadzone(value)` single entry point enforces the `get_tree().paused = true` → mutate → unpause pattern. Avoids same-frame race conditions.
 
-**Steam Deck 1세대 stick drift (RMA range 0.05–0.18 raw)**: 0.2 하한 충분 — Tier 1 Week 1 prototype에서 *물리 Steam Deck 1세대* 5분 manual 검증 (OQ-IN-2).
+**Steam Deck 1st-gen stick drift (RMA range 0.05–0.18 raw)**: 0.2 lower bound is sufficient — manual verification on *physical Steam Deck 1st-gen* for 5 minutes in Tier 1 Week 1 prototype (OQ-IN-2).
 
-**B10 책임 분리**: PM의 `facing_threshold_outside == gamepad_deadzone` (둘 다 0.2 — PM 2026-05-11 review B10 BLOCKING) 문제는 **Input 레이어에서 해결 불가** (gdscript-specialist 명시). PM에 enter=0.2 / exit=0.15 비대칭 hysteresis 추가가 PM 책임. 본 GDD는 deadzone 단일 출처만 보장.
+**B10 responsibility separation**: The problem of PM's `facing_threshold_outside == gamepad_deadzone` (both 0.2 — PM 2026-05-11 review B10 BLOCKING) **cannot be resolved at the Input layer** (explicitly stated by gdscript-specialist). Adding asymmetric hysteresis with enter=0.2 / exit=0.15 to PM is PM's responsibility. This GDD only guarantees the deadzone single source.
 
 #### C.1.4 Pause Architecture (Dual-Path)
 
-`get_tree().paused = true` 상태에서 `_physics_process`는 정지. Pause toggle은 *항상-실행* 노드가 처리하고 SM은 swallow 정책만 분리한다.
+When `get_tree().paused = true`, `_physics_process` stops. The pause toggle is handled by an *always-running* node; SM only separates the swallow policy.
 
 ```gdscript
 # src/input/pause_handler.gd (autoload, process_mode = PROCESS_MODE_ALWAYS)
@@ -141,55 +141,55 @@ func _unhandled_input(event: InputEvent) -> void:
     get_viewport().set_input_as_handled()   # consume on every decision (resume / initiate / veto) — Godot 4.6 canonical "consume on decision" pattern; AC-IN-24 + B4 reconciliation 2026-05-11
 ```
 
-| 노드 | `process_mode` | 콜백 | 역할 |
+| Node | `process_mode` | Callback | Role |
 |---|---|---|---|
 | `PauseHandler` (autoload) | `PROCESS_MODE_ALWAYS` | `_unhandled_input` | toggle (resume + initiate + veto consumption) |
 | `EchoLifecycleSM` (under ECHO) | `INHERIT` (=PAUSABLE) | `_physics_process` | swallow veto (`can_pause()` query interface) |
 
 **Consumption invariant (B4 reconciliation 2026-05-11)**: PauseHandler MUST call `set_input_as_handled()` on **every** decision path — resume, initiate, AND veto. Rationale: (a) Godot 4.6 canonical pattern is consume-on-decision (any node that resolves the event should consume it to prevent downstream misclassification); (b) ActiveProfileTracker._input fires *before* `_unhandled_input` regardless (E-IN-NEW), so consumption here doesn't block profile classification — but it does prevent any other `_unhandled_input` listener from acting on a resolved pause event; (c) AC-IN-24 asserts both veto and resume call this — earlier draft (Session 12) only consumed on success, creating a 4-way contradiction (qa-lead BLK-1 + godot-specialist Item 1 + gameplay-programmer BLOCKING-1 + main-review). CD adjudication: veto SHOULD consume.
 
-**SM 측 cross-doc obligation (F.4.1)**: state-machine.md C.2.2 O2의 `should_swallow_pause()` → `can_pause()`로 명명 통일 권장 (Round-7 cross-doc-contradiction exception 후보).
+**SM-side cross-doc obligation (F.4.1)**: Recommend unifying naming from `should_swallow_pause()` → `can_pause()` in state-machine.md C.2.2 O2 (Round-7 cross-doc-contradiction exception candidate).
 
-**Why not 단일 SM 폴링?**: SM이 paused 상태에서 `_physics_process` 정지 → resume 불가 (deadlock).
+**Why not single SM polling?**: SM's `_physics_process` stops when paused → resume impossible (deadlock).
 
 #### C.1.5 First-Death Onboarding Hint (Cross-Doc with HUD #13 + SM)
 
-Tier 1 *튜토리얼 페이지/모달 0건* 약속(Pillar 4) 하에서, *KB+M `Shift = rewind_consume` 발견 위험* (Katana Zero 미경험 플레이어가 0.2s DYING grace 내 Shift 본능 미발화)을 완화하는 *context-timed* 힌트.
+A *context-timed* hint that, under Tier 1's *zero tutorial pages/modals* promise (Pillar 4), mitigates the risk of *KB+M `Shift = rewind_consume` discovery* (players without Katana Zero experience may not reflexively press Shift within the 0.2s DYING grace).
 
-**Pillar 4 carve-out 명시 (B3 fix 2026-05-11)**: 본 hint가 노출하는 1-token button label (`[Shift] Rewind` / `[LT] Rewind`)은 game-concept Pillar 4 "텍스트 튜토리얼 0줄"의 *carve-out*이다. Pillar 4 약속의 *정신*은 "튜토리얼 전용 텍스트 페이지 / 모달 / 페이지-진행 textbox 0건" — 1-토큰 button label은 게임-내 *UI element* (HUD action prompt)로 분류되어 약속 위반이 아니다. 비교 정당화: 보통 `[LT]` 같은 button-label affordance는 Dark Souls/Cuphead/Hollow Knight 등 *textfree* 게임도 표준으로 사용. Tier 3 Localization #22가 다국어 처리(F.4.1 #3)하므로 영문 lock-in도 아니다. 글리프 대안(ux-designer REC-2 `[LT] ↺`) 검토 후 reject — KB+M `Shift` 보편 글리프 표준 부재(Mac ⇧ vs Windows shift logo)로 인해 cross-platform 일관성 보장 불가. Decision Log A.1 참조.
+**Pillar 4 carve-out explicit statement (B3 fix 2026-05-11)**: The 1-token button label (`[Shift] Rewind` / `[LT] Rewind`) exposed by this hint is a *carve-out* from game-concept Pillar 4 "zero lines of text tutorial". The *spirit* of Pillar 4's promise is "zero tutorial-dedicated text pages / modals / page-advancing textboxes" — a 1-token button label is classified as an in-game *UI element* (HUD action prompt) and is not a violation of that promise. Comparative justification: button-label affordances like `[LT]` are standard even in *text-free* games like Dark Souls/Cuphead/Hollow Knight. Tier 3 Localization #22 handles multilingual processing (F.4.1 #3) so there is no English lock-in either. Glyph alternative (ux-designer REC-2 `[LT] ↺`) was reviewed and rejected — no universal glyph standard exists for KB+M `Shift` (Mac ⇧ vs Windows shift logo), making cross-platform consistency impossible. See Decision Log A.1.
 
-**B15 fix (2026-05-11 — Pillar 1/2 silent-betrayal 방지)**: latch가 "세션 내 최초 죽음"에 닫히면, panic-miss 한 번에 prompt가 영구 소실 → 같은 플레이어가 다음 죽음에서도 Shift/LT를 모른 채 silent death loop에 진입한다. 따라서 prompt는 **매 DYING 진입 시 표시**되며, **세션 내 최초 rewind 성공** 직후 *영구 정지* (학습 도구 폐기 시점은 player가 학습을 *증명*한 시점으로 이동).
+**B15 fix (2026-05-11 — Pillar 1/2 silent-betrayal prevention)**: If the latch closes on "first death in session", one panic-miss permanently eliminates the prompt → the same player enters a silent death loop on the next death still not knowing Shift/LT. Therefore, the prompt **displays on every DYING entry** and *permanently stops* immediately after **the first rewind success in session** (the point at which the learning tool is retired moves to when the player *proves* they have learned).
 
-- **표시 트리거 (per-DYING)**: 매 `ALIVE → DYING` 전이. SM이 `first_death_in_session(profile)` 시그널 emit (recurring; 1-time latch *아님*). HUD #13 구독 + 자체 latch (`_first_rewind_success_latched: bool`) 검사 후 prompt show.
-- **영구 정지 트리거 (per-session)**: SM이 `first_rewind_success_in_session(profile)` 시그널 emit — 세션 내 최초 `REWINDING → ALIVE` 전이 시점에 `_lethal_hit_latched_prev == true` (= rewind이 실제 lethal hit를 되감았음, hazard-grace 자연 회복과 구별)일 때 1회 emit. HUD가 receive → `_first_rewind_success_latched = true` → 이후 `first_death_in_session` 무시.
-- **Latch reset**: `scene_will_change` 도달 시 (a) HUD가 `_first_rewind_success_latched = false`로 리셋 (= 새 씬 = 새 학습 컨텍스트), (b) SM이 `_session_first_success_emitted = false`로 리셋 (O6 cascade — state-machine.md C.2.2 O8).
-- **표시 시간**: DYING grace window (12 frames = 200ms). REWINDING/DEAD 전이 시 즉시 사라짐.
+- **Display trigger (per-DYING)**: Every `ALIVE → DYING` transition. SM emits `first_death_in_session(profile)` signal (recurring; *not* a 1-time latch). HUD #13 subscribes + checks its own latch (`_first_rewind_success_latched: bool`) before showing prompt.
+- **Permanent stop trigger (per-session)**: SM emits `first_rewind_success_in_session(profile)` signal — emitted once at the first `REWINDING → ALIVE` transition in session when `_lethal_hit_latched_prev == true` (= rewind actually reversed a lethal hit, distinguished from natural hazard-grace recovery). HUD receives → `_first_rewind_success_latched = true` → subsequent `first_death_in_session` ignored.
+- **Latch reset**: On `scene_will_change` (a) HUD resets `_first_rewind_success_latched = false` (= new scene = new learning context), (b) SM resets `_session_first_success_emitted = false` (O6 cascade — state-machine.md C.2.2 O8).
+- **Display duration**: DYING grace window (12 frames = 200ms). Disappears immediately on REWINDING/DEAD transition.
 
-**Input 책임**:
-- (a) `first_death_in_session` 발생 시 active device profile에 맞는 button-label 제공:
+**Input responsibilities**:
+- (a) On `first_death_in_session`, provide button-label matching the active device profile:
   - KB+M: `[Shift] Rewind`
   - Gamepad: `[LT] Rewind`
-- (b) Active profile 결정 — `Input.get_connected_joypads().size() > 0 AND _last_input_source == &"gamepad"`. Godot 4.6에 native "last input source" API 부재 → Input GDD가 자체 추적 (OQ-IN-3).
+- (b) Active profile determination — `Input.get_connected_joypads().size() > 0 AND _last_input_source == &"gamepad"`. Godot 4.6 has no native "last input source" API → Input GDD tracks it internally (OQ-IN-3).
 
-**HUD #13 책임**: 비주얼 렌더링, 12프레임 페이드, 위치/크기/색, HUD-local `_first_rewind_success_latched` 소유 + `scene_will_change` reset.
-**SM 책임**: `first_death_in_session` 시그널 owner (매 DYING emit) + `first_rewind_success_in_session` 시그널 owner (per-session 1-time emit + `_session_first_success_emitted` 카운터 + O6 cascade reset). state-machine.md C.2.2 O7/O8 참조.
+**HUD #13 responsibilities**: Visual rendering, 12-frame fade, position/size/color, HUD-local `_first_rewind_success_latched` ownership + `scene_will_change` reset.
+**SM responsibilities**: `first_death_in_session` signal owner (emit on every DYING) + `first_rewind_success_in_session` signal owner (per-session 1-time emit + `_session_first_success_emitted` counter + O6 cascade reset). See state-machine.md C.2.2 O7/O8.
 
 **Cross-doc obligations (F.4.1)**:
-1. HUD #13 GDD: prompt 시각 시방 + 12프레임 fade + HUD-local `_first_rewind_success_latched` + `scene_will_change` reset 시방 포함.
-2. SM #5 (**Round-7 cross-doc-contradiction exception**, 2026-05-11): `first_death_in_session` + `first_rewind_success_in_session` 2개 신호 추가 (C.2.2 호스팅 의무 O7/O8). 본 변경은 Approved/LOCKED SM GDD에 *additive* state(`_session_first_success_emitted`) + 2 signal을 부과하므로 cross-doc exception로 인가 — `damage.md` Round 5 S1 BLOCKER cross-doc fix 패턴(Session 6, 2026-05-10) 답습.
-3. Localization #22 (Tier 3): `[Shift] Rewind` / `[LT] Rewind` 문자열 다국어 키 등록.
+1. HUD #13 GDD: include prompt visual spec + 12-frame fade + HUD-local `_first_rewind_success_latched` + `scene_will_change` reset spec.
+2. SM #5 (**Round-7 cross-doc-contradiction exception**, 2026-05-11): add 2 signals `first_death_in_session` + `first_rewind_success_in_session` (C.2.2 hosting obligation O7/O8). This change imposes *additive* state (`_session_first_success_emitted`) + 2 signals on the Approved/LOCKED SM GDD, authorized as cross-doc exception — follows `damage.md` Round 5 S1 BLOCKER cross-doc fix pattern (Session 6, 2026-05-10).
+3. Localization #22 (Tier 3): register `[Shift] Rewind` / `[LT] Rewind` strings as multilingual keys.
 
 #### C.1.6 InputStateProvider Adapter Seam (Tier 3 #24 Hook — B21 fix 2026-05-11)
 
-**문제 (accessibility-specialist)**: Tier 1에서 게임플레이 소비자(PM/SM/TRC/PS/Menu)가 `Input.is_action_*` / `Input.get_vector`를 *직접* 호출하면, Tier 3 #24 Accessibility (motor features — hold-duration scaling, mash assist, toggle mode)가 interposition할 *seam*이 없다. Anti-Pillar #6은 Tier 3 *content*를 defer하지만 *architecture*를 foreclose하지 않는다. 본 sub-section은 *지금* seam을 정의하고 Tier 1에서는 1:1 passthrough로 운영하여 Tier 3 swap 가능성을 보존한다.
+**Problem (accessibility-specialist)**: In Tier 1, if gameplay consumers (PM/SM/TRC/PS/Menu) call `Input.is_action_*` / `Input.get_vector` *directly*, Tier 3 #24 Accessibility (motor features — hold-duration scaling, mash assist, toggle mode) has no *seam* to interpose. Anti-Pillar #6 defers Tier 3 *content* but does not foreclose *architecture*. This sub-section defines the seam *now* and operates it as a 1:1 passthrough in Tier 1, preserving the Tier 3 swap option.
 
-**Tier 1 invariant (no obligation)**: Tier 1 게임플레이 소비자는 `Input.is_action_*` 직접 호출을 *그대로 유지*한다 — 추가 layer 추상화 강제 없음 (솔로 budget + Pillar 5 작은 성공). 본 sub-section은 *signature만* 락인하여 Tier 3 mass-rename burden을 *불변하게* 만든다.
+**Tier 1 invariant (no obligation)**: Tier 1 gameplay consumers *keep their direct* `Input.is_action_*` calls — no additional layer abstraction forced (solo budget + Pillar 5 small wins). This sub-section only locks in the *signature*, making the Tier 3 mass-rename burden *immutable*.
 
 ```gdscript
-# src/input/input_state_provider.gd (Tier 1: thin static wrapper — 사용 의무 없음)
+# src/input/input_state_provider.gd (Tier 1: thin static wrapper — no usage obligation)
 class_name InputStateProvider extends Node
 
-## Tier 1: 1:1 passthrough. Tier 3 #24가 본 5-method를 override / instance swap.
+## Tier 1: 1:1 passthrough. Tier 3 #24 overrides / instance-swaps these 5 methods.
 static func is_pressed(action: StringName) -> bool:
     return Input.is_action_pressed(action)
 static func is_just_pressed(action: StringName) -> bool:
@@ -202,32 +202,32 @@ static func get_action_strength(action: StringName) -> float:
     return Input.get_action_strength(action)
 ```
 
-**5-method signature 안정성 보장 (Tier 1 → Tier 3 mutation 금지)**: 위 5 method signature 고정. Tier 3는 *추가 method 가능* / *기존 5개 변경 금지*. 이 invariant이 Tier 3 PR 시 raw `Input.*` mass-rename에 lower bound 보장.
+**5-method signature stability guarantee (Tier 1 → Tier 3 mutation forbidden)**: The above 5 method signatures are fixed. Tier 3 may *add methods* / *must not change the existing 5*. This invariant provides a lower bound on the raw `Input.*` mass-rename during Tier 3 PR.
 
-**Tier 3 #24 migration scope (예시 — 정의 X, 보존 hook만)**:
-- `hold_duration_scaling`: `is_pressed` → 점진 ramp (예: 0.5초 hold = 0.5 strength).
+**Tier 3 #24 migration scope (examples — not defined here, hook preservation only)**:
+- `hold_duration_scaling`: `is_pressed` → gradual ramp (e.g. 0.5s hold = 0.5 strength).
 - `mash_assist`: `is_just_pressed` → debounced auto-repeat (5Hz threshold).
-- `toggle_mode`: `is_pressed` → 토글 상태 (press once = pressed until press again).
-- 위 features 모두 `InputStateProvider.*` static method override 또는 instance swap으로 구현. raw `Input.*` 호출 site는 Tier 3 PR에서 mechanical grep-replace.
+- `toggle_mode`: `is_pressed` → toggle state (press once = pressed until pressed again).
+- All of the above features are implemented via `InputStateProvider.*` static method override or instance swap. Raw `Input.*` call sites are mechanical grep-replaced in the Tier 3 PR.
 
-**Tier 3 hook 보존 메커니즘**:
-1. `forbidden_patterns.gameplay_input_in_callback` (Rule 2 + F.4.1 #13) — Tier 3 migration이 `_input` 콜백으로 도망가지 못함 (B22 carve-out도 *bridge* 한정).
-2. 5-method signature 락인 (위) — backward-compat 보장.
-3. Tier 3 #24 GDD가 *모든* gameplay 소비자 `InputStateProvider.*` migration 의무 부과 (F.4.2 row 신설).
+**Tier 3 hook preservation mechanisms**:
+1. `forbidden_patterns.gameplay_input_in_callback` (Rule 2 + F.4.1 #13) — prevents Tier 3 migration from escaping to `_input` callbacks (B22 carve-out is *bridge*-only).
+2. 5-method signature lock-in (above) — backward-compat guaranteed.
+3. Tier 3 #24 GDD imposes migration obligation on *all* gameplay consumers to `InputStateProvider.*` (new F.4.2 row).
 
-**Tier 1 결정 근거**: seam *정의*는 Tier 1, seam *활용*은 Tier 3. 솔로 budget + Pillar 5 = "정의는 가볍게, 의무 X, 미래 보존만". 본 GDD 작성 시점 raw `Input.is_action_*` 호출 site는 Tier 1 baseline = N (정확 카운트는 PR 시점); Tier 3 migration이 N → 0 transition.
+**Tier 1 rationale**: seam *definition* is Tier 1, seam *utilization* is Tier 3. Solo budget + Pillar 5 = "define lightly, no obligation, future preservation only". At the time of this GDD, raw `Input.is_action_*` call sites = Tier 1 baseline N (exact count at PR time); Tier 3 migration transitions N → 0.
 
 ### C.2 States / Modes (Tier Gating)
 
-Input은 게임플레이 state machine을 *소유하지 않는다* (Foundation; SM은 #5). Tier 모드는 invariant 게이팅 차원에서만 명시.
+Input does *not own* the gameplay state machine (Foundation; SM is #5). Tier modes are specified only for invariant gating purposes.
 
 | Tier | Mode | Invariant |
 |---|---|---|
-| Tier 1 | `default_only` | 9 actions × 2 device profiles 디폴트 매핑. **single-button no-chord** invariant 절대 (C.3). |
-| Tier 2 | `default_only` (unchanged) | Difficulty Toggle #20은 InputMap 미수정; `RewindPolicy` data만 변경. **Input deliverable 0건.** |
-| Tier 3 | `remap_permissive` | #23 Input Remapping이 `InputMap.action_*_event` 동적 호출. Player-bound chord 허용 (UI에 1-frame latency 경고). **Default mapping table은 Reset to Defaults에서 불변** (chord 0건). |
+| Tier 1 | `default_only` | 9 actions × 2 device profiles default mapping. **single-button no-chord** invariant absolute (C.3). |
+| Tier 2 | `default_only` (unchanged) | Difficulty Toggle #20 does not modify InputMap; only `RewindPolicy` data changes. **0 Input deliverables.** |
+| Tier 3 | `remap_permissive` | #23 Input Remapping dynamically calls `InputMap.action_*_event`. Player-bound chords allowed (1-frame latency warning in UI). **Default mapping table is immutable in Reset to Defaults** (0 chords). |
 
-**OQ-15 closure**: Tier 3 chord 정책 = `default-only` interpretation locked (game-designer recommendation). Tier 3 권한이 Tier 1 결정성 계약을 깨지 않음.
+**OQ-15 closure**: Tier 3 chord policy = `default-only` interpretation locked (game-designer recommendation). Tier 3 permissions do not break the Tier 1 determinism contract.
 
 ### C.3 InputMap Default Bindings (Single Source)
 
@@ -239,13 +239,13 @@ Input은 게임플레이 state machine을 *소유하지 않는다* (Foundation; 
 | `move_right` | D | WASD genre standard |
 | `move_up` | W | 8-way aim only |
 | `move_down` | S | 8-way aim only |
-| `jump` | Space | 보편 KB jump affordance |
-| `aim_lock` | F | WASD home row **left index finger** 자연 reach (F는 left index 정상 reach 위치); **Hotline Miami Shift-aim muscle-memory separation** (Shift은 본 GDD `rewind_consume` 점유로 aim_lock에 사용 불가); non-chord single-button. *B6 fix 2026-05-11*: 이전 "right ring finger" 인용은 해부학적 오류 — F는 left hand index reach (WASD 사용 시 left index가 D 위에서 F로 1키 right slide). |
-| `shoot` | LMB (Mouse Button Left) | Hotline Miami convention; mouse-aim 미사용 시에도 LMB primary fire 본능 |
+| `jump` | Space | Universal KB jump affordance |
+| `aim_lock` | F | WASD home row **left index finger** natural reach (F is the normal reach position for left index); **Hotline Miami Shift-aim muscle-memory separation** (Shift is occupied by `rewind_consume` in this GDD, cannot be used for aim_lock); non-chord single-button. *B6 fix 2026-05-11*: previous "right ring finger" citation was anatomically incorrect — F is left hand index reach (when using WASD, left index slides 1 key right from D to F). |
+| `shoot` | LMB (Mouse Button Left) | Hotline Miami convention; LMB primary fire instinct even when mouse-aim is unused |
 | `rewind_consume` | Shift | Katana Zero precedent + LT body-mapping mirror; left pinky panic reflex |
 | `pause` | Escape | OS-universal |
 
-**RMB / Mouse-aim 차후 확장**: 현재 mouse-aim 미사용. Tier 3 mouse-aim 추가 시 `aim_lock = F` 유지 + `RMB` 별도 액션 등록 가능.
+**RMB / Mouse-aim future expansion**: Mouse-aim currently unused. If Tier 3 mouse-aim is added, keep `aim_lock = F` + register `RMB` as a separate action.
 
 #### C.3.2 Gamepad Profile (Xbox labels — Steam Deck inherits verbatim)
 
@@ -256,19 +256,19 @@ Input은 게임플레이 state machine을 *소유하지 않는다* (Foundation; 
 | `move_up` | Left Stick Y− | 8-way aim direction (Godot Y axis: up = negative) |
 | `move_down` | Left Stick Y+ | 8-way aim direction |
 | `jump` | A (South face) | Contra/Cuphead universal jump |
-| `aim_lock` | RB (Right Bumper) | **Left-right separation**: LT=`rewind_consume` (Pillar 1 LT exclusivity — time-rewind.md C.3 #1) ⇒ RB=`aim_lock` (right shoulder, opposite hand from rewind trigger). Right-hand pinch risk (RB+RT 동시 hold = `aim_lock` + `shoot`) Tier 1 accepted → OQ-IN-6 playtest verify. *B16 fix 2026-05-11*: "Cuphead lock-aim precedent" 인용 제거 — community consensus는 LT=lock, RB=avoid right-hand pinch (web-verified Session 13). CD adjudication: keep RB (LT 충돌이 더 나쁨 — Pillar 1 protect), remove false cite, re-justify on left-right separation. |
+| `aim_lock` | RB (Right Bumper) | **Left-right separation**: LT=`rewind_consume` (Pillar 1 LT exclusivity — time-rewind.md C.3 #1) ⇒ RB=`aim_lock` (right shoulder, opposite hand from rewind trigger). Right-hand pinch risk (simultaneous RB+RT hold = `aim_lock` + `shoot`) Tier 1 accepted → OQ-IN-6 playtest verify. *B16 fix 2026-05-11*: "Cuphead lock-aim precedent" citation removed — community consensus is LT=lock, RB=avoid right-hand pinch (web-verified Session 13). CD adjudication: keep RB (LT conflict is worse — Pillar 1 protect), remove false cite, re-justify on left-right separation. |
 | `shoot` | RT (Right Trigger) | Cuphead RT shoot — right-hand dominance |
 | `rewind_consume` | LT (Left Trigger), threshold 0.5 | time-rewind.md C.3 #1 lock |
-| `pause` | Start / Menu | hardware convention; Steam Deck Menu 버튼 |
+| `pause` | Start / Menu | hardware convention; Steam Deck Menu button |
 
-**Steam Deck 검증**:
-- 별도 프로필 X — gamepad table verbatim.
-- LT threshold 0.5 chatter 위험 → SM hysteresis (`_trigger_held` gate; cross-doc obligation 신규).
-- Tier 1 Week 1 *물리 Deck 1세대* manual 검증 (OQ-IN-2).
+**Steam Deck verification**:
+- No separate profile — gamepad table verbatim.
+- LT threshold 0.5 chatter risk → SM hysteresis (`_trigger_held` gate; new cross-doc obligation).
+- Tier 1 Week 1 *physical 1st-gen Deck* manual verification (OQ-IN-2).
 
-#### C.3.3 AimLock-Jump Exclusivity AC (PM F.4.2 의무 충족)
+#### C.3.3 AimLock-Jump Exclusivity AC (PM F.4.2 obligation fulfilled)
 
-InputMap은 `aim_lock` hold + `jump` press를 *독립 이벤트*로 발화 — chord swallow 0건. PM이 *둘 다 본 상태에서 jump 무시*는 PM 단독 정책(C.2.4 input ignore). 본 GDD는 *입력 도달*만 보장:
+InputMap fires `aim_lock` hold + `jump` press as *independent events* — 0 chord swallows. PM *ignoring jump while both are seen* is PM-only policy (C.2.4 input ignore). This GDD only guarantees *input delivery*:
 
 ```
 GIVEN: aim_lock = pressed (hold) + jump = just_pressed (same _physics_process tick)
@@ -295,38 +295,39 @@ const REWIND_CONSUME := &"rewind_consume"
 const PAUSE          := &"pause"
 ```
 
-**규칙**: 모든 `Input.*` 호출은 `InputActions.JUMP` 형태. Inline `&"jump"` literal 산발 금지 — refactor-safe(rename → const 1곳) + grep-able + reuse-safe (게임플레이 코드 + GUT 픽스처 양쪽).
+**Rule**: All `Input.*` calls use the `InputActions.JUMP` form. Scattering inline `&"jump"` literals is forbidden — refactor-safe (rename → 1 const location) + grep-able + reuse-safe (both gameplay code and GUT fixtures).
 
-**위배 검출**: `tools/ci/input_action_static_check.sh` (Tier 1 CI gate; PM B2 trap 회피 — *script 자체 작성*도 본 GDD AC의 일부) — `grep -RE 'Input\.[a-z_]+\(\s*&?"' src/` 출력이 `InputActions.X`가 아닌 라인 0개 검증.
+**Violation detection**: `tools/ci/input_action_static_check.sh` (Tier 1 CI gate; PM B2 trap avoidance — *writing the script itself* is part of this GDD's AC) — verifies that `grep -RE 'Input\.[a-z_]+\(\s*&?"' src/` output has 0 lines not of the form `InputActions.X`.
 
 ### C.5 Interactions With Other Systems
 
-본 표는 Input이 다른 시스템과 데이터·시그널·메서드 호출을 어떻게 주고받는가의 단일 출처. F.1-F.4가 양방향 정합성 책임.
+This table is the single source of truth for how Input exchanges data, signals, and method calls with other systems. F.1–F.4 are responsible for bidirectional consistency.
 
-| 대상 시스템 | 방향 | Wiring 패턴 | 금지 alternatives |
+| Target System | Direction | Wiring Pattern | Forbidden Alternatives |
 |---|---|---|---|
-| **Player Movement (#6)** | PM이 `Input.get_vector` + `is_action_pressed/just_pressed` 폴링 (5 actions: 4 move + jump + aim_lock) | `_physics_process` Phase 2 | `_input` / `_unhandled_input` 콜백; Input → PM 시그널 emit |
-| **State Machine (#5)** | SM AliveState/DyingState `physics_update`이 `is_action_just_pressed(REWIND_CONSUME)` 폴링; LT chatter hysteresis(`_trigger_held`) gate **신규 cross-doc obligation** | `_physics_process` (paused 시 정지 — resume은 PauseHandler) | `_input` 콜백; SM이 직접 InputMap 변경 |
-| **Time Rewind Controller (#9)** | TRC가 `process_physics_priority=1`에서 SM과 동일 시점에 input 폴링 (verify only — 실제 logic은 SM) | Phase 2 read | TRC가 InputMap mutate |
-| **Player Shooting (#7)** *(provisional)* | PS가 `is_action_just_pressed(SHOOT)` 또는 `is_action_pressed(SHOOT)` (#7 결정) 폴링 | Phase 2 | — |
-| **PauseHandler autoload (본 GDD 단일 출처)** | autoload가 `_unhandled_input`에서 `pause` 토글; SM `can_pause()` 쿼리 | autoload + `PROCESS_MODE_ALWAYS` | SM 단독 폴링 (paused 시 deadlock) |
-| **Menu / Pause UI (#18)** | UI가 `_input` 콜백에서 directional/confirm 액션 폴링 (예외 영역) | `_input` 허용 | 게임플레이 액션을 `_input`에서 폴링 |
-| **HUD (#13)** | HUD가 `first_death_in_session` 신호 (SM owner) + Input의 button-label string API 구독 | signal + read-only API | HUD가 `Input.get_action_*()` 직접 호출 |
-| **SettingsManager (Tier 3)** | `apply_deadzone(v)` 호출 시 paused-tree에서 `InputMap.action_set_deadzone` 호출 | paused-tree apply | mid-tick deadzone mutate |
-| **Input Remapping (#23, Tier 3)** | #23이 `InputMap.action_*_event` 동적 호출 — *default mapping table 불변* | paused-tree apply + `default_only` invariant | Tier 3에서 9-action 기본 카탈로그 변경 |
-| **GUT Test Fixture (CI)** | 픽스처가 `Input.action_press(InputActions.X)` 또는 `parse_input_event(InputEventAction)` | `await get_tree().physics_frame` 이전 inject | 두 API 혼용 (false positive) |
+| **Player Movement (#6)** | PM polls `Input.get_vector` + `is_action_pressed/just_pressed` (5 actions: 4 move + jump + aim_lock) | `_physics_process` Phase 2 | `_input` / `_unhandled_input` callbacks; Input → PM signal emit |
+| **State Machine (#5)** | SM AliveState/DyingState `physics_update` polls `is_action_just_pressed(REWIND_CONSUME)`; LT chatter hysteresis (`_trigger_held`) gate **new cross-doc obligation** | `_physics_process` (stops when paused — resume via PauseHandler) | `_input` callback; SM directly mutating InputMap |
+| **Time Rewind Controller (#9)** | TRC polls input at same time as SM in `process_physics_priority=1` slot (verify only — actual logic owned by SM) | Phase 2 read | TRC mutating InputMap |
+| **Player Shooting (#7)** *(provisional)* | PS polls `is_action_just_pressed(SHOOT)` or `is_action_pressed(SHOOT)` (decision owned by #7) | Phase 2 | — |
+| **PauseHandler autoload (single source: this GDD)** | autoload toggles `pause` in `_unhandled_input`; queries SM `can_pause()` | autoload + `PROCESS_MODE_ALWAYS` | SM polling alone (deadlock when paused) |
+| **Menu / Pause UI (#18)** | Approved 2026-05-14: focusable menu surfaces may handle UI navigation/confirm/cancel/slider events in `_input` only; pause toggling remains PauseHandler-owned | `_input` allowed for UI only + `PROCESS_MODE_ALWAYS` pause overlay | Polling gameplay actions in `_input`; adding Tier 1 InputMap actions (`menu_confirm`, `menu_cancel`, `skip_intro`); bypassing PauseHandler |
+| **HUD (#13)** | HUD subscribes to `first_death_in_session` signal (SM owner) + Input's button-label string API | signal + read-only API | HUD calling `Input.get_action_*()` directly |
+| **Story Intro Text (#17)** | Uses no input API directly; existing cold-boot first-input route may interrupt the passive intro via Scene Manager #2 | Input #1 / Scene Manager #2 cold-boot route; no new InputMap action | Adding `skip_intro` or intro-specific confirm action |
+| **SettingsManager (Tier 3)** | On `apply_deadzone(v)` call, calls `InputMap.action_set_deadzone` in paused tree | paused-tree apply | mid-tick deadzone mutation |
+| **Input Remapping (#23, Tier 3)** | #23 dynamically calls `InputMap.action_*_event` — *default mapping table immutable* | paused-tree apply + `default_only` invariant | Changing the 9-action base catalog from Tier 3 |
+| **GUT Test Fixture (CI)** | Fixture uses `Input.action_press(InputActions.X)` or `parse_input_event(InputEventAction)` | inject before `await get_tree().physics_frame` | Mixing both APIs (false positive) |
 
 ## D. Formulas
 
-Section D는 의도적으로 좁다. Input은 Foundation/Infrastructure 레이어로, 게임플레이상 의미 있는 모든 산식(jump buffer / coyote window / rewind predicate / velocity integration / 1.5초 lookback)은 소비자 GDD 단일 출처다(C.5 Interactions 참조). Input이 *직접 owns*하는 산식은 세 가지다: **D.1** active device profile resolution, **D.2** wall-clock exclusion 규칙, **D.3** radial composite deadzone (B9 추가 2026-05-11 — Session 12 draft은 "C.1.3에 완결"이라고 미루었으나 Godot `Input.get_vector` 정확한 함수 정의 + 변수표 + 워크드 예제가 systems-designer 검증 시 필수로 판정됨; C.1.3는 *정책 선언*만 가지고 함수 정의는 D.3가 단일 출처).
+Section D is intentionally narrow. Input is a Foundation/Infrastructure layer; all gameplay-meaningful formulas (jump buffer / coyote window / rewind predicate / velocity integration / 1.5s lookback) are single-sourced in consumer GDDs (see C.5 Interactions). The formulas Input *directly owns* are three: **D.1** active device profile resolution, **D.2** wall-clock exclusion rule, **D.3** radial composite deadzone (B9 addition 2026-05-11 — Session 12 draft deferred with "complete in C.1.3" but systems-designer review determined that the exact Godot `Input.get_vector` function definition + variable table + worked examples are required; C.1.3 holds only the *policy declaration*, D.3 is the single source for the function definition).
 
 ### D.1 Active Device Profile Resolution
 
-C.1.5 first-death hint이 active device profile (KB+M vs Gamepad)를 알아야 button-label string(`[Shift] Rewind` vs `[LT] Rewind`)을 골라준다. Godot 4.6에 native "last input source" API가 없으므로 본 GDD가 *자체 추적 + 휴리스틱*을 단일 출처로 정의한다.
+C.1.5 first-death hint needs to know the active device profile (KB+M vs Gamepad) to select the button-label string (`[Shift] Rewind` vs `[LT] Rewind`). Since Godot 4.6 has no native "last input source" API, this GDD defines *its own tracking + heuristic* as the single source.
 
 #### D.1.1 Part A — Source Classification (event-driven write)
 
-`_input` 콜백에서 `InputEvent` 서브타입을 분류해 두 멤버 변수를 갱신한다 (predicate, 산술 없음):
+Classifies `InputEvent` subtypes in the `_input` callback and updates two member variables (predicate, no arithmetic):
 
 ```gdscript
 # src/input/active_profile_tracker.gd (autoload, PROCESS_MODE_ALWAYS)
@@ -346,7 +347,7 @@ func _input(event: InputEvent) -> void:
         _last_input_frame = Engine.get_physics_frames()
     elif event is InputEventJoypadMotion:
         # B8 axis filter (2026-05-11 fix): only intentional-input axes flip the profile.
-        # Without this filter, RIGHT_STICK_X/Y drift in (0.3, 0.5) range — Steam Deck 1세대
+        # Without this filter, RIGHT_STICK_X/Y drift in (0.3, 0.5) range — Steam Deck 1st-gen
         # right-stick drift is documented up to 0.18 raw on RMA units but third-party
         # controllers (Xbox One worn analog) can exceed GAMEPAD_DETECTION_THRESHOLD without
         # the player intending input. Right stick is *unbound* in Echo Tier 1 (no aim-stick),
@@ -384,70 +385,70 @@ active_profile() :=
 
 | Variable | Symbol | Type | Range | Description |
 |----------|--------|------|-------|-------------|
-| `_last_input_source` | s | DeviceProfile enum | {NONE=0, KB_M=1, GAMEPAD=2} | Part A 출력. 마지막 분류된 입력 소스 |
-| `_last_input_frame` | f₀ | int | -1 또는 ≥ 0 | Part A 갱신 시점의 `Engine.get_physics_frames()`. -1 = 초기 미입력 |
-| `current_frame` | f | int | ≥ 0 | 쿼리 시점 `Engine.get_physics_frames()` |
-| `HYSTERESIS_FRAMES` | H | int | 60 ≤ H ≤ 600, default **180** | Gamepad sticky 윈도우. 60 = 1초 (너무 짧음, 마우스 brush로 즉시 KB+M flip), 600 = 10초 (너무 김, 디바이스 교체 후 10초 wrong label) — Tier 1 default 180 (3초)는 mouse jitter 흡수 + 디바이스 교체 응답성 균형. G.1 tunable. |
-| `GAMEPAD_DETECTION_THRESHOLD` | T_g | float | **0.3** (OQ-IN-3 pending Tier 1 Steam Deck 1세대 검증) | InputEventJoypadMotion `abs(axis_value)` 필터. 0.2 deadzone 위 50% 마진 — drift 거짓-양성 회피. Steam Deck 1st-gen RMA 0.18 max raw 위에 충분. |
-| `joypads_connected` | j | int | ≥ 0 | `Input.get_connected_joypads().size()` 쿼리 시점 값 |
-| **Output** `active_profile()` | — | DeviceProfile | {KB_M, GAMEPAD} | 절대 NONE 반환 안 함 (3rd 분기가 fallback) |
+| `_last_input_source` | s | DeviceProfile enum | {NONE=0, KB_M=1, GAMEPAD=2} | Part A output. Last classified input source |
+| `_last_input_frame` | f₀ | int | -1 or ≥ 0 | `Engine.get_physics_frames()` at the time Part A last updated. -1 = initial, no input yet |
+| `current_frame` | f | int | ≥ 0 | `Engine.get_physics_frames()` at query time |
+| `HYSTERESIS_FRAMES` | H | int | 60 ≤ H ≤ 600, default **180** | Gamepad sticky window. 60 = 1s (too short, mouse brush causes immediate KB+M flip), 600 = 10s (too long, wrong label for 10s after device switch) — Tier 1 default 180 (3s) balances mouse jitter absorption + device switch responsiveness. G.1 tunable. |
+| `GAMEPAD_DETECTION_THRESHOLD` | T_g | float | **0.3** (OQ-IN-3 pending Tier 1 Steam Deck 1st-gen verification) | `InputEventJoypadMotion` `abs(axis_value)` filter. 50% margin above 0.2 deadzone — avoids drift false-positives. Sufficient above Steam Deck 1st-gen RMA 0.18 max raw. |
+| `joypads_connected` | j | int | ≥ 0 | `Input.get_connected_joypads().size()` value at query time |
+| **Output** `active_profile()` | — | DeviceProfile | {KB_M, GAMEPAD} | Never returns NONE (3rd branch is fallback) |
 
-**Output Range**: `{KB_M, GAMEPAD}` — `NONE`은 외부 노출 안 됨 (3번째 분기가 폴백). 산술 unbounded 영역 없음.
+**Output Range**: `{KB_M, GAMEPAD}` — `NONE` is never exposed externally (3rd branch is fallback). No arithmetic unbounded region.
 
 **Worked Examples** (HYSTERESIS_FRAMES = 180):
 
 ```
 Scenario 1 — gamepad active session
   s = GAMEPAD, f₀ = 3000, f = 3050, H = 180, j = 1
-  delta = 50; 50 < 180 → 1st 분기 hit → output = GAMEPAD ✓
+  delta = 50; 50 < 180 → 1st branch hit → output = GAMEPAD ✓
 
 Scenario 2 — gamepad expired, joypad still connected
   s = GAMEPAD, f₀ = 3000, f = 3500, H = 180, j = 1
-  delta = 500; 500 ≥ 180 → 1st 분기 miss → s != KB_M → 3rd 분기 → j > 0 → GAMEPAD ✓
+  delta = 500; 500 ≥ 180 → 1st branch miss → s != KB_M → 3rd branch → j > 0 → GAMEPAD ✓
 
 Scenario 3 — gamepad expired, joypad unplugged mid-session
   s = GAMEPAD, f₀ = 3000, f = 3500, H = 180, j = 0
-  delta = 500; 500 ≥ 180 → 3rd 분기 → j == 0 → KB_M ✓
+  delta = 500; 500 ≥ 180 → 3rd branch → j == 0 → KB_M ✓
 
 Scenario 4 — KB_M sticky (no hysteresis on KB+M side)
   s = KB_M, f₀ = 100, f = 100000, H = 180, j = 1
-  s == KB_M → 2nd 분기 hit → KB_M ✓
-  (이유: 키보드/마우스 사용자는 actively "데스크 위" — gamepad fallback 불필요)
+  s == KB_M → 2nd branch hit → KB_M ✓
+  (reason: keyboard/mouse users are actively "at desk" — no gamepad fallback needed)
 
 Scenario 5 — cold boot
   s = NONE, f₀ = -1, f = 60, H = 180, j = 1
-  s == NONE → 3rd 분기 → j > 0 → GAMEPAD ✓
-  (Pillar 4 부산물: Steam Deck 부팅 시 첫 프레임에 GAMEPAD 디폴트로 시작)
+  s == NONE → 3rd branch → j > 0 → GAMEPAD ✓
+  (Pillar 4 byproduct: GAMEPAD default on first frame when booting Steam Deck)
 ```
 
-**비대칭성 설계**: GAMEPAD는 hysteresis로 sticky, KB_M은 즉시-sticky (영구). 의도 — gamepad 사용자는 종종 마우스를 *brush*하지만 KB+M 사용자는 의도적으로 키를 누른다. 이 비대칭은 첫-사망 prompt label flickering을 방지(false KB_M flip → 즉시 KB_M label → 의도와 mismatch). G.1 tunable 권한으로 향후 대칭 hysteresis로 변경 가능.
+**Asymmetric design**: GAMEPAD is sticky via hysteresis, KB_M is immediately-sticky (permanent). Rationale — gamepad users often *brush* the mouse, but KB+M users press keys intentionally. This asymmetry prevents first-death prompt label flickering (false KB_M flip → immediate KB_M label → mismatch with intent). G.1 tunable permission allows changing to symmetric hysteresis in the future.
 
-**OQ-SM-3 closure**: `rewind_consume` action 이름은 본 GDD C.1.1 row 8에서 verbatim lock — state-machine.md OQ-SM-3 해소(*registry 등록 불필요* — 단일 source naming, cross-system value drift risk 없음).
+**OQ-SM-3 closure**: `rewind_consume` action name is verbatim-locked in this GDD C.1.1 row 8 — state-machine.md OQ-SM-3 resolved (*no registry registration required* — single source naming, no cross-system value drift risk).
 
 ### D.2 Wall-Clock Exclusion Rule (non-formula clarification)
 
-**Wall-clock API 게임플레이 사용 금지**. ADR-0003 `determinism_clock` 결정에 따라 입력 시점 판정은 `Engine.get_physics_frames()` 단일 출처만 사용한다.
+**Wall-clock API usage in gameplay is forbidden**. Per the ADR-0003 `determinism_clock` decision, input timing judgment uses only `Engine.get_physics_frames()` as the single source.
 
-**Godot 4.6 verified banned API list** (`docs/engine-reference/godot/modules/input.md` + `Time` / `OS` API 검증 기준):
+**Godot 4.6 verified banned API list** (`docs/engine-reference/godot/modules/input.md` + `Time` / `OS` API verification basis):
 - `Time.get_ticks_msec()`, `Time.get_ticks_usec()`, `Time.get_unix_time_from_system()`
 - `OS.get_ticks_msec()`, `OS.get_ticks_usec()`
 - `Time.get_datetime_*` family
 
 ```gdscript
-# 금지 — wall-clock 의존
+# Forbidden — wall-clock dependency
 if Time.get_ticks_msec() - _last_press_msec < 100:  # ← BANNED (wall-clock source)
     handle_recent_input(event)
 
-# 허용 — physics frame 기반
+# Allowed — physics frame based
 if Engine.get_physics_frames() - _last_input_frame < HYSTERESIS_FRAMES:
     use_recent_profile()
 ```
 
-**B11 fix (2026-05-11 — Godot 4.6 unverified API citation 정정)**: Session 12 draft는 `InputEvent.timestamp`를 wall-clock source로 인용했으나, *Godot 4.6 official `InputEvent` base class API에 공식 `timestamp` 필드 없음* (`docs/engine-reference/godot/modules/input.md` 본 reference 부재 — 2026-05-11 grep 검증). 본 정정으로 false API citation 제거 + 실제 wall-clock surface(`Time.*` / `OS.*` 가족)만 banned list에 유지. AC-IN-18 wall-clock check script 패턴(`Time\.get_ticks_msec\|Time\.get_ticks_usec\|OS\.get_ticks_msec`)은 이미 `InputEvent.timestamp` 미포함 — 변경 없음. `forbidden_patterns.wall_clock_in_input_logic` (F.4.1 #13) 스캐너 정의도 동일 grep 패턴 유지.
+**B11 fix (2026-05-11 — Godot 4.6 unverified API citation correction)**: Session 12 draft cited `InputEvent.timestamp` as a wall-clock source, but *Godot 4.6 official `InputEvent` base class API has no official `timestamp` field* (`docs/engine-reference/godot/modules/input.md` reference absent — 2026-05-11 grep verified). This correction removes the false API citation and keeps only the actual wall-clock surfaces (`Time.*` / `OS.*` family) in the banned list. The AC-IN-18 wall-clock check script pattern (`Time\.get_ticks_msec\|Time\.get_ticks_usec\|OS\.get_ticks_msec`) already excludes `InputEvent.timestamp` — no change. The `forbidden_patterns.wall_clock_in_input_logic` (F.4.1 #13) scanner definition also maintains the same grep pattern.
 
-Forbidden pattern 등록 후보(F.4.1): `wall_clock_in_input_logic` — `Time.get_ticks_msec()` / `Time.get_ticks_usec()` / `OS.get_ticks_msec()` 호출이 Input/게임플레이 코드에 존재 시 차단. CI grep gate `tools/ci/wall_clock_check.sh`로 검증 (C.4 의무 확장).
+Forbidden pattern registration candidate (F.4.1): `wall_clock_in_input_logic` — blocks when `Time.get_ticks_msec()` / `Time.get_ticks_usec()` / `OS.get_ticks_msec()` calls exist in Input/gameplay code. Verified by CI grep gate `tools/ci/wall_clock_check.sh` (C.4 obligation extension).
 
-### D.3 Radial Composite Deadzone (B9 추가 2026-05-11)
+### D.3 Radial Composite Deadzone (B9 addition 2026-05-11)
 
 **Formula**:
 
@@ -461,60 +462,60 @@ deadzone_filter(raw_vec, T) :=
   (= raw_vec.normalized() * remapped_magnitude)
 ```
 
-이는 `Input.get_vector(neg_x, pos_x, neg_y, pos_y, deadzone=-1.0)`의 동등 표현이다 — Godot 4.6 엔진 내부에서 4 개별 action `deadzone` 값의 평균을 `T`로 사용하며, magnitude는 합성 전의 raw `(x, y)` 벡터에 적용된다(`x = pos_x_strength − neg_x_strength`, 동일 for y; raw `axis_value` 기반).
+This is the equivalent expression for `Input.get_vector(neg_x, pos_x, neg_y, pos_y, deadzone=-1.0)` — Godot 4.6 engine internally uses the average of the 4 individual action `deadzone` values as `T`, and applies magnitude to the raw `(x, y)` vector before composition (`x = pos_x_strength − neg_x_strength`, same for y; based on raw `axis_value`).
 
 **Variables**:
 
 | Variable | Symbol | Type | Range | Description |
 |----------|--------|------|-------|-------------|
-| `raw_vec` | $\vec{v}$ | Vector2 | $[-1.0, 1.0]^2$ | `(pos_x_strength − neg_x_strength, pos_y_strength − neg_y_strength)`. Godot가 4 actions의 raw axis_value (또는 KB 1.0/0.0)를 합성. |
-| `magnitude` | $m$ | float | $[0.0, \sqrt{2}]$ | $\|\vec{v}\|$ — radial composite 길이. 대각선 입력 시 √2 까지. |
-| `T` | $T$ | float | $[0.0, 1.0]$ default **0.2** | radial threshold. `Input.get_vector(deadzone=-1.0)` 시 = mean(action_get_deadzone(4 actions)) — Echo Tier 1 모두 0.2 → T=0.2. |
-| **Output** | $\vec{u}$ | Vector2 | $[-1.0, 1.0]^2$ (magnitude $\in [0.0, 1.0]$) | radial scaled vector. magnitude가 [T, 1.0]에서 [0.0, 1.0]로 remap. |
+| `raw_vec` | $\vec{v}$ | Vector2 | $[-1.0, 1.0]^2$ | `(pos_x_strength − neg_x_strength, pos_y_strength − neg_y_strength)`. Godot composites the raw axis_value (or KB 1.0/0.0) of 4 actions. |
+| `magnitude` | $m$ | float | $[0.0, \sqrt{2}]$ | $\|\vec{v}\|$ — radial composite length. Up to √2 on diagonal input. |
+| `T` | $T$ | float | $[0.0, 1.0]$ default **0.2** | radial threshold. When `Input.get_vector(deadzone=-1.0)` = mean(action_get_deadzone(4 actions)) — Echo Tier 1 all 0.2 → T=0.2. |
+| **Output** | $\vec{u}$ | Vector2 | $[-1.0, 1.0]^2$ (magnitude $\in [0.0, 1.0]$) | radial scaled vector. magnitude remapped from [T, 1.0] to [0.0, 1.0]. |
 
-**Output Range**: `Vector2.ZERO` (m < T) 또는 magnitude `[0.0, 1.0]` 의 normalized-and-remapped vector. Magnitude는 √2까지 갈 수 없음 — Godot가 출력 magnitude를 `min(remapped, 1.0)`으로 클램프 (대각선 입력 1.0 limit).
+**Output Range**: `Vector2.ZERO` (m < T) or normalized-and-remapped vector with magnitude `[0.0, 1.0]`. Magnitude cannot reach √2 — Godot clamps output magnitude with `min(remapped, 1.0)` (diagonal input 1.0 limit).
 
 **Worked Examples** (Echo Tier 1 case T=0.2):
 
 ```
-Example 1 — within deadzone (Steam Deck 1세대 stick drift)
+Example 1 — within deadzone (Steam Deck 1st-gen stick drift)
   raw_vec = Vector2(0.15, 0.0); m = 0.15; T = 0.2
   m < T → output = Vector2.ZERO ✓
-  (PM facing-lock invariant 유지 — E-IN-1)
+  (PM facing-lock invariant maintained — E-IN-1)
 
 Example 2 — at deadzone boundary
   raw_vec = Vector2(0.2, 0.0); m = 0.2; T = 0.2
   m ≥ T → remapped_m = (0.2 − 0.2) / 0.8 = 0.0 → output = Vector2.ZERO
-  (boundary inclusion 사실상 zero output — flickering 없음)
+  (boundary inclusion is effectively zero output — no flickering)
 
 Example 3 — mid-tilt cardinal
   raw_vec = Vector2(0.6, 0.0); m = 0.6; T = 0.2
   m ≥ T → remapped_m = (0.6 − 0.2) / 0.8 = 0.5 → output = Vector2(0.5, 0.0) ✓
   (m=0.6 raw → 0.5 effective — analog tilt linear remap)
 
-Example 4 — diagonal full-tilt (대각선 1.0 클램프)
+Example 4 — diagonal full-tilt (diagonal 1.0 clamp)
   raw_vec = Vector2(1.0, 1.0); m = √2 ≈ 1.414; T = 0.2
   m ≥ T → remapped_m = (1.414 − 0.2) / 0.8 ≈ 1.518
   Godot clamps: output magnitude = min(1.518, 1.0) = 1.0
   output = (1.0, 1.0).normalized() = Vector2(0.707, 0.707) ✓
-  (대각선이 cardinal보다 빠르지 않음 — Echo PM facing 8-way 안정성)
+  (diagonal is no faster than cardinal — Echo PM facing 8-way stability)
 
 Example 5 — KB+M (1.0/0.0 binary)
   raw_vec = Vector2(1.0, 0.0); m = 1.0; T = 0.2
   m ≥ T → remapped_m = (1.0 − 0.2) / 0.8 = 1.0 → output = Vector2(1.0, 0.0) ✓
-  (KB 1.0 strength → full output, deadzone 영향 없음 — KB+M 사용자 의도와 일치)
+  (KB 1.0 strength → full output, deadzone has no effect — matches KB+M user intent)
 ```
 
-**Cross-knob Invariant (B10 추가 2026-05-11)**:
+**Cross-knob Invariant (B10 addition 2026-05-11)**:
 
 ```
 INVARIANT-IN-1: gamepad_stick_deadzone < GAMEPAD_DETECTION_THRESHOLD
 INVARIANT-IN-2: GAMEPAD_DETECTION_THRESHOLD − gamepad_stick_deadzone ≥ 0.05
 ```
 
-이유: 두 knob이 같으면 (예: 둘 다 0.2), 스틱 raw `axis_value`가 deadzone을 *통과해 PM movement를 발화*하는 *동일 순간* `_last_input_source = GAMEPAD`로 flip이 트리거된다 — race가 아니지만 두 효과가 같은 frame에 발생해 디버깅이 어렵다. ≥0.05 마진은 *순수한 stick drift는 둘 다 통과 안 함*, *의도적 입력은 둘 다 통과함*, *경계 영역은 detection만 트리거하고 movement는 trigger 안 함*의 명확한 3-band 분리. Echo Tier 1: 0.2 / 0.3 = 0.10 마진 (충분).
+Rationale: if the two knobs are equal (e.g. both 0.2), the *same moment* the stick raw `axis_value` passes the deadzone and *fires PM movement*, a flip to `_last_input_source = GAMEPAD` is also triggered — not a race, but both effects occur in the same frame making debugging difficult. The ≥0.05 margin provides a clear 3-band separation: *pure stick drift passes neither*, *intentional input passes both*, *border region triggers detection only without triggering movement*. Echo Tier 1: 0.2 / 0.3 = 0.10 margin (sufficient).
 
-**Boot-time assert** (gameplay-programmer R5 + R20 종합): `ActiveProfileTracker._ready()` 또는 InputManager 부트 시점에:
+**Boot-time assert** (gameplay-programmer R5 + R20 combined): at `ActiveProfileTracker._ready()` or InputManager boot time:
 
 ```gdscript
 # B10 invariant boot assert (2026-05-11 fix)
@@ -531,73 +532,73 @@ func _ready() -> void:
         "INVARIANT: HYSTERESIS_FRAMES=0 produces silent GAMEPAD-sticky (R5)")
 ```
 
-테스트 의무: H 섹션 AC-IN-22 신규 (boot-time invariant assertion fires when knobs misconfigured in `project.godot`).
+Test obligation: new H section AC-IN-22 (boot-time invariant assertion fires when knobs misconfigured in `project.godot`).
 
-**왜 D.3가 D.1.1 axis filter와 분리된가?**: D.1.1은 *어떤 axis가 profile flip을 트리거할 수 있는가*(axis whitelist). D.3는 *flip을 트리거할 수 있는 axis에서, 어느 magnitude가 flip을 트리거하는가*(threshold + invariant). 두 layer가 함께 false-positive를 0건으로 만든다 — D.1.1 단독이면 right-stick 무시는 되지만 left-stick 0.2-0.3 drift가 GAMEPAD profile을 만든다(false positive); D.3 단독이면 right-stick 0.5+ drift가 false positive (axis 무관하게 트리거).
+**Why is D.3 separate from D.1.1 axis filter?**: D.1.1 is about *which axes can trigger a profile flip* (axis whitelist). D.3 is about *for axes that can trigger a flip, what magnitude triggers the flip* (threshold + invariant). The two layers together reduce false-positives to zero — D.1.1 alone would ignore the right stick but left-stick 0.2–0.3 drift would create a GAMEPAD profile (false positive); D.3 alone would allow right-stick 0.5+ drift as a false positive (triggers regardless of axis).
 
 ## E. Edge Cases
 
-본 절은 Input 단독 + 다른 시스템과의 interaction에서 발생할 수 있는 비정상/모서리 상황을 명시한다. 각 항목은 *조건 → 결과* 형식 ("handle gracefully" 금지, design-docs.md rule). 산식·게임플레이 의미가 큰 케이스는 소비자 GDD 단일 출처 — 본 절은 Input 레이어가 *직접* 처리하거나 *명시 책임이 있는* 경우만 등록한다(systems-designer 검증 — 10 entries).
+This section specifies abnormal/edge situations that can arise in Input alone or in interaction with other systems. Each item uses *condition → outcome* format ("handle gracefully" is forbidden, per design-docs.md rule). Cases with large formula/gameplay significance are single-sourced in consumer GDDs — this section only registers cases the Input layer *directly* handles or *has explicit responsibility for* (systems-designer verified — 10 entries).
 
 ### E.1 Deadzone & Stick Drift
 
-- **E-IN-1**: stick raw `abs(axis_value) ∈ [0.0, 0.2)` (Steam Deck 1세대 RMA 0.05–0.18 포함) → `Input.get_vector` returns `Vector2.ZERO` (radial composite deadzone 0.2). PM facing-lock invariant 유지 — *단, PM B10 hysteresis fix(`facing_threshold_outside=0.2 / facing_threshold_inside=0.15` 비대칭) 적용 조건부*. PM B10 unfixed 상태에서는 facing direction이 매 frame 깜빡일 수 있음(player-movement.md 2026-05-11 review B10 BLOCKING) — Input 책임 X, PM 단독 책임.
+- **E-IN-1**: stick raw `abs(axis_value) ∈ [0.0, 0.2)` (includes Steam Deck 1st-gen RMA 0.05–0.18) → `Input.get_vector` returns `Vector2.ZERO` (radial composite deadzone 0.2). PM facing-lock invariant maintained — *conditional on PM B10 hysteresis fix (`facing_threshold_outside=0.2 / facing_threshold_inside=0.15` asymmetric) being applied*. With PM B10 unfixed, facing direction may flicker every frame (player-movement.md 2026-05-11 review B10 BLOCKING) — not Input's responsibility, PM-only responsibility.
 
-- **E-IN-6**: 게임패드 `JOY_AXIS_TRIGGER_LEFT < 0.5` (threshold 미달) AND 같은 tick에 KB `Shift` 누름 → `Input.is_action_just_pressed("rewind_consume")` returns `true` (KB path는 `axis_value` 0.5 threshold 무관 — InputEventKey 1.0 strength 직접 발화). 추가 결과: D.1.1 분류기가 KB_M으로 active profile 갱신. SM의 `_trigger_held` gate(C.5 cross-doc obligation)는 *action state* 기준이므로 KB path도 정상 발화 — gate가 LT 체결 상태였더라도 KB Shift `just_pressed`는 보임.
+- **E-IN-6**: gamepad `JOY_AXIS_TRIGGER_LEFT < 0.5` (below threshold) AND KB `Shift` pressed same tick → `Input.is_action_just_pressed("rewind_consume")` returns `true` (KB path fires directly at InputEventKey 1.0 strength, independent of `axis_value` 0.5 threshold). Additional outcome: D.1.1 classifier updates active profile to KB_M. SM's `_trigger_held` gate (C.5 cross-doc obligation) is based on *action state*, so KB path also fires normally — even if the gate was in LT-held state, KB Shift `just_pressed` is seen.
 
 ### E.2 Multi-Source & Device Convergence
 
-- **E-IN-4 (E-IN-5 merged)**: KB `Shift` AND 게임패드 `LT` 동시(같은 tick) 누름 또는 동시 release → `is_action_just_pressed`/`is_action_just_released`가 *각 한 번씩만* 발화 (Godot action consolidation: 다중 InputEvent → 단일 action state). `rewind_consume` 단일 발화로 SM 처리 정상. *단* active profile resolution은 *불확정* — OS event 도착 순서가 같은 tick 내에서 보장되지 않으므로 D.1.1이 마지막에 처리한 이벤트 device로 결정. First-death prompt label도 그에 따라 둘 중 하나. **결정**: pathological 시나리오 — 둘 중 어느 label이 보여도 의도와 mismatch는 없음(둘 다 누름 = 둘 다 의도) → Tier 1 fix 없음.
+- **E-IN-4 (E-IN-5 merged)**: KB `Shift` AND gamepad `LT` pressed simultaneously (same tick) or simultaneously released → `is_action_just_pressed`/`is_action_just_released` fires *exactly once each* (Godot action consolidation: multiple InputEvents → single action state). SM handles `rewind_consume` single fire normally. *However* active profile resolution is *indeterminate* — OS event arrival order is not guaranteed within the same tick, so D.1.1 decides by whichever device event was processed last. First-death prompt label shows whichever of the two. **Decision**: pathological scenario — whichever label is shown, there is no intent mismatch (both pressed = both intended) → no Tier 1 fix.
 
-- **E-IN-12**: Steam Input(Big Picture) OS-level remapping이 Godot InputMap을 *override* → 플레이어가 기대한 물리 버튼과 다른 버튼이 action 발화. **결정**: Tier 1 doc-only stance. Input 레이어는 SDL3 event 아래를 보지 못하므로 Steam Big Picture 커스터마이즈는 플레이어 책임 영역. Tier 3 #23 GDD 작성 시 Steam Deck 가이드 cross-ref 추가 의무.
+- **E-IN-12**: Steam Input (Big Picture) OS-level remapping *overrides* Godot InputMap → a different button than the player expected fires the action. **Decision**: Tier 1 doc-only stance. The Input layer cannot see below SDL3 events, so Steam Big Picture customization is the player's responsibility. When Tier 3 #23 GDD is authored, obligation to add Steam Deck guide cross-ref.
 
-- **E-IN-13**: 플레이어가 게임패드를 mid-DYING(또는 mid-게임) 언플러그 → `Input.get_connected_joypads().size()` drops to 0; D.1.1의 `_last_input_source = GAMEPAD` 그대로; `delta_frames < HYSTERESIS_FRAMES`(180) 동안 D.1.2가 stale `GAMEPAD` 반환. 그 윈도우 내 `first_death_in_session` 발화 시 prompt에 `[LT] Rewind` 잘못 표시 가능. **결정**: Tier 1 accepted (mid-session unplug = pathological). Tier 2 fix 후보: `Input.joy_connection_changed` 시그널 구독 → ActiveProfileTracker가 disconnect 시 GAMEPAD hysteresis 강제 만료 (`_last_input_frame -= HYSTERESIS_FRAMES`). OQ-IN-4로 등록.
+- **E-IN-13**: Player unplugs gamepad mid-DYING (or mid-game) → `Input.get_connected_joypads().size()` drops to 0; D.1.1's `_last_input_source = GAMEPAD` remains; D.1.2 returns stale `GAMEPAD` while `delta_frames < HYSTERESIS_FRAMES` (180). If `first_death_in_session` fires within that window, prompt may incorrectly show `[LT] Rewind`. **Decision**: Tier 1 accepted (mid-session unplug = pathological). Tier 2 fix candidate: subscribe to `Input.joy_connection_changed` signal → ActiveProfileTracker force-expires GAMEPAD hysteresis on disconnect (`_last_input_frame -= HYSTERESIS_FRAMES`). Registered as OQ-IN-4.
 
-- **E-IN-14**: Cold boot에서 모든 입력 디바이스 미연결 (`Input.get_connected_joypads().size() == 0` AND 키보드도 OS 인식 X) → D.1.2 Scenario 5 with `j=0` → KB_M default 반환. 게임은 title 화면에서 입력 대기. PauseHandler autoload는 정상 활성 (입력 없으므로 trigger 안 됨). 키보드가 나중에 OS-recognized되면 `_input`이 정상 동작. *crash 없음, 멈춤 없음.*
+- **E-IN-14**: Cold boot with no input devices connected (`Input.get_connected_joypads().size() == 0` AND keyboard not OS-recognized) → D.1.2 Scenario 5 with `j=0` → returns KB_M default. Game waits for input on the title screen. PauseHandler autoload is active normally (no trigger since no input). If keyboard is later OS-recognized, `_input` functions normally. *No crash, no freeze.*
 
 - **E-IN-NEW (PauseHandler vs ActiveProfileTracker dispatch order — B5 corrected 2026-05-11)**: Godot 4.6 input dispatch order is invariant: `_input` → GUI/Control → `_shortcut_input` → `_unhandled_key_input` → `_unhandled_input` (godot docs `Node.notification` + InputEvent propagation). Therefore: when `pause` keypress reaches the engine, `ActiveProfileTracker._input` fires **first**, classifies the source (KB → KB_M; gamepad button → GAMEPAD), updates `_last_input_source` + `_last_input_frame`, and returns. *Then* `PauseHandler._unhandled_input` runs and (a) toggles `get_tree().paused` per `can_pause()` query (b) calls `set_input_as_handled()` on every decision path (B4 invariant). Consumption here does **not** prevent ActiveProfileTracker from receiving the event — it already ran. Consumption *does* prevent any other `_unhandled_input` listener (UI/Menu #18 future hook, debug overlays, etc.) from re-acting on a resolved pause event. **Decision**: benign on different grounds than Session 12 draft assumed. The benign property holds because (i) ActiveProfileTracker classifying a pause keypress is meaningful and correct — pressing Escape on KB or Start on gamepad is a legitimate profile signal (player is reaching for menu); (ii) PauseHandler consumption gates downstream double-handling. Autoload **registration order in project.godot is irrelevant** — Godot dispatch order is determined by callback type (`_input` < `_unhandled_input`), not by autoload load order. Earlier Session 12 draft implied registration order mattered; this is **factually wrong** (3-way specialist convergence: systems-designer + gameplay-programmer + godot-specialist). Tier 1 prototype verification: GUT scenario asserts ActiveProfileTracker._last_input_frame increments on the same frame a `pause` keypress is dispatched, regardless of PauseHandler `set_input_as_handled()` invocation order.
 
 ### E.3 Pause Domain
 
-- **E-IN-7 (E-IN-8 + E-IN-10 merged)**: `pause` 입력 도달 시점에 `EchoLifecycleSM.current_state ∈ {DYING, REWINDING}` → `PauseHandler._unhandled_input`이 `sm.can_pause()` 쿼리 → SM이 false 반환(state-machine.md C.2.2 O2 swallow 정책) → `get_tree().paused`는 *변경되지 않음*; pause 이벤트는 silently drop. 결과 (a) `rewind_consume` 12프레임 grace 윈도우 정상 카운트 — pause-cheat 차단; (b) i-frame 30프레임 윈도우 정상 카운트; (c) 같은 시점에 first-death prompt가 표시 중이면 prompt continues for remaining frames(별도 cancel 로직 없음 — DYING veto가 자연 처리). H 섹션에 testable AC 등록 의무.
+- **E-IN-7 (E-IN-8 + E-IN-10 merged)**: `pause` input arrives when `EchoLifecycleSM.current_state ∈ {DYING, REWINDING}` → `PauseHandler._unhandled_input` queries `sm.can_pause()` → SM returns false (state-machine.md C.2.2 O2 swallow policy) → `get_tree().paused` is *not changed*; pause event is silently dropped. Outcomes: (a) `rewind_consume` 12-frame grace window counts normally — pause-cheat blocked; (b) i-frame 30-frame window counts normally; (c) if first-death prompt is currently displayed, prompt continues for remaining frames (no separate cancel logic — DYING veto handles it naturally). Obligation to register testable AC in H section.
 
-- **E-IN-9**: `pause` 입력 도달 시점에 `get_tree().paused == true` → resume always allowed (SM veto 권한 없음 — C.1.4 단일 출처). cross-ref to C.1.4 only.
+- **E-IN-9**: `pause` input arrives when `get_tree().paused == true` → resume is always allowed (SM has no veto authority — C.1.4 single source). Cross-ref to C.1.4 only.
 
-- **E-IN-11**: 게임 윈도우가 mid-DYING focus loss → Godot 4.6 `application/run/pause_when_focus_lost = true` (default) → tree pauses → SM `_physics_process` 정지 → `_frames_in_state` counter freeze. Focus 회복 시 정확히 그 시점에서 재개. 결과적으로 12프레임 DYING window가 *focus-lost 시간만큼* 연장. **결정**: Tier 1 accepted behavior — alt-tab 플레이어는 Echo target audience (Achievers) 외이며, 결과(window 연장)는 플레이어 측에 favor. OQ-IN-5 등록 (Tier 2 playtest validation).
+- **E-IN-11**: Game window loses focus mid-DYING → Godot 4.6 `application/run/pause_when_focus_lost = true` (default) → tree pauses → SM `_physics_process` stops → `_frames_in_state` counter freezes. On focus recovery, resumes exactly from that point. Net result: the 12-frame DYING window is extended *by the focus-lost duration*. **Decision**: Tier 1 accepted behavior — alt-tab players are outside Echo's target audience (Achievers), and the outcome (window extension) favors the player. Registered as OQ-IN-5 (Tier 2 playtest validation).
 
 ### E.4 Test Injection
 
-- **E-IN-16**: GUT fixture가 같은 frame에 `Input.action_press(InputActions.X)` AND `Input.parse_input_event(InputEventAction.new())` *둘 다* 같은 action에 호출 → action state는 두 번 set (idempotent — 결과 같음); `_input` 콜백은 *한 번* 발화 (`parse_input_event` path만). `is_action_just_pressed`는 `await get_tree().physics_frame` 후 `true` 한 번만. **결정**: undefined-but-not-crashing 영역; C.1.2 Rule 4의 "두 API 혼용 금지" 명시적 위반. 본 GDD H 섹션의 GUT helper template이 *한 가지 API만* 쓰는 패턴 강제(test author error 방지).
+- **E-IN-16**: GUT fixture calls *both* `Input.action_press(InputActions.X)` AND `Input.parse_input_event(InputEventAction.new())` on the same action in the same frame → action state is set twice (idempotent — same result); `_input` callback fires *once* (`parse_input_event` path only). `is_action_just_pressed` is `true` exactly once after `await get_tree().physics_frame`. **Decision**: undefined-but-not-crashing territory; explicit violation of C.1.2 Rule 4 "mixing both APIs is forbidden". The GUT helper template in this GDD's H section enforces the *single-API-only* pattern (prevents test author error).
 
-### E.5 Cross-Reference (다른 GDD/섹션 단일 출처)
+### E.5 Cross-Reference (single sources in other GDDs/sections)
 
-본 절에 *등록 안 된* 후보 edge case의 단일 출처 위치 명시 (systems-designer 분류):
+Specifies the single-source location of edge case candidates *not registered* in this section (systems-designer classification):
 
-| 후보 | 단일 출처 | 비고 |
+| Candidate | Single Source | Notes |
 |---|---|---|
-| LT chatter near threshold 0.5 → 재발화 처리 | state-machine.md **C.2.2 O9** (`_trigger_held` gate, applied Session 14 Task #11 2026-05-11) | Input은 `is_action_just_pressed` 정상 발화만 보장 — 후속 처리는 SM 책임 |
-| 같은-tick 다중 소비자 consistency 검증 | input.md H (Cascade invariant AC) + ADR-0003 1000-cycle | 본 GDD AC-IN-XX로 등록 |
-| Tier 3 chord 바인딩의 1-frame latency 표시 | input.md C.2 (Tier 3 remap_permissive) + #23 GDD | 본 GDD 단일 출처는 invariant only, UI 처리는 #23 |
-| `_input` ↔ `_physics_process` 순서 race (D.1.1 → D.1.2 same tick) | non-issue | Cascade invariant은 *게임플레이 상태* scope; `active_profile()` UI label query는 같은 tick 내 fresh 반환 정상 |
+| LT chatter near threshold 0.5 → re-fire handling | state-machine.md **C.2.2 O9** (`_trigger_held` gate, applied Session 14 Task #11 2026-05-11) | Input only guarantees normal `is_action_just_pressed` firing — subsequent handling is SM's responsibility |
+| Same-tick multi-consumer consistency verification | input.md H (Cascade invariant AC) + ADR-0003 1000-cycle | Registered in this GDD as AC-IN-XX |
+| Tier 3 chord binding 1-frame latency display | input.md C.2 (Tier 3 remap_permissive) + #23 GDD | This GDD's single source is invariant only; UI handling is #23 |
+| `_input` ↔ `_physics_process` order race (D.1.1 → D.1.2 same tick) | non-issue | Cascade invariant is *gameplay state* scope; `active_profile()` UI label query returns fresh within the same tick normally |
 
 ## F. Dependencies
 
-본 절은 Input 시스템의 의존성 지도와 양방향 reciprocity(다른 GDD가 본 GDD를 어떻게 참조하는지)를 단일 출처로 보유한다. 인터페이스 세부(시그널 시그니처·메서드 시그니처·polling 패턴)는 C.5 "Interactions With Other Systems"가 단일 출처 — 본 절은 *지도 + obligations 추적*만 다룬다.
+This section holds the single source for the Input system's dependency map and bidirectional reciprocity (how other GDDs reference this GDD). Interface details (signal signatures · method signatures · polling patterns) are single-sourced in C.5 "Interactions With Other Systems" — this section only covers *map + obligations tracking*.
 
 ### F.1 Upstream Dependencies (Input depends on)
 
-**없음** — Input은 Foundation 레이어 (systems-index.md "Foundation Layer (의존성 0)"에 명시). Godot 4.6 엔진(`Input` 싱글톤 + `InputMap` API + SDL3 게임패드 드라이버)에만 의존.
+**None** — Input is the Foundation layer (stated in systems-index.md "Foundation Layer (0 dependencies)"). Depends only on the Godot 4.6 engine (`Input` singleton + `InputMap` API + SDL3 gamepad driver).
 
-### F.2 Downstream Dependencies (소비자 — Input에 의존)
+### F.2 Downstream Dependencies (consumers — depend on Input)
 
-| # | 시스템 | Hard/Soft | Tier | 인터페이스 (C.5 단일 출처) | 본 GDD 작성 후 양방향 갱신 의무 |
+| # | System | Hard/Soft | Tier | Interface (C.5 single source) | Bidirectional update obligation after this GDD is authored |
 |---|---|---|---|---|---|
-| #6 Player Movement | **Hard** | T1 | `Input.get_vector` + `is_action_pressed`/`just_pressed`/`just_released` for 5 actions (4 move + jump + aim_lock). `_physics_process` Phase 2 only. | PM C.5.3 *(provisional)* 플래그 4건 해소 (F.4.1 #1) |
-| #5 State Machine | **Hard** | T1 | `is_action_just_pressed("rewind_consume")` per-tick at AliveState/DyingState `physics_update`; `pause` swallow via `can_pause()`. SM 측 LT chatter `_trigger_held` gate 신규 의무. | SM F.1 row 832 *(provisional)* 해소 + OQ-SM-3 Resolved + `_trigger_held` cross-doc obligation 추가 (F.4.1 #4-7) |
-| #9 Time Rewind Controller | **Soft** | T1 | `process_physics_priority=1` slot에서 SM과 동일 시점 polling (verify-only — SM이 실제 logic 소유). | time-rewind.md C.3 #1 *(provisional)* 해소 + OQ-15 Resolved (F.4.1 #8-9) |
+| #6 Player Movement | **Hard** | T1 | `Input.get_vector` + `is_action_pressed`/`just_pressed`/`just_released` for 5 actions (4 move + jump + aim_lock). `_physics_process` Phase 2 only. | Resolve 4 PM C.5.3 *(provisional)* flags (F.4.1 #1) |
+| #5 State Machine | **Hard** | T1 | `is_action_just_pressed("rewind_consume")` per-tick at AliveState/DyingState `physics_update`; `pause` swallow via `can_pause()`. New SM-side LT chatter `_trigger_held` gate obligation. | Resolve SM F.1 row 832 *(provisional)* + OQ-SM-3 Resolved + add `_trigger_held` cross-doc obligation (F.4.1 #4-7) |
+| #9 Time Rewind Controller | **Soft** | T1 | Polling at same time as SM in `process_physics_priority=1` slot (verify-only — SM owns actual logic). | Resolve time-rewind.md C.3 #1 *(provisional)* + OQ-15 Resolved (F.4.1 #8-9) |
 | #7 Player Shooting | **Hard** | T1 | `Input.is_action_pressed("shoot")` polled in WeaponSlot `_physics_process` Phase 2. Tap-spam gated by #7 cooldown counter (FIRE_COOLDOWN_FRAMES=10), not by edge-trigger. | **Locked 2026-05-11** by Player Shooting #7 §C Rule 1; C.1.1 row 7 *(provisional)* removed in same batch. |
-| #13 HUD | **Hard** *(provisional)* | T1 | `first_death_in_session` 신호(SM owner) 구독 + Input의 `button_label(profile, action)` API. | #13 GDD 작성 시 prompt 시각 시방 + 12프레임 fade (F.4.2 #2) |
-| #18 Menu / Pause UI | **Soft** *(provisional)* | T1 | `_input` 콜백에서 directional/confirm 액션 polling (예외 영역). | #18 GDD 작성 시 `_input` exception protocol 명시 (F.4.2 #3) |
+| #13 HUD | **Hard** | T1 | Subscribe to `first_death_in_session` signal (SM owner) + Input's `button_label(profile, action)` API. | ✅ Closed 2026-05-13 by HUD #13 approval: prompt visual spec + 12-frame fade + HUD-local latch reset |
+| #18 Menu / Pause UI | **Soft** | T1 | UI navigation/confirm/cancel/slider/focus-repair events in `_input` only; pause toggling remains PauseHandler-owned. | ✅ Closed 2026-05-14 by Menu/Pause #18 approval: no gameplay polling, no new Tier 1 InputMap actions, `PROCESS_MODE_ALWAYS` pause/options surfaces only. |
 | PauseHandler autoload | — (본 GDD 단일 출처) | T1 | `_unhandled_input`에서 `pause` 토글; SM `can_pause()` 쿼리. | 자체 출처 — 갱신 의무 없음 |
 | ActiveProfileTracker autoload | — (본 GDD 단일 출처) | T1 | `_input`에서 InputEvent 분류 → `_last_input_source` 갱신. | 자체 출처 — 갱신 의무 없음 |
 | #20 Difficulty Toggle | **Soft** *(provisional)* | T2 | InputMap 미수정. `RewindPolicy` data만 변경. | #20 GDD 작성 시 zero InputMap mutation 확인 (F.4.2 #4) |
@@ -649,7 +650,7 @@ func _ready() -> void:
 
 1. **#7 Player Shooting** GDD: `shoot` action detect mode 결정 (edge `just_pressed` vs hold `is_action_pressed`) — 본 GDD C.1.1 row 7 update + AC mirror.
 2. **#13 HUD** GDD: first-death prompt 시각 시방 + 12프레임 fade + KB_M/GAMEPAD label switching. cross-ref input.md C.1.5 + D.1.
-3. **#18 Menu/Pause UI** GDD: `_input` 콜백 사용을 input.md C.1.2 Rule 2 예외로 명시 (게임플레이 액션을 `_input`에서 polling 하지 않음만 강제).
+3. **#18 Menu/Pause UI** GDD: ✅ Closed 2026-05-13 by `design/gdd/menu-pause.md` — UI/Menu `_input` exception is limited to navigation/confirm/cancel/slider/focus repair, no gameplay polling, no new Tier 1 InputMap actions, and PauseHandler remains the pause toggle authority.
 4. **#20 Difficulty Toggle** GDD: zero InputMap mutation 확인 (`RewindPolicy` data만 변경 — Input C.2 Tier 2 invariant 수용).
 5. **#23 Input Remapping** (Tier 3) GDD: (a) `default_only` Reset-to-Defaults invariant 수용; (b) chord 바인딩 시 1-frame latency UI advisory 표시; (c) paused-tree apply 경유 (`SettingsManager` 패턴).
 6. **#22 Localization** (Tier 3) GDD: 본 GDD button-label 문자열 (`[Shift] Rewind`, `[LT] Rewind` Tier 1 + Tier 3 player-rebound chord 변형) 다국어 키 등록.
@@ -722,8 +723,8 @@ func _ready() -> void:
 ### V/A.1 First-Death Prompt — Label String Provider (Input → HUD #13)
 
 - **Input 책임**: C.1.5 + D.1.2가 제공하는 button-label string (`[Shift] Rewind` / `[LT] Rewind`).
-- **HUD #13 책임 (Tier 1 deferred)**: 시각 렌더링, 위치, 크기, 색, 12-frame fade 애니메이션, 콜라주 톤 정합. art-bible Section 1 Principle B (사진 + 드로잉 둘 다) 준수 — prompt 자체가 콜라주 컷아웃 스타일.
-- **art-director consult deferred**: HUD #13 GDD 작성 시점에 art-director 정식 consult (Visual/Audio 카테고리 REQUIRED for HUD).
+- **HUD #13 책임 (Approved 2026-05-13)**: 시각 렌더링, 위치, 크기, 색, 12-frame fade 애니메이션, 콜라주 톤 정합. art-bible Section 1 Principle B (사진 + 드로잉 둘 다) 준수 — prompt 자체가 콜라주 컷아웃 스타일.
+- **art-direction status**: HUD #13 approved a Tier 1 minimal prompt treatment; exact glyph/icon asset pass remains for UX/asset-spec.
 
 ### V/A.2 Pause Menu Transition — No Input-Side Visuals
 
@@ -763,7 +764,7 @@ Input은 *직접* 오디오 큐를 발화하지 않는다. 입력에 반응한 �
 
 ### UI.4 Tier 1 Title / Boot UI 영향 없음
 
-E-IN-14(cold boot 디바이스 미연결) 시 title 화면 대기 — 별도 "Press any key to start" UI 없음 (Pillar 4). 입력이 들어오면 자연스럽게 game start 트리거 (`#2 Scene Manager` owner).
+E-IN-14(cold boot 디바이스 미연결) 시 title/Story Intro #17 화면 대기 — 별도 "Press any key to start" UI 없음 (Pillar 4). 입력이 들어오면 자연스럽게 game start 트리거 (`#2 Scene Manager` owner). Story Intro #17은 입력 API를 직접 읽지 않고, 이 기존 cold-boot route가 발생시키는 scene transition으로 interrupt된다.
 
 ## H. Acceptance Criteria
 
@@ -1248,5 +1249,3 @@ func active_profile() -> StringName:
 **프로덕션 분리 원칙**: production code (`src/`) 는 mock을 reference하지 않는다 (test-helpers만 사용). `forbidden_patterns.test_helper_in_production` (Tier 1 추가 후보; F.4.1 외 — 향후 검토) 으로 향후 enforce 가능. 본 Tier 1: convention.
 
 **Formula drift 방지**: ActiveProfileTracker `active_profile()` 함수 본문 변경 시 본 mock도 동시 update — Tier 1에서 *2개 site, 동기화 의무*. Tier 2 검토 후보: production class를 mock interface와 share 하는 helper module로 리팩토 (현재 deferred — solo budget + Pillar 5).
-
-

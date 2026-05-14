@@ -7,8 +7,8 @@
 > **Author**: game-designer + godot-gdscript-specialist
 > **Created**: 2026-05-09
 > **Engine**: Godot 4.6 / GDScript (statically typed)
-> **Depends On**: Player Movement #6 (Approved 2026-05-11) + Player Shooting #7 *(provisional)* + Enemy AI #10 *(provisional)* + Boss Pattern #11 *(provisional)* + Stage #12 *(provisional)* — HitBox/HurtBox instantiation clients
-> **Consumed By**: State Machine #5 (Approved — player_hit_lethal subscriber) + Time Rewind #9 (Approved — i-frame cooperation) + HUD #13 *(provisional)* — boss phase signal option
+> **Depends On**: Player Movement #6 (Approved 2026-05-11) + Player Shooting #7 *(provisional)* + Enemy AI #10 (Approved 2026-05-13) + Boss Pattern #11 (Approved 2026-05-13) + Stage #12 (Approved 2026-05-13) — HitBox/HurtBox instantiation clients
+> **Consumed By**: State Machine #5 (Approved — player_hit_lethal subscriber) + Time Rewind #9 (Approved — i-frame cooperation) + HUD #13 (Approved 2026-05-13 — boss phase/presence signal consumer) + VFX #14 (Approved 2026-05-13 — cause mapping / impact / near-miss / boss phase visuals)
 
 ---
 
@@ -301,11 +301,12 @@ Hazard (Area2D, layer=5, mask=1)
 
 #### C.5.2 cause taxonomy (Tier 1 baseline, locked)
 
-> **Tier 1 enemy archetype decision obligation (game-designer recommendation)**: If Tier 1 has *only one drone type*, the baseline 6 entries are sufficient. If *3 types coexist* (`&"projectile_enemy_drone"`, `&"projectile_enemy_secbot"` etc.) sub-entries must be added — guaranteeing B.3 "cause-aware death" learnability. Decision to be made when writing Enemy AI GDD #10 (OQ-DMG-7).
+> **Tier 1 enemy archetype decision resolved by Enemy AI #10 Section C (2026-05-13)**: Drone and Security Bot coexist in Tier 1, so standard enemy projectile causes are subtype-specific to preserve B.3 "cause-aware death" learnability. The old generic `&"projectile_enemy"` baseline is retired from Tier 1 standard enemy assignment and kept only as a deprecated compatibility label for older fixtures.
 
 | StringName | Category | Source |
 |---|---|---|
-| `&"projectile_enemy"` | Enemy projectile (Tier 1 baseline — one drone type) | Standard enemy (#10) |
+| `&"projectile_enemy_drone"` | Drone projectile | Enemy AI #10 |
+| `&"projectile_enemy_secbot"` | Security Bot projectile | Enemy AI #10 |
 | `&"projectile_boss"` | Boss projectile | Boss (#11) |
 | `&"hazard_spike"` | Environmental spike (`hazard_` prefix invariant — DEC-6) | Stage (#12) |
 | `&"hazard_pit"` | Infinite fall | Stage (#12) |
@@ -565,7 +566,9 @@ When `hits_in_tick(N) > b.phase_hits_remaining(N)` (multiple hits in the same ti
 ```text
 host_assigns_cause(hb: HitBox, host_type) :=
     &"projectile_boss"   if host_type is Boss            # Boss Pattern GDD #11 obligation
-    else &"projectile_enemy"   if host_type is Enemy     # Enemy AI GDD #10 obligation
+    else subtype cause       if host_type is Enemy        # Enemy AI GDD #10 obligation:
+                                                           # Drone -> &"projectile_enemy_drone"
+                                                           # Security Bot -> &"projectile_enemy_secbot"
     else <hazard label>                                   # Stage GDD #12 per-instance label ("hazard_spike" etc.)
 ```
 
@@ -575,7 +578,8 @@ ECHO Projectile HitBox (L2) cause is *explicitly unset* (F.1 row #7) — ECHO pr
 
 | StringName | Source (host type) | Estimated Frequency |
 |---|---|---|
-| `&"projectile_enemy"` | Standard enemy (#10) projectile | Very high |
+| `&"projectile_enemy_drone"` | Drone (#10) projectile | High |
+| `&"projectile_enemy_secbot"` | Security Bot (#10) projectile | High |
 | `&"projectile_boss"` | Boss (#11) projectile | Medium |
 | `&"hazard_spike"` | Stage spike | Medium |
 | `&"hazard_pit"` | Infinite fall area | Low |
@@ -689,7 +693,7 @@ is_invulnerable(echo_hurtbox: HurtBox) := !echo_hurtbox.monitorable
 **Situation**: Enemy projectile + pickup item reach ECHO's position simultaneously.
 
 **Result**:
-- Pickup Area2D is on a *separate collision layer* (to be assigned in Tier 2 system #15, does not exist in current Tier 1).
+- Pickup Area2D is on a *separate collision layer* (to be assigned in Tier 2 system #19, does not exist in current Tier 1).
 - The two area_entered events are processed *independently* in ECHO host's separate handlers.
 - Damage emits `lethal_hit_detected` → SM DYING transition.
 - Pickup handling is at ECHO host's own discretion (normally ignores pickups during DYING/REWINDING/DEAD — defined in separate GDD).
@@ -753,7 +757,7 @@ is_invulnerable(echo_hurtbox: HurtBox) := !echo_hurtbox.monitorable
 **Result [DEC-6 policy — Pillar 1 protection]**:
 - `RewindingState.exit()` calls `damage.start_hazard_grace()` simultaneously with restoring `echo_hurtbox.monitorable = true` → sets `_hazard_grace_remaining = 12`.
 - During the same frame or the next 12 frames (~200ms):
-  - Enemy projectile hits (`projectile_enemy`/`projectile_boss`) → processed normally (enters DYING). Pillar Challenge consistency — *not exempted*.
+  - Enemy projectile hits (`projectile_enemy_*`/`projectile_boss`) → processed normally (enters DYING). Pillar Challenge consistency — *not exempted*.
   - Hazard hits (`hazard_*` prefix) → return immediately in `hurtbox_hit` handler. Code path not entered.
 - Within 12 frames, player can execute 1 input cycle (jump/move/shoot) → escape hazard position.
 - After 12 frames, counter naturally reaches 0 → normal hazard detection reactivated. Instant hazard kill if escape fails.
@@ -799,9 +803,9 @@ This GDD *provides* components (HitBox/HurtBox classes + cause taxonomy), and th
 |---|---|---|---|
 | **#6** | [Player Movement](player-movement.md) | ECHO HurtBox (L1) + HitBox + Damage node (PlayerMovement child host) | **PM #6 Designed lock-in (2026-05-10)**: Instantiated as child of ECHO scene tree (= PlayerMovement CharacterBody2D root, player-movement.md A.Overview Decision A). ECHO HurtBox + HitBox + Damage nodes are *child nodes of PlayerMovement (CharacterBody2D)*, with PM holding node *ownership* and lifecycle (especially `monitorable` toggle) controlled by SM. Sets `entity_id = &"echo"`. **monitorable toggle authority delegated to SM (DEC-4) — node hosted by PM, lifecycle controlled by SM**. SM's RewindingState.enter()/exit() + DEC-6 `start_hazard_grace()` invocation. |
 | **#7** | Player Shooting | ECHO Projectile HitBox (L2) | Instantiated as child of projectile .tscn. `cause` unset (ECHO projectile cause label irrelevant — enemy/boss destroy side does not use cause). |
-| **#10** | Enemy AI | Enemy HurtBox (L3) + Enemy Projectile HitBox (L4) | HurtBox on enemy body, HitBox on enemy projectile. HitBox.cause = `&"projectile_enemy"` (D.3 auto branch). |
-| **#11** | Boss Pattern | Boss HurtBox (L6) + Boss Projectile HitBox (L4) | Obligation to hold `phase_hits_remaining` / `phase_index` / `phase_hp_table` members (E.11 validation obligation). HitBox.cause = `&"projectile_boss"` (D.3 auto branch). |
-| **#12** | Stage | Hazard HitBox (L5) | Instantiated as child of hazard Area2D. Obligation to set per-instance `cause` label (`&"hazard_spike"` etc.). Does not hold HurtBox (not destructible). |
+| **#10** | Enemy AI | Enemy HurtBox (L3) + Enemy Projectile HitBox (L4) | HurtBox on enemy body, HitBox on enemy projectile. HitBox.cause is subtype-specific per enemy-ai.md C.1 Rule 9: Drone = `&"projectile_enemy_drone"`; Security Bot = `&"projectile_enemy_secbot"`. |
+| **#11** | [Boss Pattern](boss-pattern.md) | Boss HurtBox (L6) + Boss Projectile HitBox (L4) | Approved 2026-05-13. Holds `phase_hits_remaining` / `phase_index` / `phase_hp_table=[3,4,5]` members (E.11 validation obligation). HitBox.cause = `&"projectile_boss"` (D.3 auto branch). |
+| **#12** | [Stage / Encounter](stage-encounter.md) | Hazard HitBox (L5) | Instantiated as child of hazard Area2D. Obligation to set per-instance `cause` label (`&"hazard_spike"` etc.). Does not hold HurtBox (not destructible). Stage GDD now owns preflight validation for hazard causes and room Area2D budget. |
 
 ### F.2 Downstream Consumers (signal subscribers)
 
@@ -812,7 +816,7 @@ The following systems *subscribe* to signals *emitted* by this GDD.
 | **#5** | State Machine Framework | `player_hit_lethal(cause)` | EchoLifecycleSM transitions ALIVE → DYING + sets `_lethal_hit_latched`. *Calls* `damage.commit_death()` / `damage.cancel_pending_death()` (unidirectional). |
 | **#9** | Time Rewind | `lethal_hit_detected(cause)`, `death_committed(cause)` | TRC caches `_lethal_hit_head` (frame N) + buffer cleanup on `death_committed`. Consistent with ADR-0002 Amendment 1. |
 | **#13** | HUD | `boss_phase_advanced(boss_id, new_phase)` | Phase transition notification (text or screen effect). No HP bar created (Anti-Pillar consistency). |
-| **#14** | VFX | `hurtbox_hit(cause)`, `boss_hit_absorbed(...)`, `boss_phase_advanced(...)` | VFX differentiation based on cause (cause taxonomy D.3 mapping). Visual layer change on boss phase transition. |
+| **#14** | [VFX / Particle System](vfx-particle.md) | `hurtbox_hit(cause)`, `lethal_hit_detected(cause)`, `death_committed(cause)`, `enemy_killed(enemy_id, cause)`, `boss_hit_absorbed(...)`, `boss_phase_advanced(...)`, `boss_pattern_interrupted(...)`, `boss_killed(...)` | Approved 2026-05-13. VFX maps cause taxonomy D.3 to impact/death signatures, owns DEC-3 near-miss feedback via passive proximity checks, and renders boss phase/death visuals without HP or `hits_remaining`. |
 | **#4** | [Audio System](audio.md) | `boss_killed(boss_id: StringName)`, `player_hit_lethal(cause: StringName)` | `boss_killed` → SFX pool: play `sfx_boss_defeated_sting_01.ogg` (audio.md Rule 13). `player_hit_lethal` → SFX pool: play `sfx_player_death_01.ogg` (audio.md Rule 17). cause + boss_id ignored in Tier 1. Audio #4 Approved 2026-05-12. |
 | **#3** | [Camera System](camera.md) | `player_hit_lethal(_cause)`, `boss_killed(boss_id)` | Camera starts shake event — `player_hit_lethal` → 6 px / 12 frames impact shake; `boss_killed` → 10 px / 18 frames catharsis shake (camera.md R-C1-5 + F.1 row #4 reciprocal). cause ignored (Camera does not use cause taxonomy — signal arrival itself is the trigger). Camera #3 Approved 2026-05-12 RR1 PASS. |
 
@@ -822,15 +826,15 @@ The *exhaustive catalog* of all signals emitted by this GDD. External systems mu
 
 | Signal | Signature | Fire Condition | Consumers |
 |---|---|---|---|
-| `lethal_hit_detected` | `(cause: StringName)` | ECHO HurtBox `HitBox.area_entered` (frame N) | #9 TRC |
-| `player_hit_lethal` | `(cause: StringName)` | Same frame and moment as `lethal_hit_detected` | #5 SM |
-| `death_committed` | `(cause: StringName)` | When SM calls `damage.commit_death()` (frame N+12) | #9 TRC, #13 HUD |
+| `lethal_hit_detected` | `(cause: StringName)` | ECHO HurtBox `HitBox.area_entered` (frame N) | #9 TRC, #14 VFX |
+| `player_hit_lethal` | `(cause: StringName)` | Same frame and moment as `lethal_hit_detected` | #5 SM, #14 VFX (optional local lethal-read) |
+| `death_committed` | `(cause: StringName)` | When SM calls `damage.commit_death()` (frame N+12) | #9 TRC, #13 HUD, #14 VFX |
 | `hurtbox_hit` | `(cause: StringName)` | Per HurtBox instance (common to all entities) | #14 VFX, #4 Audio |
-| `enemy_killed` | `(enemy_id: StringName, cause: StringName)` | On Enemy HurtBox hit | #4 Audio, (Tier 2: statistics system) |
+| `enemy_killed` | `(enemy_id: StringName, cause: StringName)` | On Enemy HurtBox hit | #14 VFX, #4 Audio, (Tier 2: statistics system) |
 | `boss_hit_absorbed` | `(boss_id: StringName, phase_index: int)` | Boss non-phase-transition hit (DEC-5 — `hits_remaining` removed) | #14 VFX |
-| `boss_pattern_interrupted` | `(boss_id: StringName, prev_phase_index: int)` | Same-frame emit immediately before phase transition or boss kill (new — DEC-6 partner) | #11 Boss Pattern (in-flight active pattern cleanup) |
+| `boss_pattern_interrupted` | `(boss_id: StringName, prev_phase_index: int)` | Same-frame emit immediately before phase transition or boss kill (new — DEC-6 partner) | #11 Boss Pattern (in-flight active pattern cleanup), #14 VFX (warning-only telegraph cleanup) |
 | `boss_phase_advanced` | `(boss_id: StringName, new_phase: int)` | On Boss phase transition | #13 HUD, #14 VFX, #4 Audio, #11 Boss Pattern (own pattern SM re-entry) |
-| `boss_killed` | `(boss_id: StringName)` | Boss final phase last hit | #2 Scene Manager (stage clear trigger), #11 Boss Pattern (summon registry cleanup), #4 Audio |
+| `boss_killed` | `(boss_id: StringName)` | Boss final phase last hit | #2 Scene Manager (stage clear trigger), #11 Boss Pattern (summon registry cleanup), #14 VFX, #4 Audio |
 
 ### F.4 Inter-system Invocation API (unidirectional method calls)
 
@@ -1126,7 +1130,7 @@ Reason: Unset cause cases with 30 hazards × 60fps would call push_error 1,800 t
 | **AC-30** | G.5 Steam Deck performance budget: 5 enemies + 20 projectiles + 5 hazards simultaneously active + 60fps 5-minute play: Damage system cumulative cost ≤ 2.5ms (Deck-equivalent throttled CPU) | Integration: Godot profiler + Deck-equivalent build (or Steam Deck measurement) + per-frame breakdown screenshot | Integration |
 | **AC-31** | `commit_death()` idempotency: when called with `_pending_cause == &""`, `death_committed` emit 0 times + no state change | GUT: unset state commit_death + spy | Logic |
 | **AC-32** | `cancel_pending_death()` idempotency: when called with `_pending_cause == &""`, silent no-op (no error) | GUT: unset state cancel_pending_death + push_error spy 0 times | Logic |
-| **AC-33** | DEC-6 hazard grace diagnostic predicate: `should_skip_hazard(cause)` 4-case verification — (a) `_hazard_grace_remaining=0 + cause=hazard_spike` → false (b) `=12 + hazard_spike` → true (c) `=12 + projectile_enemy` → false (d) `=12 + cause=&""` → false | GUT: direct call for 4 cases | Logic |
+| **AC-33** | DEC-6 hazard grace diagnostic predicate: `should_skip_hazard(cause)` 4-case verification — (a) `_hazard_grace_remaining=0 + cause=hazard_spike` → false (b) `=12 + hazard_spike` → true (c) `=12 + projectile_enemy_drone` → false (d) `=12 + cause=&""` → false | GUT: direct call for 4 cases | Logic |
 | **AC-34** | `enemy_killed` signal full path: ECHO Projectile HitBox (L2) → Enemy HurtBox (L3) area_entered → `enemy_killed(entity_id, cause)` emit 1 time + cause determined by ECHO Projectile's `host` branch (D.3.1) | GUT: ECHO Projectile + Enemy HurtBox simulation + spy | Logic |
 | **AC-35** | Layer completeness: when each of 6 hosts (`echo`, `echo_proj`, `enemy`, `enemy_proj`, `hazard`, `boss`) is instantiated, collision_layer has exactly single bit set + collision_mask exactly matches C.2.2 matrix | GUT: load 6 host .tscn + strict comparison of all 12 values (layer×6 + mask×6) | Logic |
 | **AC-36** | C.3.2 step 0 first-hit lock (Round 5 cross-doc S1 fix 2026-05-10): ECHO Damage `_on_hurtbox_hit` entered with `cause₀` → `_pending_cause = cause₀`, `lethal_hit_detected` emit 1 time, `player_hit_lethal` emit 1 time. Re-entered with `cause₁` during *same frame N* or *DYING window N+1..N+11* → step 0 guard detects `_pending_cause != &""` → returns immediately → `_pending_cause` unchanged (`cause₀` preserved) + `lethal_hit_detected` emit 0 times (TRC `_lethal_hit_head` re-cache blocked) + `player_hit_lethal` emit 0 times. After `commit_death()` call, `_pending_cause = &""` cleared → next lethal event passes normally. | GUT: ECHO Damage instance + first `hurtbox_hit(cause₀)` + immediate second `hurtbox_hit(cause₁)` + `lethal_hit_detected`/`player_hit_lethal` emit-count spy + `_pending_cause` member strict comparison. Additional scenario: verify clear after `commit_death()` call + new `hurtbox_hit(cause₂)` → normal 1 emit. | Logic |
@@ -1187,10 +1191,10 @@ tools/ci/
 | **OQ-DMG-1** | Future Tuning | Design of Tier 2 `friendly_fire` game mode — in combat playground / boss rush, are enemies killing each other *allowed*, *allowed but stats invalidated*, or *fully blocked*? | Tier 2 gate (when Game Modes system is introduced) | Game Designer review + cross-check when writing Player Movement #6 / Enemy AI #10 GDDs |
 | ~~**OQ-DMG-2**~~ ✅ Resolved RR3 | Boss Cleanup | Handling of *existing boss projectiles* at Boss `phase_advanced` → `boss_pattern_interrupted` emit + Boss Pattern SM self-cleanup | C.4.2 + F.3 | DEC-RR3 |
 | ~~**OQ-DMG-3**~~ ✅ Resolved RR4 | Boss Cleanup | Summon cleanup responsibility on `boss_killed` → Boss Pattern GDD #11 holds own summon registry + subscribes to `boss_killed` | C.4.2 + F.2 | DEC-RR4 |
-| **OQ-DMG-4** | Pickup System | When Tier 2 system #15 (Pickup) is introduced, is collision_layer bit 7+ assignment + priority matrix with ECHO HurtBox needed? E.6 only describes *when it occurs*. | Tier 2 gate + when writing Pickup GDD | Pickup GDD *appends* this GDD's C.2 matrix to assign bit 7. Update E.6 table to *resolved*. |
+| **OQ-DMG-4** | Pickup System | When Tier 2 system #19 (Pickup) is introduced, is collision_layer bit 7+ assignment + priority matrix with ECHO HurtBox needed? E.6 only describes *when it occurs*. | Tier 2 gate + when writing Pickup GDD | Pickup GDD *appends* this GDD's C.2 matrix to assign bit 7. Update E.6 table to *resolved*. |
 | **OQ-DMG-5** | Tooling | Can H.8 (AC-26, AC-27) bidirectional check be CI automated? (e.g., grep + regex to verify absence of *(provisional)* tag in other GDD's row #8) | When DevOps system is built | Automate with `tools/ci/gdd_consistency_check.gd` or shell script. In current Tier 1: PR review checklist (ADVISORY). |
 | **OQ-DMG-6** | Pillar Tuning | Should SM grant ECHO a *short grace* (e.g., 6-frame i-frame) at boss phase advance moment? Helps avoid phase transition explosion vs dilutes 1-hit catharsis | Tier 1 playtesting (after first boss encounter verification) | Current baseline: *not granted* — Pillar 1-hit consistency priority. Consider adding SM `BossPhaseGraceState` based on playtesting results. |
-| **OQ-DMG-7** | Tier 1 Scope | Number of Tier 1 enemy archetypes — 1 type (drone only) vs 3 types (drone, security bot, STRIDER trash mobs). With 3 types: cause taxonomy `projectile_enemy_*` sub-entry addition required (B.3 learnability) | When writing Enemy AI GDD #10 | Enemy AI GDD determines archetype count → Damage GDD C.5.2 taxonomy update + VFX/Audio GDD mapping additions |
+| **OQ-DMG-7** | Tier 1 Scope | **RESOLVED 2026-05-13 by Enemy AI #10 Section C** — Tier 1 standard enemies include Drone + Security Bot, so Damage C.5.2 / D.3.1 / D.3.2 / F.1 now use subtype causes `projectile_enemy_drone` and `projectile_enemy_secbot`. | Closed | VFX/Audio mapping additions remain downstream obligations when those systems consume per-cause enemy feedback. |
 | **OQ-DMG-8** | ADR Queue | Write `D.2.3 monotonic +1 phase advance lock` ADR — explicitly state permanent closure of design space for perfect parry/skill skip | Immediately before writing Boss Pattern GDD #11 | `/architecture-decision boss-phase-advance-monotonicity` |
 | **OQ-DMG-9** | ADR Queue | `signal emit ordering determinism` ADR — elevate F.4.1/F.4.2 determinism contract to architecture-level decision | Immediately before starting Tier 1 prototype | `/architecture-decision signal-emit-order-determinism` |
 | **OQ-DMG-10** | Performance | Acquire Steam Deck measurement environment or set up Deck-equivalent throttled CPU build (AC-30 verification obligation) | Immediately before Tier 1 gate closes | DevOps + technical-director — measure Damage budget on Deck or equivalent environment |

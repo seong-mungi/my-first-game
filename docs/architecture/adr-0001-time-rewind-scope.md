@@ -261,7 +261,7 @@ class_name PlayerSnapshot extends Resource
 ## Related Decisions
 
 - **ADR-0002 (R-T2)** [Pending] — Time Rewind 저장 방식: 상태 스냅샷 vs 입력 리플레이. R-T1이 Player-only이므로 단일 객체 스냅샷이 명백한 우선 후보 → R-T2는 비교적 단순한 결정이 될 것.
-- **ADR-0003 (R-T3)** [Pending] — 결정성 전략: CharacterBody2D + 직접 transform set vs RigidBody2D + PhysicsServer 동기화. R-T1이 Player-only이므로 ECHO 단독 결정성만 보장하면 충분.
+- **ADR-0003 (R-T3)** [Accepted 2026-05-14; decision date 2026-05-09] — 결정성 전략: CharacterBody2D + 직접 transform set vs RigidBody2D + PhysicsServer 동기화. R-T1이 Player-only이므로 ECHO 단독 결정성만 보장하면 충분.
 - **design/gdd/game-concept.md** — Echo 컨셉 + Pillar 정의 + Story Spine
 - **design/art/art-bible.md** — 원칙 C "시간 되감기 = 색 반전 + 글리치" — 시각 임팩트 보완 책임 명시
 - **design/gdd/systems-index.md** — System #9 Time Rewind System (Status: Blocked → R-T1 Accepted 후 부분 unblock)

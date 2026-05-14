@@ -3,9 +3,9 @@
 > **Status**: Approved · 2026-05-12 · RR2 PASS — see design/gdd/reviews/camera-review-log.md for full history.
 > **System**: #3 — Core layer, MVP priority
 > **Author**: solo dev + game-designer / ux-designer / gameplay-programmer / systems-designer / qa-lead / art-director / creative-director (inline consults)
-> **Last Updated**: 2026-05-12 — see design/gdd/reviews/camera-review-log.md for full history.
+> **Last Updated**: 2026-05-14 — ADR-0004 sync: `scene_post_loaded(anchor: Vector2, limits: Rect2)` mirror; see design/gdd/reviews/camera-review-log.md for full history.
 > **Implements Pillars**: Pillar 3 (collage first impression — screenshot composition) · Pillar 1 (sub-second checkpoint restart — snap-no-cut) · Pillar 2 (determinism — shake RNG seeded, no smoothing residual across rewind)
-> **Depends on**: Scene Manager #2 (Approved RR7 PASS 2026-05-11) — triggers Q2 deferred signal addition `scene_post_loaded(anchor: Vector2)` to scene-manager.md C.2.1 (Phase 5 cross-doc batch — this GDD is the first-use case per Session 19 design call)
+> **Depends on**: Scene Manager #2 (Approved RR7 PASS 2026-05-11) — triggered Q2 deferred signal addition `scene_post_loaded(anchor: Vector2, limits: Rect2)` to scene-manager.md C.2.1 (Phase 5 cross-doc batch — this GDD is the first-use case per Session 19 design call)
 > **Engine**: Godot 4.6 / GDScript / 2D Forward+ / 60 fps locked
 
 ---
@@ -15,7 +15,7 @@
 Camera2D is a side-scrolling camera that follows ECHO, with **three responsibilities**:
 
 1. **Follow** — tracks player position using horizontal deadzone-based advance (vertical uses grounded-baseline lookahead lerp).
-2. **Snap** — upon receiving the `scene_post_loaded(anchor: Vector2)` signal emitted by Scene Manager at checkpoint restart, immediately calls `global_position = anchor` + `reset_smoothing()` to align **within 1 frame** with zero delay (Pillar 1 non-negotiable — within 60-tick restart budget).
+2. **Snap** — upon receiving the `scene_post_loaded(anchor: Vector2, limits: Rect2)` signal emitted by Scene Manager at checkpoint restart, immediately applies `limits` to Camera2D `limit_*`, calls `global_position = anchor`, and calls `reset_smoothing()` to align **within 1 frame** with zero delay (Pillar 1 non-negotiable — within 60-tick restart budget).
 3. **Shake** — visual emphasis for gameplay events (`shot_fired` micro-vibration, `player_hit_lethal` impact, `boss_killed` heavy shake). Shake intensity/duration/frequency are defined by this GDD as single source of truth (architecture.yaml line 358 registration contract).
 
 ### Data Layer (infrastructure framing)
@@ -367,7 +367,7 @@ The signal contracts for which this GDD is the first-use trigger must be reflect
 | `docs/registry/architecture.yaml` | New entry `interfaces.camera_shake_events` — consumers=[camera-system], producers=[player-shooting, damage] | new entry |
 | `docs/registry/architecture.yaml` | New forbidden pattern `camera_state_in_player_snapshot` — Camera state must never be included in PlayerSnapshot (protects ADR-0002 9-field lock) | forbidden_patterns |
 | `design/registry/entities.yaml` | 6 new constants: `DEADZONE_HALF_X`, `JUMP_LOOKAHEAD_UP_PX`, `FALL_LOOKAHEAD_DOWN_PX`, `LOOKAHEAD_LERP_FRAMES`, `MAX_SHAKE_PX`, `POSITION_SMOOTHING_SPEED` | constants |
-| `design/gdd/systems-index.md` | Row #3 Camera System: Status Not Started → Designed (or Approved post-review); add Design Doc link | Row #3 |
+| `design/gdd/systems-index.md` | ✅ Closed: Row #3 Camera System is Approved and links `camera.md` + `reviews/camera-review-log.md` | Row #3 |
 
 ## D. Formulas
 
@@ -681,11 +681,11 @@ These 4 asserts align with the "safe range" lower bound for each knob in the G t
 
 | # | System | Status | What they need from Camera | Source GDD |
 |---|---|---|---|---|
-| 1 | **HUD #13** | Not Started | Camera coordinate system reference (screen-anchored UI vs world-anchored boss HP bar). Camera emits no signal for HUD to subscribe to directly — HUD reads Camera Node's `get_screen_center_position()` or viewport transform directly. | F.4.2 row #1 |
-| 2 | **VFX / Particle #14** | Not Started | Screenshake state read (camera.offset) for particle emitter to decide world vs viewport-anchored. Separate timing from Time Rewind Visual Shader #16. | F.4.2 row #2 |
-| 3 | **Stage / Encounter #12** | Not Started | Stage scene passes camera's `limits: Rect2` in `scene_post_loaded` payload (queried from stage root just before Scene Manager #2 C.2.1 emit). Stage GDD decides between `Marker2D` `StageBoundsMin`/`StageBoundsMax` or stage root export var pattern. | F.4.2 row #3 |
-| 4 | **Boss Pattern #11** | Not Started | Camera zoom or locked-composition request on boss arena entry when Tier 2 introduced — deferred in Tier 1 (DEC-CAM-A4 lock). When Boss GDD is written, review adding `boss_arena_entered(arena_rect: Rect2)` or similar signal via this GDD revision. | F.4.2 row #4 (deferred Tier 2) |
-| 5 | **Time Rewind Visual Shader #16** | Not Started | Shader fade timing must align with R-C1-9 `reset_smoothing()` call for ux-designer F3 answer option (c) "shader inherits camera snap" to work. When Shader GDD is written, reference this GDD's `rewind_completed` handler order sequence. | F.4.2 row #5 |
+| 1 | **HUD #13** | Approved 2026-05-13 | Camera coordinate system boundary: HUD #13 uses screen-anchored `CanvasLayer` UI for Tier 1 and does not require a Camera signal. World-anchored boss HP bars remain forbidden by Boss Pattern/Damage/HUD. | F.4.2 row #1 |
+| 2 | **VFX / Particle #14** | Approved 2026-05-13 | Screenshake state read (`camera.offset`) is read-only and only needed for viewport-anchored overlays; world combat particles remain world-anchored. Timing remains separate from Time Rewind Visual Shader #16. | F.4.2 row #2 |
+| 3 | **Stage / Encounter #12** | Approved 2026-05-13 | Stage owns immutable `stage_camera_limits: Rect2` and routes it through Scene Manager → Camera via `scene_post_loaded(anchor, limits)`; Camera consumes the already-resolved `limits` payload and never calls Stage directly. | F.4.2 row #3 |
+| 4 | **Boss Pattern #11** | Approved 2026-05-13 | Boss Pattern #11 explicitly does **not** require Tier 1 camera zoom; Camera remains `zoom = Vector2(1.0, 1.0)` and uses existing `boss_killed` shake. Revisit `boss_arena_entered(arena_rect: Rect2)` only at Tier 2 zoom/letterbox gate. | F.4.2 row #4 (deferred Tier 2) |
+| 5 | **[Time Rewind Visual Shader #16](time-rewind-visual-shader.md)** | Approved 2026-05-13 | Shader starts on `rewind_started`, remains viewport-space, does not request Camera signals, and clears visible fullscreen intensity by frame 19 so R-C1-9 `rewind_completed` unfreeze → clear shake → retarget → `reset_smoothing()` order remains readable. | F.4.2 row #5 |
 
 ---
 
@@ -718,11 +718,11 @@ Obligations that the following GDDs must fulfill to align with Camera #3 contrac
 
 | # | Target GDD | Obligation | Trigger |
 |---|---|---|---|
-| 1 | **HUD #13** | HUD GDD must: (a) choose Camera Node reference pattern (expose via autoload vs `get_tree().get_first_node_in_group("camera")`); (b) classify screen-anchored vs world-anchored UI elements; (c) handle any new signal requests from Camera via this GDD revision | When HUD GDD is written |
-| 2 | **VFX / Particle #14** | VFX GDD must: (a) define screenshake offset (camera.offset) consume pattern; (b) specify world-anchored vs viewport-anchored particle emitter classification contract; (c) coordinate timing with Time Rewind Visual Shader #16 | When VFX GDD is written |
-| 3 | **Stage / Encounter #12** | Stage GDD must: (a) decide `limits: Rect2` exposure pattern at stage root (export var `stage_camera_limits: Rect2` or `Marker2D` child node query); (b) specify contract for Scene Manager to extract Rect2 from stage root and pass it in `scene_post_loaded` payload | When Stage GDD is written |
+| 1 | **HUD #13** | Resolved by HUD #13 (2026-05-13): Tier 1 HUD is screen-anchored `CanvasLayer`, requires no Camera node reference for core layout, and requests no new Camera signal. Future world-anchored UI requires HUD/VFX review. | Closed by `design/gdd/hud.md` |
+| 2 | **VFX / Particle #14** | ✅ Closed by `vfx-particle.md` (2026-05-13): (a) `camera.offset` is read-only for viewport-anchor classification; (b) world-anchored vs viewport-anchored vs shader-owned classification is defined; (c) Shader #16 keeps full-screen rewind timing ownership. | Re-check only if Shader #16 timing changes |
+| 3 | **Stage / Encounter #12** | ✅ Closed by Stage #12 (2026-05-13): Stage owns immutable `stage_camera_limits: Rect2`; Scene Manager extracts it and passes it to Camera in `scene_post_loaded(anchor, limits)`; Camera remains a consumer only. | Re-check only if Stage/Scene Manager change the `stage_camera_limits` delivery contract |
 | 4 | **Boss Pattern #11** (Tier 2) | When Boss GDD requests camera zoom/lock behavior on boss arena entry, add new signal contract such as `boss_arena_entered(arena_rect: Rect2)` via this Camera #3 GDD revision | When Tier 2 is introduced |
-| 5 | **Time Rewind Visual Shader #16** | Shader GDD must specify that shader fade timing is synchronized with this Camera #3 R-C1-9 `rewind_completed` handler order sequence (unfreeze → clear shake → reset_smoothing) | When Shader GDD is written |
+| 5 | **Time Rewind Visual Shader #16** | ✅ Approved 2026-05-13: Shader #16 starts from `rewind_started`, does not terminate from `rewind_completed`, and clears visible fullscreen intensity by frame 19 while respecting Camera #3 R-C1-9 order (unfreeze → clear shake → reset_smoothing). | Re-check only if Shader #16 timing changes |
 | 6 | **Player Shooting #7** | (status: **Already done** — Player Shooting F.4.2 row #5 "Camera #3 obligation" registration complete 2026-05-11 Round 2). This GDD closes it — Phase 5 verify no edit. | — |
 
 ---
@@ -1111,9 +1111,9 @@ This table explicitly distinguishes often-confused ownership (boundary clarity w
 
 ### VA.4 — Audio Events (Camera is not owner — Audio #4 cross-ref)
 
-All shake-source events within this GDD scope (`shot_fired`, `player_hit_lethal`, `boss_killed`) emit their own SFX, but **Camera #3 does not own audio output**. Audio routing/mixing/ducking is owned by Audio #4 (Tier 1 stub-level, Not Started).
+All shake-source events within this GDD scope (`shot_fired`, `player_hit_lethal`, `boss_killed`) emit their own SFX, but **Camera #3 does not own audio output**. Audio routing/mixing/ducking is owned by Audio #4 (Approved 2026-05-12).
 
-**Reciprocal obligation when Audio #4 GDD is written in future** (F.4.2 row #6 candidate): Audio GDD decides whether to align `shot_fired` SFX amplitude with Camera's shake amplitude (e.g., strengthen SFX ducking when `MAX_SHAKE_PX` is reached). Currently no-op on Camera side.
+**Audio #4 reciprocal status**: Audio #4 is approved; any future alignment between `shot_fired` SFX amplitude and Camera shake amplitude (e.g., strengthening SFX ducking when `MAX_SHAKE_PX` is reached) remains an Audio polish pass, with no Camera-side action.
 
 ### VA.5 — Asset Spec Implications (zero assets)
 
@@ -1142,7 +1142,7 @@ This amendment adds 1 row to Phase 5 cross-doc batch (augments C.3.3 + F.4.1 bat
 
 ### UI.1 — UI Surfaces Camera Does NOT Provide
 
-- HUD elements (REWIND token counter, weapon icon, boss HP bar) — **HUD #13** owns.
+- HUD elements (REWIND token counter, weapon icon, boss phase pulse/title flash) — **HUD #13** owns.
 - Pause/menu overlays — **Menu #18** owns (Anti-Pillar #6: Tier 1 minimal — pause overlay only).
 - Story intro 5-line typewriter — **Story Intro Text System #17** owns.
 - Boss arena letterbox bars (Tier 2 deferred) — **VFX #14** owns (per VA.3 ownership boundary).
@@ -1154,12 +1154,12 @@ Primitives downstream UI systems can read from Camera:
 
 | Primitive | Type | Usage |
 |---|---|---|
-| `camera.global_position` | Vector2 | Read by HUD when calculating position of world-anchored UI (e.g., boss HP bar above boss) |
+| `camera.global_position` | Vector2 | Not used by Tier 1 HUD; available only if a future reviewed feature adds world-anchored UI |
 | `camera.offset` | Vector2 | Shake state read — read by VFX when deciding particle world-vs-viewport anchoring (UI generally does not read) |
 | `camera.get_screen_center_position()` | Vector2 (Godot 4.6 built-in) | Viewport center world coord — assists HUD anchoring |
 | `camera.get_viewport_rect()` | Rect2 (Godot 4.6 built-in) | Viewport bounds — screen-anchored UI placement |
 
-**HUD #13 obligation** (F.4.2 row #1 compliant): when HUD GDD is written, (a) decide Camera Node reference pattern (`get_tree().get_first_node_in_group("camera")` or autoload exposure vs sibling lookup); (b) classify screen-anchored (CanvasLayer top) vs world-anchored (sibling in stage tree) UI; (c) any new signal requests from Camera handled via this GDD revision.
+**HUD #13 resolution** (F.4.2 row #1 compliant): HUD #13 chooses screen-anchored `CanvasLayer` UI for Tier 1, requires no Camera signal, and does not need a Camera node reference for core placement. Any future world-anchored UI requires a HUD/VFX review because boss HP bars remain forbidden.
 
 ### UI.3 — UX Flag (NO new ux-spec required)
 
@@ -1193,7 +1193,7 @@ This section specifies decisions not yet resolved in this GDD. Each item has an 
 | **OQ-CAM-2** | FALL_LOOKAHEAD_DOWN_PX=52 adequacy — is landing threat visibility sufficient? If below 80% threshold, consider raising to 60 px or 70 px | game-designer | Tier 1 Week 1-2 playtest (when landing threat encounter appears) | MEDIUM | AC-CAM-HX-05 evidence; can only change within INV-CAM-5 36-frame limit |
 | **OQ-CAM-3** | Tier 2 zoom introduction timing — is zoom-out (0.85×) on boss arena entry valuable? Isn't a simple Cuphead-locked letterbox sufficient? | art-director + game-designer | When Tier 2 Boss Pattern #11 GDD is written | LOW (Tier 2 deferred) | 0.85..1.25× intent recorded in VA.2; this decision owned by Boss GDD |
 | **OQ-CAM-4** | Tier 2 zoom transition curve — linear lerp vs ease-in/ease-out? Exact curve for "collage breathes into new frame" | art-director | When Tier 2 zoom is introduced (Boss #11 GDD) | LOW (Tier 2) | VA.2 specifies "tween" but curve not yet determined |
-| **OQ-CAM-5** | Camera Node reference pattern — which does HUD #13 use: `get_tree().get_first_node_in_group("camera")` vs autoload exposure vs direct sibling lookup? | ui-designer + ux-designer | When HUD #13 GDD is written | LOW | F.4.2 row #1 / UI.2 deferred to HUD owner |
+| **OQ-CAM-5** | RESOLVED 2026-05-13 — HUD #13 uses screen-anchored `CanvasLayer` for Tier 1 and does not require a Camera node reference or signal for core HUD placement. | ui-designer + ux-designer | Closed by `design/gdd/hud.md` | CLOSED | F.4.2 row #1 / UI.2 resolved by HUD owner |
 | **OQ-CAM-6** | Ducking alignment with Audio #4 — should Camera shake amplitude (`shake_offset.length()`) align with SFX ducking intensity? e.g., strengthen BGM ducking at `boss_killed` peak 10 px | audio-director | When Audio #4 GDD is written | LOW | VA.4 reciprocal candidate; currently no-op on Camera side |
 | **OQ-CAM-7** | Tier 2 viewport change scenario (viewport shrink on options menu letterbox or multi-room) → DEADZONE_HALF_X re-tuning needed? Re-run INV-CAM-2 `× 6 < viewport_width` verification | game-designer + ux-designer | When Tier 2 viewport scaling is introduced | LOW (Tier 2) | E-CAM-12 carry-over |
 | **OQ-CAM-8** | Tier 2 need for new signal such as `boss_arena_entered(arena_rect: Rect2)` — for cases where boss arena triggers only camera lock without stage scene change | game-designer + boss-pattern-designer | When Boss Pattern #11 GDD is written | LOW (Tier 2) | F.4.2 row #4 reciprocal candidate |

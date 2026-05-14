@@ -362,7 +362,7 @@ func restore_from_snapshot(snap: PlayerSnapshot) -> void:
 | game-concept.md | Pillar 2 "결정론적 패턴" (라인 138) | 외부 의존 0 데이터 복원 → 결정성 100% 보장 + 1000회 자동 테스트로 검증 가능 |
 | systems-index.md | System #9 Time Rewind System | TimeRewindController 노드 + PlayerSnapshot Resource 두 entity로 구조 명시 |
 | systems-index.md | System #14 HUD System | HUD는 `token_consumed` / `token_replenished` 시그널 구독 — direct state polling 금지 (registry forbidden pattern 후보) |
-| systems-index.md | System #21 Save / Settings Persistence (Tier 2) | PlayerSnapshot Resource는 Save system에서 직접 직렬화 재사용 — 추가 포맷 정의 불필요 |
+| systems-index.md | System #21 Save / Settings Persistence (Tier 2) | `PlayerSnapshot` is a runtime rewind schema only. Persistence defers to ADR-0006; save/progress files must not serialize `PlayerSnapshot` unless a future Save ADR or ADR-0006 amendment explicitly expands scope. |
 | ADR-0001 | PlayerSnapshot 7 필드 사양 | 7 PM 필드 + Amendment 1 (1 TRC `captured_at_physics_frame`) + Amendment 2 (1 Weapon-owned `ammo_count`) = 9-필드 Resource |
 
 ## Performance Implications
@@ -393,7 +393,7 @@ func restore_from_snapshot(snap: PlayerSnapshot) -> void:
 ## Related Decisions
 
 - **ADR-0001 (R-T1)** [Accepted] — Time Rewind 범위 Player-only. 본 ADR의 단일 객체 모델 가능 조건.
-- **ADR-0003 (R-T3)** [Pending] — 결정성 전략. Snapshot 모델과 정합 — CharacterBody2D + 직접 transform set으로 복원 시 100% 결정.
+- **ADR-0003 (R-T3)** [Accepted 2026-05-14; decision date 2026-05-09] — 결정성 전략. Snapshot 모델과 정합 — CharacterBody2D + 직접 transform set으로 복원 시 100% 결정.
 - **design/gdd/systems-index.md** — System #9 Time Rewind System (Status: 본 ADR 후 R-T3 1건만 남음).
 - **design/gdd/game-concept.md** — Echo 컨셉 + Pillar 정의.
 - **docs/registry/architecture.yaml** — 본 ADR이 추가하는 stances:

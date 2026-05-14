@@ -1,9 +1,9 @@
 # Player Shooting / Weapon System
 
-> **Status**: In Design
+> **Status**: Approved · 2026-05-11
 > **System Index**: #7 (Feature Layer, MVP, depends on Input #1 / Player Movement #6 / Damage #8)
 > **Author**: seong-mungi + Claude (game-designer / systems-designer / gameplay-programmer / godot-gdscript-specialist / art-director / audio-director / qa-lead specialists per section)
-> **Last Updated**: 2026-05-11
+> **Last Updated**: 2026-05-13 — status-ledger cleanup after cross-GDD warning pass
 > **Implements Pillars**: Pillar 1 (rewind = learning tool — via `ammo_count` restoration), Pillar 2 (determinism — no random spread), Pillar 4 (5-min rule — discoverable without tutorial)
 > **Ratification Gate**: Closes ADR-0002 Amendment 2 (Proposed 2026-05-11) → Accepted. Closes OQ-PM-NEW (TRC orchestration vs Weapon `rewind_completed` subscription). Closes OQ-3 (silent fallback signaling). Closes input.md C.1.1 row 7 `shoot` detect mode.
 
@@ -87,7 +87,7 @@ ECHO 작전 요원은 *달리면서 쏘고, 점프하면서 조준하고, 슬라
 
 **규칙 6 (Concurrent projectile cap — INV-WS-3)** — `_active_projectile_count: int` member 유지. 사격 spawn 시점 `if _active_projectile_count >= PROJECTILE_CAP: return` silent skip (no SFX/VFX/error). `PROJECTILE_CAP = 8` Tier 1 default. Spawn 시 `_active_projectile_count += 1`; Projectile `tree_exiting` 시그널 → WeaponSlot handler `_active_projectile_count -= 1` (signal 기반 deterministic decrement). Tuning `projectile_cap: int`, safe 4..16.
 
-**규칙 7 (Projectile parent target — Stage 호스팅, ECHO subtree 외부)** — `add_child` target = `get_tree().current_scene.find_child("Projectiles", true, false)`. NOT WeaponSlot's subtree — ECHO transform inheritance가 PM `restore_from_snapshot()` 이후 invalid 위치로 displace됨. ADR-0001 player-only scope 정합 (projectile은 rewind 대상이 아니므로 ECHO subtree 외부). **Stage GDD #12 (Not Started) F.4.1 obligation**: stage scene root는 `Projectiles: Node2D` 명명 노드를 포함해야 함; Scene Manager `scene_will_change` 시 컨테이너 free (scene-manager.md Rule 4).
+**규칙 7 (Projectile parent target — Stage 호스팅, ECHO subtree 외부)** — `add_child` target = `get_tree().current_scene.find_child("Projectiles", true, false)`. NOT WeaponSlot's subtree — ECHO transform inheritance가 PM `restore_from_snapshot()` 이후 invalid 위치로 displace됨. ADR-0001 player-only scope 정합 (projectile은 rewind 대상이 아니므로 ECHO subtree 외부). **Stage GDD #12 reciprocal closed 2026-05-14**: `stage-encounter.md` Rule 15 + AC-STG-27 require exactly one root-child `Projectiles: Node2D` container; Scene Manager `scene_will_change` 시 컨테이너 free (scene-manager.md Rule 4).
 
 **규칙 8 (HitBox attachment — 자식 Area2D + layer 분리)** — Projectile `.tscn` 노드 트리:
 
@@ -312,24 +312,24 @@ WeaponSlot `_try_fire`가 `spawn_projectile(facing_direction)` direct 호출 단
 - **Restart 시 ammo / cooldown ephemeral 처리**: scene_manager Rule 9 restart_window_max_frames=60 lifecycle 내부에서 WeaponSlot은 새 scene 인스턴스의 새 `_ready()`에서 `ammo_count = MAGAZINE_SIZE` 재설정 (Pillar 4 fresh restart).
 - **Phase 5d 의무 없음** — Scene Manager F.4.1 cascade 없음.
 
-#### C.3.7 Stage / Encounter (#12, Not Started) — Soft downstream (Projectiles 컨테이너 호스팅)
+#### C.3.7 Stage / Encounter (#12, Approved 2026-05-13) — Soft downstream (Projectiles 컨테이너 호스팅)
 
 - **Stage 씬 root 의무**: Stage `.tscn`의 root 자식에 `Projectiles: Node2D` 명명 노드 1개 필수. WeaponSlot은 `get_tree().current_scene.find_child("Projectiles", true, false)` lookup; null이면 push_error (assert 형 — Stage 디자인 위반).
-- **F.4.2 Stage GDD #12 obligation 발생**: Stage GDD H section에 "Projectiles: Node2D 명명 노드 root 자식 존재" AC 추가 의무 (본 GDD F.4.2 #1).
-- Stage GDD는 *Not Started* — 본 의무는 *deferred until Stage 작성*.
+- **F.4.2 Stage GDD #12 obligation closed 2026-05-14**: `stage-encounter.md` C.1 Rule 15 / C.5 #7 / F.2 #7 / F.4 Data Interfaces / AC-STG-27 now require exactly one root-child `Projectiles: Node2D` container and keep projectile behavior owned by Player Shooting.
+- Stage owns only container presence and scene-lifetime cleanup; projectile spawn, movement, cap, Damage HitBox setup, ammo/cooldown, and `shot_fired(direction: int)` remain owned by this GDD.
 
-#### C.3.8 HUD System (#13, Not Started) — Soft downstream (signal subscriber)
+#### C.3.8 HUD System (#13, Approved 2026-05-13) — Soft downstream (signal subscriber)
 
 - `weapon_equipped(weapon_id: int)` 구독 → 무기 아이콘 변경
-- `WeaponSlot.ammo_count` read → ammo counter UI 렌더 (per-tick polling 또는 새 시그널 `ammo_changed(new_count: int)` — HUD GDD 작성 시 결정)
+- `WeaponSlot.ammo_count` read → ammo counter UI 렌더 (HUD #13 approved Tier 1 diff-read default; 새 시그널 `ammo_changed(new_count: int)`은 profiling 후 선택)
 - `weapon_fallback_activated(requested_id: int)` 구독 → optional "잘못된 무기" 인디케이터
-- **F.4.2 HUD GDD obligation 발생** — HUD GDD H section에 위 3 contract AC.
+- **F.4.2 HUD GDD obligation closed 2026-05-13** — HUD #13 H section includes AC-HUD-7/8 for weapon icon + ammo display contracts.
 
-#### C.3.9 VFX / Particle (#14, Not Started) — Soft downstream (signal subscriber + near-miss)
+#### C.3.9 VFX / Particle (#14, Approved 2026-05-13) — Soft downstream (signal subscriber + near-miss)
 
-- `shot_fired(direction: int)` 구독 → 발사 muzzle flash VFX 트리거
+- `shot_fired(direction: int)` 구독 → 발사 muzzle flash VFX 트리거 (`vfx-particle.md` AC-VFX-02)
 - `weapon_fallback_activated(requested_id: int)` 구독 → optional "잘못된 무기" 시각 글리치
-- **Near-miss obligation 영구 유지** (damage.md DEC-3): VFX #14가 ECHO projectile destroy 시점 (본 GDD 규칙 7 `queue_free()`) 데이터로 *자체 근접 판정* — 본 GDD는 near-miss 정보 *발행하지 않음*. damage.md DEC-3 사전 lock.
+- **Near-miss obligation 영구 유지** (damage.md DEC-3): VFX #14가 projectile 위치/target 위치를 이용해 passive proximity 판정 — 본 GDD는 near-miss 정보 *발행하지 않음* and adds no gameplay `Area2D` (`vfx-particle.md` C.5 / AC-VFX-03).
 
 #### C.3.10 Audio System (#4, Approved · 2026-05-12) — Hard downstream (signal subscriber + direct callee)
 
@@ -337,7 +337,7 @@ WeaponSlot `_try_fire`가 `spawn_projectile(facing_direction)` direct 호출 단
 - `AudioManager.play_ammo_empty()` direct call — `ammo_count == 0` + shoot input 시 (audio.md Rule 14)
 - `weapon_fallback_activated(requested_id: int)` 구독 → optional 큐 (Tier 2 이후)
 
-#### C.3.11 Camera System (#3, Not Started) — Soft downstream
+#### C.3.11 Camera System (#3, Approved · 2026-05-13) — Soft downstream
 
 - `shot_fired(direction: int)` 구독 → 카메라 micro-shake (Camera GDD가 intensity / duration / falloff 결정).
 - 본 GDD는 카메라 흔들림 spec 비명세; 시그널 발화만 책임 (규칙 10 단일 출처).
@@ -527,7 +527,7 @@ restore_idx = (_lethal_hit_head - RESTORE_OFFSET_FRAMES + REWIND_WINDOW_FRAMES) 
 
 ### E-PS-7 (Stage Projectiles 컨테이너 부재 — assert)
 
-**If** Stage 씬 root에 `Projectiles: Node2D` 명명 노드 부재: WeaponSlot의 `find_child("Projectiles", true, false)` returns null → `push_error("Stage scene missing Projectiles container")` + `assert(false)` (디자인 위반). Tier 1 prototype에서는 Stage 디자인 작성 전 임시로 WeaponSlot이 `get_tree().current_scene` 자체에 add_child fallback 가능하나 — Stage GDD #12 작성 후에는 `assert` 정식 활성화. **결과**: 디자인 contract 위반 시 dev build crash; 정상 Stage에서는 발생 X.
+**If** Stage 씬 root에 `Projectiles: Node2D` 명명 노드 부재: WeaponSlot의 `find_child("Projectiles", true, false)` returns null → `push_error("Stage scene missing Projectiles container")` + `assert(false)` (디자인 위반). Stage #12 is now authored and requires the container in `stage-encounter.md` Rule 15 + AC-STG-27, so Tier 1 production has no fallback to `current_scene` parenting. **결과**: 디자인 contract 위반 시 dev build crash; 정상 Stage에서는 발생 X.
 
 ### E-PS-8 (`set_active(invalid_id)` — silent fallback signal)
 
@@ -587,11 +587,11 @@ restore_idx = (_lethal_hit_head - RESTORE_OFFSET_FRAMES + REWIND_WINDOW_FRAMES) 
 | #8 Damage | downstream | Hard | Instantiate `HitBox extends Area2D` (damage.md C.1.1) as child of Projectile root; `cause = &""`, `host = projectile_root`, `collision_layer = 2`, `collision_mask = 3 \| 6`, `monitoring = true`. damage.md F.1 #7 obligation honored | LOCKED |
 | #9 Time Rewind | upstream + downstream | Hard | Upstream (read): TRC reads `WeaponSlot.ammo_count` per `_capture_to_ring()` Step (b) (time-rewind.md AC-A1). Downstream (sync method): TRC calls `WeaponSlot.restore_from_snapshot(snap)` inside Rule 9 atomic sequence (OQ-PM-NEW (a) lock). **NO signal subscription** | Approved |
 | #2 Scene Manager | upstream | Soft | `scene_will_change` Stage swap 시 Stage's `Projectiles: Node2D` 컨테이너 + 자식 자동 free; WeaponSlot 별도 cleanup 없음. Restart 시 `_ready()` 재실행 (ammo + cooldown ephemeral reset) | Approved |
-| #12 Stage / Encounter | downstream | Soft *(provisional)* | Stage `.tscn` root 자식에 `Projectiles: Node2D` 명명 노드 1개 필수; F.4.2 #1 | Not Started |
-| #13 HUD | downstream | Soft *(provisional)* | Subscribe to `weapon_equipped`, `weapon_fallback_activated`; read `ammo_count`. F.4.2 #2 | Not Started |
-| #14 VFX / Particle | downstream | Soft *(provisional)* | Subscribe to `shot_fired`, `weapon_fallback_activated`; near-miss obligation per damage.md DEC-3. F.4.2 #3 | Not Started |
+| #12 Stage / Encounter | downstream | Soft scene-host contract | Stage `.tscn` root 자식에 `Projectiles: Node2D` 명명 노드 1개 필수; closed by stage-encounter.md AC-STG-27 | Approved 2026-05-13 |
+| #13 HUD | downstream | Soft | Subscribe to `weapon_equipped`, `weapon_fallback_activated`; read `ammo_count`. F.4.2 #2 | Approved 2026-05-13 |
+| #14 VFX / Particle | downstream | Soft | Subscribe to `shot_fired`, `weapon_fallback_activated`; near-miss obligation per damage.md DEC-3; no extra projectile payload required. F.4.2 #3 | Approved 2026-05-13 |
 | #4 Audio | downstream | Hard | Subscribe to `shot_fired(direction: int)` → `sfx_player_shoot_rifle_01.ogg` + pitch jitter (audio.md Rule 16). Direct callee: `AudioManager.play_ammo_empty()` on ammo=0+shoot (audio.md Rule 14). F.4.2 #4 | Approved |
-| #3 Camera | downstream | Soft *(provisional)* | Subscribe to `shot_fired(direction)` for micro-shake (Camera GDD spec). F.4.2 #5 | Not Started |
+| #3 Camera | downstream | Soft | Subscribe to `shot_fired(direction)` for micro-shake (Camera GDD spec). F.4.2 #5 | Approved 2026-05-13 |
 | #19 Pickup (Tier 2) | downstream | Soft *(deferred)* | Call `WeaponSlot.set_active(weapon_id: int)` direct; invalid id → `weapon_fallback_activated` emit. F.4.2 #6 | Not Started, Tier 2 |
 | ADR-0001 | architecture | locked ref | Player-only rewind scope — projectile은 normal simulation (C.2.5) | Accepted |
 | ADR-0002 Amendment 2 | architecture | ratifies via 본 GDD | `ammo_count` 8번째 PM-노출 필드, Weapon single-writer; OQ-PM-NEW (a) TRC orchestration | Proposed → Accepted |
@@ -610,8 +610,8 @@ restore_idx = (_lethal_hit_head - RESTORE_OFFSET_FRAMES + REWIND_WINDOW_FRAMES) 
 **Soft** (interface 부재 시 본 시스템은 동작하나 cascade 기능 부재):
 
 - Scene Manager #2 (Tier 1 prototype에서 `_ready()` ephemeral reset 충분)
-- Stage #12 *(provisional)* (Projectiles 컨테이너 부재 시 dev-build assert)
-- HUD #13 / VFX #14 / Audio #4 / Camera #3 *(provisional)* (시그널 구독자 부재 시 본 시스템 동작 영향 없음; juice 부재만)
+- Stage #12 (Approved scene-host contract; Projectiles 컨테이너 부재 시 dev-build assert)
+- HUD #13 (Approved 2026-05-13) / VFX #14 (Approved 2026-05-13) / Audio #4 / Camera #3 (Approved 2026-05-13) *(presentation subscribers)* (시그널 구독자 부재 시 본 시스템 동작 영향 없음; juice 부재만)
 - Pickup #19 *(deferred)* (Tier 1 single-weapon에서 호출 site 없음)
 
 ### F.3 Cross-doc reciprocal status (HEAD 시점 stale-check)
@@ -648,13 +648,13 @@ restore_idx = (_lethal_hit_head - RESTORE_OFFSET_FRAMES + REWIND_WINDOW_FRAMES) 
 
 #### F.4.2 Future GDD obligations (downstream — apply when target GDD is authored)
 
-| # | Target GDD (Not Started) | Obligation | Trigger |
+| # | Target GDD / downstream | Obligation | Trigger |
 |---|---|---|---|
-| 1 | Stage / Encounter #12 | Stage `.tscn` root에 `Projectiles: Node2D` 명명 노드 자식 1개; H section AC × 1 | `/design-system stage-encounter` 시 |
-| 2 | HUD #13 | `weapon_equipped`/`weapon_fallback_activated` 구독 + `ammo_count` read; H section AC × 3 | `/design-system hud` 시 |
-| 3 | VFX #14 | `shot_fired`/`weapon_fallback_activated` 구독; near-miss 책임; H section AC × 2 | `/design-system vfx-particle` 시 |
+| 1 | Stage / Encounter #12 | Stage `.tscn` root에 `Projectiles: Node2D` 명명 노드 자식 1개; H section AC × 1 | ✅ Closed 2026-05-14 by `stage-encounter.md` Rule 15 + AC-STG-27 |
+| 2 | HUD #13 | `weapon_equipped`/`weapon_fallback_activated` 구독 + `ammo_count` read; H section AC × 3 | ✅ Closed by HUD #13 approval 2026-05-13 |
+| 3 | VFX #14 | `shot_fired`/`weapon_fallback_activated` 구독; near-miss 책임; no extra projectile payload; H section AC mirrored in `vfx-particle.md` | ✅ Closed by VFX #14 design 2026-05-13 |
 | 4 | Audio #4 | `shot_fired`/`weapon_fallback_activated` 구독; placeholder `sfx_player_shoot_rifle_01.ogg`; H section AC × 2 | `/design-system audio-system` 시 |
-| 5 | Camera #3 | `shot_fired` 구독 → micro-shake; H section AC × 1 | `/design-system camera` 시 |
+| 5 | Camera #3 | `shot_fired` 구독 → micro-shake; H section AC × 1 | ✅ Closed by Camera #3 approval 2026-05-13 |
 | 6 | Pickup #19 (Tier 2) | `WeaponSlot.set_active(weapon_id)` direct call; invalid id 발생 조건; H section AC × 2 | `/design-system pickup` 시 (Tier 2) |
 
 ## G. Tuning Knobs
@@ -786,14 +786,14 @@ Section B fantasy 모먼트 ("mid-jump, fire upper-right, no horizontal velocity
 
 ## UI Requirements
 
-본 시스템은 *direct UI 호스팅 책임이 없다* — 모든 player-facing UI 요소(ammo counter, 무기 아이콘, fallback indicator)는 HUD System #13 (Not Started)이 own. 본 절은 HUD GDD가 작성될 때 본 시스템에서 *어떤 데이터를 어떤 형식으로 expose*하는지를 단일 출처로 명세한다.
+본 시스템은 *direct UI 호스팅 책임이 없다* — 모든 player-facing UI 요소(ammo counter, 무기 아이콘, fallback indicator)는 HUD System #13 (Approved 2026-05-13)이 own. 본 절은 HUD가 본 시스템에서 *어떤 데이터를 어떤 형식으로 expose*받는지를 단일 출처로 명세한다.
 
 ### UI.1 HUD가 본 시스템에서 read하는 데이터 (HUD GDD F.4.2 #2 obligation 참조)
 
 | UI element | Data source | Format | Update trigger |
 |---|---|---|---|
 | 무기 아이콘 | `weapon_equipped(weapon_id: int)` signal | int 0..N (Tier 1: 0만; Tier 2+: 0..3) | 시그널 발화 시점 + 초기 boot |
-| Ammo counter (현재 magazine 잔여) | `WeaponSlot.ammo_count` direct read | int 0..MAGAZINE_SIZE (Tier 1: 0..30) | per-tick polling (HUD GDD 결정) 또는 새 시그널 `ammo_changed(new_count: int)` |
+| Ammo counter (현재 magazine 잔여) | `WeaponSlot.ammo_count` direct read | int 0..MAGAZINE_SIZE (Tier 1: 0..30) | HUD #13 approved default: diff-read per physics/render tick; 새 시그널 `ammo_changed(new_count: int)`은 profiling 후 선택 |
 | Fallback indicator (optional) | `weapon_fallback_activated(requested_id: int)` signal | int (invalid id) | 시그널 발화 시점 (Tier 1 미발화; Tier 2 Pickup 도입 시) |
 | Magazine capacity (label) | `assets/data/weapons.tres` `magazine_size` | int (Tier 1: 30) | static (boot read; tuning change 시 게임 재시작 — E-PS-18) |
 
@@ -821,11 +821,11 @@ Tier 3 Accessibility Options #24 도입 시 본 시스템이 영향받을 surfac
 - **Fire rate auto** (Tier 3 optional): hold-fire를 못하는 사용자를 위한 auto-fire 토글 — `Input.is_action_pressed`를 internal auto-repeat로 변환; 본 시스템 코드 변경 불필요 (Input #1 layer).
 - **Audio cue alternatives**: 시각 장애 사용자를 위한 directional audio cue 보강은 Audio System #4가 own.
 
-Tier 1에서는 위 surface 모두 *비활성* (Anti-Pillar #6 — Tier 3 deferred).
+Tier 1에서는 weapon icon + ammo counter가 HUD #13에서 활성이다. Fallback indicator는 invalid weapon/pickup flow가 등장하는 Tier 2 이후 더 자주 쓰인다.
 
 ### UI.5 UX flag (skill 자동 출력)
 
-> **📌 UX Flag — Player Shooting #7**: 본 시스템은 ammo counter + 무기 아이콘 UI 요구사항을 발생시킨다. Phase 4 (Pre-Production) 진입 시 `/ux-design` 실행하여 HUD #13 GDD 작성 *전*에 ammo counter / weapon icon 스크린 명세 생성. Story는 `design/ux/hud-ammo-counter.md` 등 ux 스펙 참조 (본 GDD 직접 참조 X). HUD #13 row가 systems-index에서 작성 trigger 시점 기준.
+> **📌 UX Flag — Player Shooting #7**: 본 시스템은 ammo counter + 무기 아이콘 UI 요구사항을 발생시킨다. HUD #13 GDD는 승인되었으므로, Phase 4 (Pre-Production) 진입 시 `/ux-design design/gdd/hud.md` 또는 HUD UX spec에서 ammo counter / weapon icon 스크린 명세를 구체화한다. Story는 `design/ux/hud-ammo-counter.md` 등 ux 스펙 참조 (본 GDD 직접 참조 X).
 
 ## H. Acceptance Criteria
 

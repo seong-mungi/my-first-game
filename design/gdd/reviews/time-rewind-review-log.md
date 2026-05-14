@@ -1,6 +1,6 @@
 # Time Rewind GDD Review Log
 
-`design/gdd/time-rewind.md` 디자인 리뷰 이력. 신규 리뷰 시 *위*에 prepend.
+Design review history for `design/gdd/time-rewind.md`. Prepend new reviews *above*.
 
 ---
 
@@ -25,7 +25,7 @@ No items qualified as BLOCKING under Round 1 directive criteria. The 7 RECOMMEND
 | BLOCK-R1-2 (signal split) | Rule 4 (L74) + H_lethal table (L178) + AC-A3 (L606) — TRC/SM split correct |
 | BLOCK-R1-3 (D2 cap) | time-rewind.md L208 + ADR-0002 L161 grant_token() — synced |
 | BLOCK-R1-4 (Amendment 1) | ADR-0001 status (L4) + Verification Required #3 (L30) + Performance Implications (L241) + Validation Criteria #1 (L253) — 4 sites updated |
-| BLOCK-R1-5 (정본 pseudocode) | ADR-0002 Decision (L140-157) + assert (L151) + Superseded subsection (L165) |
+| BLOCK-R1-5 (authoritative pseudocode) | ADR-0002 Decision (L140-157) + assert (L151) + Superseded subsection (L165) |
 | BLOCK-R1-6 (game-concept copy) | Core Fantasy (L34) + Unique Hook (L42) + verification bullet (L49) + Core Mechanics (L75) |
 
 ### Round 2 RECOMMENDED Applied (7)
@@ -40,7 +40,7 @@ No items qualified as BLOCKING under Round 1 directive criteria. The 7 RECOMMEND
 
 ### New Cosmetic Fix
 
-- **R2-Cosmetic (AC count 33→34)**: Acceptance Criteria header L599 declared "33개 기준" but actual enumeration is 34 (A:5 / B:8 / C:6 / D:5 / E:4 / F:2 / G:4). Header updated to "34개 기준" with breakdown.
+- **R2-Cosmetic (AC count 33→34)**: Acceptance Criteria header L599 declared "33 criteria" but actual enumeration is 34 (A:5 / B:8 / C:6 / D:5 / E:4 / F:2 / G:4). Header updated to "34 criteria" with breakdown.
 
 ### Round 1 Deferred Post-Lock Observations (11 unchanged)
 
@@ -49,7 +49,7 @@ Per Round 1 director directive — log only, do not gate prototype:
 - C3 Tier 3 boss-kill refill at peak content (Tier 3 design)
 - C4 Easy mode infinite=true Pillar 1 break (Tier 2/3 Difficulty Toggle GDD)
 - I1 HUD aesthetic ownership gap (Tier 1 polish)
-- I2 Hard 8-frame DYING punitive feel (Tier 2 difficulty)
+- I2 Hard 8-frame DYING window punitive feel (Tier 2 difficulty)
 - I3 Shader self-terminate desync (apply only if const changes)
 - I4 dry-thunk denial SFX tonal mismatch Hard (Tier 2 sound-designer)
 - L1 grant_on_boss_kill diegetic bridge (narrative-director post-prototype)
@@ -59,13 +59,13 @@ Per Round 1 director directive — log only, do not gate prototype:
 
 ### Director Directive (Round 3 carryover)
 
-**Round 3 차단** except for:
-- (a) Locked Decision empirical falsification (Tier 1 prototype 검증 시 발견된 spec-vs-실제 불일치)
+**Round 3 blocked** except for:
+- (a) Locked Decision empirical falsification (spec-vs-actual mismatch discovered during Tier 1 prototype verification)
 - (b) Cross-document contradiction discovered after lock
 
-Aesthetic-only 발견은 post-lock observations log only — Tier 1 playtest 후 review-log entry만.
+Aesthetic-only findings go to post-lock observations log only — add review-log entry only after Tier 1 playtest.
 
-**Empirical falsification examples that WOULD reopen the lock**: Steam Deck profiling exceeds 1 ms / shader sub-cap (500 μs) / restore sub-cap (300 μs); Tier 1 playtest validates C1 0.7s 안전망 reading; memory measurement exceeds 25 KB; priority ladder breaks (Boss Pattern GDD assigns priority < 2); GDScript field-copy measured outside 100–500 ns envelope.
+**Empirical falsification examples that WOULD reopen the lock**: Steam Deck profiling exceeds 1 ms / shader sub-cap (500 μs) / restore sub-cap (300 μs); Tier 1 playtest validates C1 0.7s safety-net reading; memory measurement exceeds 25 KB; priority ladder breaks (Boss Pattern GDD assigns priority < 2); GDScript field-copy measured outside 100–500 ns envelope.
 
 ### Validation Criteria — How We'll Know Round 2 Was Right
 
@@ -95,46 +95,46 @@ Blocking items: **6** | Recommended: **9 (deferred to next session per user [A] 
 
 First Round 1 review of System #9 Time Rewind GDD (745 lines). 5 specialists spawned in parallel (full mode per skill default; `production/review-mode.txt` says lean for director gates which is independent of `--depth`). Three specialists (systems-designer + godot-specialist + qa-lead) independently identified the same root defect — Rule 16/I2 priority invariant inversion — making it the strongest convergent signal in the review.
 
-Beyond that, structural defects in formula (D2 missing max_tokens cap), cross-document contradiction with locked Damage GDD (AC-A3 names `player_hit_lethal` but TRC subscribes to `lethal_hit_detected` per Damage F.1 #8), ADR drift (ADR-0001 ≤5 KB validation criterion auto-fails after Amendment 1 cosmetic correction in ADR-0002 not propagated), ADR-0002 broken pseudocode in primary Decision section, and player-facing copy contradiction ("1초 회수" in game-concept.md vs 0.15s mechanic).
+Beyond that, structural defects in formula (D2 missing max_tokens cap), cross-document contradiction with locked Damage GDD (AC-A3 names `player_hit_lethal` but TRC subscribes to `lethal_hit_detected` per Damage F.1 #8), ADR drift (ADR-0001 ≤5 KB validation criterion auto-fails after Amendment 1 cosmetic correction in ADR-0002 not propagated), ADR-0002 broken pseudocode in primary Decision section, and player-facing copy contradiction ("recover 1 second" in game-concept.md vs 0.15s mechanic).
 
-creative-director synthesis: Time Rewind is Echo's *unique hook* — failure = concept failure. Damage Round 4 lean precedent (defer non-empirical concerns) does not transfer wholesale; the bar is necessarily higher. 6 BLOCKING are all *structural defects* (wrong invariants, missing cap expressions, cross-doc contradictions, ADR drift, ship-stopper copy mismatch), not aesthetic preferences. game-designer's anti-fantasy concerns (C1 42-frame compound = 안전망 risk, C2 pre-hit buffer + DYING pulse = "분석 시간", C3 Tier 3 token refill at hardest content, C4 Easy mode breaks Pillar 1) demoted to ADVISORY/DEFERRED — playtest hypothesis register, not blocker list. godot-specialist's `@export` mutation concern demoted to RECOMMENDED implementation hardening item.
+creative-director synthesis: Time Rewind is Echo's *unique hook* — failure = concept failure. Damage Round 4 lean precedent (defer non-empirical concerns) does not transfer wholesale; the bar is necessarily higher. 6 BLOCKING are all *structural defects* (wrong invariants, missing cap expressions, cross-doc contradictions, ADR drift, ship-stopper copy mismatch), not aesthetic preferences. game-designer's anti-fantasy concerns (C1 42-frame compound = safety-net risk, C2 pre-hit buffer + DYING pulse = "analysis time", C3 Tier 3 token refill at hardest content, C4 Easy mode breaks Pillar 1) demoted to ADVISORY/DEFERRED — playtest hypothesis register, not blocker list. godot-specialist's `@export` mutation concern demoted to RECOMMENDED implementation hardening item.
 
 User chose option [A]: apply 6 BLOCKING in same session, defer 9 RECOMMENDED to next session.
 
 ### Fixes Applied (6 BLOCKING)
 
-- **BLOCK-R1-1 (systems-designer + godot-specialist + qa-lead 합의)**: Rule 16 + I2 priority invariant 재작성. Original claimed "Boss(priority=10)이 Damage 처리 이전에 grant_token() 발행". 정정: process_physics_priority lower=earlier (Godot 4.x). 사다리: player=0, TRC=1, Damage=2 (damage.md Round 3 lock), enemies/Boss=10, projectiles=20. 같은 틱 실제 순서: Damage(2) → Boss(10) → projectile(20). Damage `lethal_hit_detected` first → SM이 buffered input 보유 시 `try_consume_rewind` (T → T-1, 중간 T=0 dip 가능) → Boss `boss_defeated` → `grant_token` (T-1 → T, net zero). 중간 T=0 dip은 같은 틱 내 비관측. AC-B5 reframed to verify net-zero (was incorrectly asserting `token_replenished` *before* `token_consumed`). Boss Pattern GDD에 priority ≥ 10 상한 의무 add. E-06 mirror update.
+- **BLOCK-R1-1 (systems-designer + godot-specialist + qa-lead consensus)**: Rule 16 + I2 priority invariant rewritten. Original claimed "Boss(priority=10) issues grant_token() before Damage processing". Correction: process_physics_priority lower=earlier (Godot 4.x). Ladder: player=0, TRC=1, Damage=2 (damage.md Round 3 lock), enemies/Boss=10, projectiles=20. Actual same-tick order: Damage(2) → Boss(10) → projectile(20). Damage `lethal_hit_detected` first → SM tries `try_consume_rewind` if buffered input held (T → T-1, intermediate T=0 dip possible) → Boss `boss_defeated` → `grant_token` (T-1 → T, net zero). Intermediate T=0 dip unobserved within same tick. AC-B5 reframed to verify net-zero (was incorrectly asserting `token_replenished` *before* `token_consumed`). Boss Pattern GDD must add priority ≥ 10 upper-bound obligation. E-06 mirror update.
 
-- **BLOCK-R1-2 (qa-lead BLOCKING #2)**: AC-A3 + Rule 4 + 178행 formula table 시그널명 정정. AC-A3가 `player_hit_lethal` (SM-bound) 사용 — but TRC subscribes to `lethal_hit_detected` per locked Damage GDD F.1 #8. Cross-document contradiction with already-locked sibling. Fixed all 3 TRC-side mentions (Rule 4 cache trigger, formula table H_lethal description, AC-A3 GIVEN clause). SM-side `player_hit_lethal` mentions (Rule 17 latch, AC-C1, AC-C4, AC-D1, AC-D2, state table DYING entry, F.1 #5 row, F.6 contracts) preserved unchanged — they are correct (SM does subscribe to `player_hit_lethal`). Two distinct signals, same frame N emit, different subscribers.
+- **BLOCK-R1-2 (qa-lead BLOCKING #2)**: AC-A3 + Rule 4 + line 178 formula table signal name corrected. AC-A3 used `player_hit_lethal` (SM-bound) — but TRC subscribes to `lethal_hit_detected` per locked Damage GDD F.1 #8. Cross-document contradiction with already-locked sibling. Fixed all 3 TRC-side mentions (Rule 4 cache trigger, formula table H_lethal description, AC-A3 GIVEN clause). SM-side `player_hit_lethal` mentions (Rule 17 latch, AC-C1, AC-C4, AC-D1, AC-D2, state table DYING entry, F.1 #5 row, F.6 contracts) preserved unchanged — they are correct (SM does subscribe to `player_hit_lethal`). Two distinct signals, same frame N emit, different subscribers.
 
 - **BLOCK-R1-3 (systems-designer CRIT-3)**: D2 formula `T_after_boss_kill = T + 1` → `min(T + 1, max_tokens)`. AC-B3 was testing the cap but formula spec (source of truth implementers read first) had no cap expression. Same fix in ADR-0002 `grant_token()` pseudocode: `_tokens = min(_tokens + 1, _rewind_policy.max_tokens)`. Behavior unchanged — this codifies what AC-B3 already validates.
 
-- **BLOCK-R1-4 (systems-designer DRIFT-1)**: ADR-0001 Amendment 1 추가. Original claimed PlayerSnapshot ≈ 32 bytes / ring buffer 2.88 KB / Validation Criteria #1 "≤ 5 KB". GDD F4 corrected to 17–21 KB but ADR-0001 unfixed → Tier 1 prototype's first memory profile would auto-fail despite correct implementation. Updated 4 locations: status header (Accepted with Amendment 1), Verification Required #3 (≤ 25 KB), Performance Implications memory line (17–21 KB typical, 36 KB worst case per performance-analyst Round 1), Validation Criteria #1 (≤ 25 KB). Documentation-only change, no behavior modification.
+- **BLOCK-R1-4 (systems-designer DRIFT-1)**: ADR-0001 Amendment 1 added. Original claimed PlayerSnapshot ≈ 32 bytes / ring buffer 2.88 KB / Validation Criteria #1 "≤ 5 KB". GDD F4 corrected to 17–21 KB but ADR-0001 unfixed → Tier 1 prototype's first memory profile would auto-fail despite correct implementation. Updated 4 locations: status header (Accepted with Amendment 1), Verification Required #3 (≤ 25 KB), Performance Implications memory line (17–21 KB typical, 36 KB worst case per performance-analyst Round 1), Validation Criteria #1 (≤ 25 KB). Documentation-only change, no behavior modification.
 
-- **BLOCK-R1-5 (systems-designer DRIFT-2)**: ADR-0002 Decision section pseudocode reordered. Original Decision section retained the broken pre-Amendment 1 algorithm (`restore_idx` from live `_write_head`) with a warning comment. Implementer reading Decision first would copy-paste broken code before noticing Amendment 1 at top. Replaced try_consume_rewind() with corrected version (Amendment 1 정본) including all 3 guards (`_buffer_primed`, `_is_rewinding`, RESTORE_OFFSET assertion). Original demoted to "Superseded Algorithm — DO NOT IMPLEMENT" subsection at bottom for historical reference only. RECOMMENDED #7 (assert(O<W) guard) folded in as part of this fix.
+- **BLOCK-R1-5 (systems-designer DRIFT-2)**: ADR-0002 Decision section pseudocode reordered. Original Decision section retained the broken pre-Amendment 1 algorithm (`restore_idx` from live `_write_head`) with a warning comment. Implementer reading Decision first would copy-paste broken code before noticing Amendment 1 at top. Replaced try_consume_rewind() with corrected version (Amendment 1 authoritative) including all 3 guards (`_buffer_primed`, `_is_rewinding`, RESTORE_OFFSET assertion). Original demoted to "Superseded Algorithm — DO NOT IMPLEMENT" subsection at bottom for historical reference only. RECOMMENDED #7 (assert(O<W) guard) folded in as part of this fix.
 
-- **BLOCK-R1-6 (systems-designer BV-2 + game-designer implied)**: Player-facing copy contradiction resolved. game-concept.md said "죽음 직후 1.0-1.5초를 *사후* 회수" + Core Mechanics "1.0-1.5초 회수" + Core Fantasy "시간의 1초를 회수" — but actual mechanic delivers 0.15s positional rollback (RESTORE_OFFSET_FRAMES=9 / 60). User chose option [A] (recommended): rewrite copy, preserve mechanic. New copy: "1.5초 lookback window에서 사전 안전 위치를 즉시 복원하는 '철회' 토큰". The "1.5초"는 *capture window*; "0.15s pre-death"는 *restore depth*. Aligns with Defiant Loop fantasy ("분노한 글리치" defiance, not Braid-style scrubbing). Updated 3 spots in game-concept.md (Core Fantasy line 34, Unique Hook line 42 + new ✅ verification bullet, Core Mechanics line 75) + 2 ADR cross-reference tables (ADR-0001 GDD Requirements Addressed, ADR-0002 GDD Requirements Addressed).
+- **BLOCK-R1-6 (systems-designer BV-2 + game-designer implied)**: Player-facing copy contradiction resolved. game-concept.md said "recover *post-mortem* 1.0-1.5 seconds" + Core Mechanics "1.0-1.5 second recovery" + Core Fantasy "recover 1 second of time" — but actual mechanic delivers 0.15s positional rollback (RESTORE_OFFSET_FRAMES=9 / 60). User chose option [A] (recommended): rewrite copy, preserve mechanic. New copy: "instantly restores a safe pre-death position from the 1.5-second lookback window — a 'revoke' token". The "1.5s" is the *capture window*; "0.15s pre-death" is the *restore depth*. Aligns with Defiant Loop fantasy ("enraged glitch" defiance, not Braid-style scrubbing). Updated 3 spots in game-concept.md (Core Fantasy line 34, Unique Hook line 42 + new ✅ verification bullet, Core Mechanics line 75) + 2 ADR cross-reference tables (ADR-0001 GDD Requirements Addressed, ADR-0002 GDD Requirements Addressed).
 
 ### Deferred to Next Session (9 RECOMMENDED — non-blocking)
 
 User chose [A] (BLOCKING only). RECOMMENDED items queued for next revision session:
 
-7. ✅ APPLIED-AS-PART-OF-#5: `assert(O < W)` guard in `_ready()` (folded into ADR-0002 정본 pseudocode)
+7. ✅ APPLIED-AS-PART-OF-#5: `assert(O < W)` guard in `_ready()` (folded into ADR-0002 authoritative pseudocode)
 8. Rule 17 latch clear AC for `DYING → DEAD` direct path (systems-designer GAP-1) — currently AC-C3 only tests `REWINDING → ALIVE` clear path
-9. E-23 추가: 스크립트 구동 kill volume bypass `monitorable=false` 의무 명시 + level script `is_in_iframe()` check (systems-designer GAP-2 + godot-specialist)
-10. `monitorable = true` deferred-call 패턴: `call_deferred("set_monitorable", true)` (godot-specialist Bug 3) — physics callback context safety
-11. Pre-hit buffer + DYING 비주얼 reframe: 4-frame buffer를 "intent commitment"로, DYING pulse를 single-flash로 (game-designer C2 — "분석 시간" 안티-판타지 mitigation)
-12. TRC 1ms 봉투 sub-partition: shader ≤500μs / restore ≤300μs / headroom 200μs + Steam Deck Zen 2 baseline (performance-analyst HIGH-1+2)
-13. D6 t_field_copy 6ns → 100-500ns GDScript 현실값 정정 (systems-designer BV-3 + performance-analyst EST-1) — methodology fix, conclusion (still under cap) unchanged
-14. AC-D4/D5 frame-perfect injection harness 명시 + AC-E1 [AUTO]→[MANUAL] 재분류 (qa-lead) — GUT headless cannot use Godot Profiler
-15. `@export var player: PlayerMovement` 명시적 의존 노드 wiring (godot-specialist) — eliminate implicit `get_parent()` brittleness
+9. E-23 addition: scripted kill volume bypass `monitorable=false` obligation + level script `is_in_iframe()` check (systems-designer GAP-2 + godot-specialist)
+10. `monitorable = true` deferred-call pattern: `call_deferred("set_monitorable", true)` (godot-specialist Bug 3) — physics callback context safety
+11. Pre-hit buffer + DYING visual reframe: 4-frame buffer as "intent commitment", DYING pulse as single-flash (game-designer C2 — "analysis time" anti-fantasy mitigation)
+12. TRC 1ms envelope sub-partition: shader ≤500μs / restore ≤300μs / headroom 200μs + Steam Deck Zen 2 baseline (performance-analyst HIGH-1+2)
+13. D6 t_field_copy 6ns → 100-500ns GDScript actual value correction (systems-designer BV-3 + performance-analyst EST-1) — methodology fix, conclusion (still under cap) unchanged
+14. AC-D4/D5 frame-perfect injection harness spec + AC-E1 [AUTO]→[MANUAL] reclassification (qa-lead) — GUT headless cannot use Godot Profiler
+15. `@export var player: PlayerMovement` explicit dependency node wiring (godot-specialist) — eliminate implicit `get_parent()` brittleness
 
 ### Deferred — Post-Lock Observations (per creative-director directive — log only, do not gate prototype)
 
-- **[game-designer C1] 42-frame compound protection (30 i-frame + 12 hazard grace) = 0.7s** invulnerability, anti-fantasy "안전망" risk. **Playtest hypothesis** — validates or falsifies at Tier 1 (only specialist to flag this; pillar tension is intentional design).
-- **[game-designer C3] Tier 3 boss-kill refill at peak content** = 무적 파워 판타지 macro scale risk. **Tier 3 design decision** — countermeasure design only after Tier 2 establishes per-boss baseline.
+- **[game-designer C1] 42-frame compound protection (30 i-frame + 12 hazard grace) = 0.7s** invulnerability, anti-fantasy "safety-net" risk. **Playtest hypothesis** — validates or falsifies at Tier 1 (only specialist to flag this; pillar tension is intentional design).
+- **[game-designer C3] Tier 3 boss-kill refill at peak content** = invincibility power-fantasy macro scale risk. **Tier 3 design decision** — countermeasure design only after Tier 2 establishes per-boss baseline.
 - **[game-designer C4] Easy mode `infinite=true`** structurally removes Pillar 1, not just softens. Need explicit Easy-mode aesthetic AC or acknowledgment that Pillar 1 doesn't apply in Easy. **Tier 2/3 mode design** — defer to Difficulty Toggle GDD.
-- **[game-designer I1] HUD aesthetic ownership gap** — token_consumed visualization could feel like "earned reward" not "비싼 자원 썼다". HUD GDD has no binding directive over aesthetic character. **Tier 1 polish pass.**
+- **[game-designer I1] HUD aesthetic ownership gap** — token_consumed visualization could feel like "earned reward" not "expensive resource used". HUD GDD has no binding directive over aesthetic character. **Tier 1 polish pass.**
 - **[game-designer I2] Hard mode 8-frame DYING window** = 133ms < human reaction → punitive confirmation, not "defiant failure". Suggest B=0 or 1 on Hard for tokens>0 variants. **Tier 2 difficulty design.**
 - **[game-designer I3] Shader self-terminate desync** if `REWIND_SIGNATURE_FRAMES` adjusted. Lock fragile at Tier 1 gate. **Apply only if const ever changes** (currently hardcoded with strong rationale).
 - **[game-designer I4] dry-thunk denial SFX tonal mismatch** in Hard mode (every death = denial cue). Tonally Cuphead-punishment, not Echo-defiance. **Tier 2 audio sound-designer call.**
@@ -152,15 +152,15 @@ User chose [A] (BLOCKING only). RECOMMENDED items queued for next revision sessi
 
 ### Director Directive
 
-**Round 2 차단** except for:
-- (a) Locked Decision empirical falsification (Tier 1 prototype 검증 시 발견된 spec-vs-실제 불일치)
+**Round 2 blocked** except for:
+- (a) Locked Decision empirical falsification (spec-vs-actual mismatch discovered during Tier 1 prototype verification)
 - (b) Cross-document contradictions discovered after lock
 
-Aesthetic-only 발견 (game-designer C1-C4 등)은 post-lock observations log only — Tier 1 playtest 후 review-log entry만 추가.
+Aesthetic-only findings (game-designer C1-C4, etc.) go to post-lock observations log only — add review-log entry only after Tier 1 playtest.
 
 **Empirical falsification examples that WOULD reopen the lock**:
 - Steam Deck profiling shows TRC subsystem exceeds 1 ms cap under documented worst-case
-- Tier 1 playtest shows 0.7s compound invulnerability genuinely reads as 안전망 (C1 validated)
+- Tier 1 playtest shows 0.7s compound invulnerability genuinely reads as safety-net (C1 validated)
 - Memory measurement at Tier 1 exceeds 25 KB (Amendment 1 figure)
 - Frame-N priority ladder breaks (e.g., Boss Pattern GDD assigns Boss to priority < 2)
 
@@ -179,7 +179,7 @@ Aesthetic-only 발견 (game-designer C1-C4 등)은 post-lock observations log on
 
 ### Files Modified This Session
 
-- `design/gdd/time-rewind.md` (Rule 4 / Rule 16 / I2 / 178 formula table / D2 formula block / E-06 / AC-A3 / AC-B5)
+- `design/gdd/time-rewind.md` (Rule 4 / Rule 16 / I2 / line 178 formula table / D2 formula block / E-06 / AC-A3 / AC-B5)
 - `docs/architecture/adr-0001-time-rewind-scope.md` (Status header / new Amendment 1 section / Verification Required #3 / Performance Implications memory line / Validation Criteria #1 / GDD Requirements Addressed game-concept row)
 - `docs/architecture/adr-0002-time-rewind-storage-format.md` (Decision section try_consume_rewind() pseudocode / grant_token() pseudocode / Superseded Algorithm subsection / GDD Requirements Addressed game-concept row)
 - `design/gdd/game-concept.md` (Core Fantasy / Unique Hook + new verification bullet / Core Mechanics)

@@ -1,7 +1,7 @@
 # ADR-0003: Determinism Strategy — CharacterBody2D + Direct Transform / Area2D Projectiles
 
 ## Status
-Proposed
+Accepted (ratified 2026-05-14; decision date 2026-05-09)
 
 ## Date
 2026-05-09
@@ -15,7 +15,7 @@ Proposed
 | **Knowledge Risk** | HIGH — 4.6 is post-LLM-cutoff |
 | **References Consulted** | `docs/engine-reference/godot/VERSION.md`, `docs/engine-reference/godot/breaking-changes.md`, `docs/engine-reference/godot/deprecated-apis.md`, `docs/engine-reference/godot/current-best-practices.md` (Physics 4.6 section), `docs/engine-reference/godot/modules/physics.md`, ADR-0001 (Player-only scope), ADR-0002 (Snapshot ring buffer), `docs/registry/architecture.yaml`, godot-specialist validation 2026-05-09 |
 | **Post-Cutoff APIs Used** | None — `CharacterBody2D`, `Area2D`, `move_and_slide()`, `Engine.get_physics_frames()`, `Node.process_physics_priority`, `PhysicsDirectSpaceState2D.intersect_ray()`, `RandomNumberGenerator` are all stable across 4.4-4.6 with no breaking changes (verified via `breaking-changes.md`: 2D physics unchanged; 4.5 rearchitecture was 3D-interpolation only). Jolt 4.6 default is 3D-only; 2D physics still uses Godot Physics 2D and is unaffected. |
-| **Verification Required** | (1) 1000-cycle determinism test on 5-enemy + 20-projectile scene — bit-identical position state across runs on the dev machine. (2) 60fps on Steam Deck with 30 enemies + 50 active projectiles. (3) Snapshot restore round-trip exact-equality test (capture → restore → step 1 frame → assert position == captured + velocity × delta). (4) Swept-raycast bullet anti-tunneling: 10000 high-velocity bullet × thin-wall trials, zero tunneling. (5) `_physics_process` ordering verification: priority-tied siblings must not exhibit determinism breakage in the 1000-cycle test. |
+| **Verification Required** | (1) 1000-cycle determinism test on 5-enemy + 20-projectile scene — bit-identical position state across runs on the dev machine. (2) 60fps on Steam Deck with 30 enemies + 50 active projectiles. (3) Snapshot restore round-trip exact-equality test (capture → restore → step 1 frame → assert position == captured + velocity × delta). (4) Swept-raycast bullet anti-tunneling: 10000 high-velocity bullet × thin-wall trials, zero tunneling. (5) `_physics_process` ordering verification: priority-tied siblings must not exhibit determinism breakage in the 1000-cycle test. (6) Boss same-tick kill/lethal-hit ordering: Damage priority 2 resolves before boss priority 10, preserving Time Rewind #9 consume-then-grant invariant. |
 
 ## ADR Dependencies
 
@@ -164,7 +164,7 @@ func _swept_collision_check(from_pos: Vector2, to_pos: Vector2) -> void:
 |---|---|
 | `Engine.get_physics_frames()` | Monotonic int, incremented each physics step. Drives ALL AI/timer logic. Replaces wall-clock time fully. |
 | `RandomNumberGenerator` with explicit `seed` | Per-encounter seed (e.g., `seed = stage_index * 1000 + encounter_index`). NEVER use `randi()` / global RNG. |
-| `Node.process_physics_priority` | Player = 0, Enemies = 10, Projectiles = 20. Lower priority steps first. **CRITICAL**: this is `process_physics_priority`, NOT `process_priority` — the latter only orders `_process()` and has no effect on `_physics_process()`. |
+| `Node.process_physics_priority` | Player = 0, TimeRewindController = 1, Damage = 2, Enemies/Boss = 10, Projectiles = 20. Lower priority steps first. **CRITICAL**: this is `process_physics_priority`, NOT `process_priority` — the latter only orders `_process()` and has no effect on `_physics_process()`. |
 
 ### RigidBody2D — Where Banned vs. Where Allowed
 
@@ -235,7 +235,7 @@ class_name Projectile extends Area2D
 - **Forbidden Pattern**: `rigidbody2d_for_gameplay_entities` — Player, enemies, and projectiles MUST NOT be `RigidBody2D`. Cosmetic-only debris exempt under stated conditions.
 - **API Decision**: `physics_node_strategy` — `CharacterBody2D` for player + enemies; `Area2D` for projectiles; `RigidBody2D` cosmetic-only.
 - **API Decision**: `determinism_clock` — `Engine.get_physics_frames()` is the single source of game time for AI/timers; wall-clock APIs forbidden in gameplay-critical paths.
-- **API Decision**: `physics_step_ordering` — `Node.process_physics_priority` ladder: player=0, enemies=10, projectiles=20.
+- **API Decision**: `physics_step_ordering` — `Node.process_physics_priority` ladder: player=0, time-rewind-controller=1, damage=2, enemies/boss=10, projectiles=20.
 
 ## Alternatives Considered
 
@@ -297,7 +297,7 @@ Described above.
 - **R2 — Bullet tunneling**: high-velocity projectiles tunnel through thin walls if step distance exceeds collider thickness.
   - **Mitigation**: `max_step_distance` threshold in `Projectile` triggers swept raycast via `PhysicsRayQueryParameters2D.create(from, to)` on `get_world_2d().direct_space_state`. System #8 Damage / Hit Detection GDD specifies the threshold per weapon.
 - **R3 — Simultaneous-collision step ordering**: `move_and_slide` is documented as deterministic, but multiple `CharacterBody2D` entities colliding in the same frame have ordering-dependent results.
-  - **Mitigation**: explicit `process_physics_priority` ladder (player=0, enemies=10, projectiles=20); Tier 1 prototype runs the 1000-cycle determinism test on a 5-enemy + 20-bullet scene as a regression gate.
+  - **Mitigation**: explicit `process_physics_priority` ladder (player=0, time-rewind-controller=1, damage=2, enemies/boss=10, projectiles=20); Tier 1 prototype runs the 1000-cycle determinism test on a 5-enemy + 20-bullet scene as a regression gate.
 - **R4 — Cosmetic debris drift**: `RigidBody2D` debris in the cosmetic-only boundary drifts visually across replays in the same session.
   - **Mitigation**: explicitly outside determinism boundary; documented so QA does not file determinism bugs against debris; cosmetic bodies must use a collision layer disjoint from all gameplay layers.
 - **R5 — Cross-machine bit-identity is NOT guaranteed.** IEEE 754 float intrinsics differ by CPU and compiler optimization. The 1000-cycle determinism test is a single-machine / single-build guarantee.
@@ -319,7 +319,7 @@ Described above.
 | `design/gdd/systems-index.md` System #8 Damage / Hit Detection | "탄환 vs 엔티티, 1히트 룰, 히트박스 레이어" | `Area2D.body_entered` / `area_entered` + swept raycast for fast bullets (R2 mitigation); R6 mitigation requires deterministic damage policy in this GDD. |
 | `design/gdd/systems-index.md` System #9 Time Rewind | ADR-0002 snapshot restoration must be bit-identical (single-machine) | `CharacterBody2D` direct field assignment — no solver between write and next read. |
 | `design/gdd/systems-index.md` System #10 Enemy AI Base | "공통 적 컨트롤러 + 드론/경비로봇/STRIDER 서브클래스" | `EnemyBase extends CharacterBody2D`; `compute_ai_velocity(frame_offset)` is the deterministic extension point. |
-| `design/gdd/systems-index.md` System #11 Boss Pattern | "다페이즈 스크립트, 텔레그래프, HP 게이팅, REWIND 토큰 보상" | Boss inherits `EnemyBase`; phase scripts are pure functions of `frame_offset`; token replenish via existing `token_replenished` signal (ADR-0001 contract). |
+| `design/gdd/systems-index.md` System #11 Boss Pattern | "multi-phase script, telegraph, discrete phase gating, REWIND token reward" | Boss inherits `EnemyBase`; phase scripts are pure functions of `frame_offset`; token replenish via existing `token_replenished` signal (ADR-0001 contract). |
 | `docs/registry/architecture.yaml` `direct_player_state_write_during_rewind` | "Single legitimate restoration path: `PlayerMovement.restore_from_snapshot()`" | This ADR confirms the path is implementable via direct field assignment on `CharacterBody2D` without solver interference; no second writer needed. |
 
 ## Performance Implications
@@ -337,7 +337,7 @@ No prior code exists. New construction. Each affected system GDD will cite this 
 - System #7 Player Shooting → projectile spawn produces `Area2D` instances
 - System #8 Damage / Hit Detection → `body_entered` / `area_entered` + swept raycast
 - System #10 Enemy AI Base → `EnemyBase extends CharacterBody2D`
-- System #11 Boss Pattern → boss subclasses inherit `EnemyBase`
+- System #11 Boss Pattern → STRIDER inherits EnemyBase-compatible priority 10 host; boss projectiles use priority 20; Damage priority 2 remains earlier for same-tick consume/grant invariants.
 
 Estimated initial Tier 1 code: ~250 lines GDScript across `PlayerMovement`, `EnemyBase`, `Projectile`, plus the existing `TimeRewindController` (~90 lines from ADR-0002).
 

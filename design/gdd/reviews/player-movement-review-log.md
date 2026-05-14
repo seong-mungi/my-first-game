@@ -48,7 +48,7 @@ None applicable (lean mode — no specialists spawned this pass).
 - ✓ `tools/ci/pm_static_check.sh`: file present
 
 ### Senior Verdict (lean-mode self-attest synthesis)
-Pillar 1 ("학습 도구") failure points from prior review (B1 / B5 / B6 / C.4.0 mental model) are all now demonstrably closed. Three architectural integrity blockers (B1, B2, B3) closed with (a) by-construction safety, (b) physical file presence, (c) post-cutoff engine fact verified against official docs and recorded in engine-reference. Cross-doc reciprocal hygiene intact; B10 forward-compatibility risk caught (Scene Manager #2 4→8-var obligation expansion).
+Pillar 1 ("learning tool") failure points from prior review (B1 / B5 / B6 / C.4.0 mental model) are all now demonstrably closed. Three architectural integrity blockers (B1, B2, B3) closed with (a) by-construction safety, (b) physical file presence, (c) post-cutoff engine fact verified against official docs and recorded in engine-reference. Cross-doc reciprocal hygiene intact; B10 forward-compatibility risk caught (Scene Manager #2 4→8-var obligation expansion).
 
 ### Status transition
 - Status header in player-movement.md line 3: still "In Design" (REC-RR-3) — should advance per A.7 template.
@@ -72,7 +72,7 @@ Prior verdict resolved: First review — no prior verdict
 GDD posture at review entry: "Designed (2026-05-10)" claimed in Status header line 3 + systems-index #6 row; specialists confirmed all 8 required sections + Visual/Audio + UI + Z + Appendix present (1658 lines, 0 placeholders, 34 AC, 12 locked decisions).
 
 ### Summary
-Pillar 1 ("학습 도구") is **not delivered as written** per creative-director synthesis — 4 independent failures (B1, B5, B6, B.2/C.4.0 mental model gap REC-G3) each surfaced by a different specialist. Three architectural integrity blockers (B1 INT_MIN sentinel, B2 missing CI script, B3 unverified Godot 4.6 callback timing) compromise the foundation; B1 alone guarantees a phantom-jump bug on the first physics frame. The "Designed" posture was overstated. systems-index reverted to "In Design — NEEDS REVISION."
+Pillar 1 ("learning tool") is **not delivered as written** per creative-director synthesis — 4 independent failures (B1, B5, B6, B.2/C.4.0 mental model gap REC-G3) each surfaced by a different specialist. Three architectural integrity blockers (B1 INT_MIN sentinel, B2 missing CI script, B3 unverified Godot 4.6 callback timing) compromise the foundation; B1 alone guarantees a phantom-jump bug on the first physics frame. The "Designed" posture was overstated. systems-index reverted to "In Design — NEEDS REVISION."
 
 ### Blocking items (consolidated, deduped across specialists)
 
@@ -91,7 +91,7 @@ Pillar 1 ("학습 도구") is **not delivered as written** per creative-director
 
 ### Recommended revisions (22 items, deferred to revision pass)
 
-- **G3** B.2 "되-실행 / 같은 탄막을 다시 본다" reads as world-rewind vs C.4.0 player-only mental model gap (no first-rewind comprehension AC).
+- **G3** B.2 "re-execution / seeing the same bullet pattern again" reads as world-rewind vs C.4.0 player-only mental model gap (no first-rewind comprehension AC).
 - **G4** No audio cue for i-frame end (30 frames silent; player can't time re-engagement).
 - **G6** Post-cut rise 7.9 px (5.5% of apex) sub-perceptual — variable jump cut functionally binary.
 - **G7** DeadState single anim cannot dispatch DYING (12-frame stagger) vs DEAD (whiteout) — VA.2 spec gap.

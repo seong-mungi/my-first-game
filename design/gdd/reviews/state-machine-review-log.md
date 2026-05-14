@@ -27,7 +27,7 @@ Comparison to Damage GDD (4 rounds, behavioral negotiation) and Time Rewind GDD 
 | ID | Specialist | Issue | Fix Applied |
 |---|---|---|---|
 | **B1** | systems-designer F1 | B-range mismatch — SM doc 2–8 vs `time-rewind.md` owner 2–6 (verified by grep at lines 138, 175–176, 340, 483, 496) | D.1 / D.7 / G.2 → 2–6 with explicit "range owner = time-rewind.md" attribution |
-| **B2** | game-designer F4 | Easy-mode `pause_swallow_states=[]` override directly violates Time Rewind Rule 18 ("12프레임 grace를 분석 시간으로 변환 방지") | G.1 row → framework invariant; G.4 + H.7 Tier 3 row → "non-override 검증"; OQ-SM-4 closed; F.6 + Tier 3 routing forces Easy mode through `RewindPolicy.dying_window_frames` / `starting_tokens` |
+| **B2** | game-designer F4 | Easy-mode `pause_swallow_states=[]` override directly violates Time Rewind Rule 18 ("prevent converting 12-frame grace into analysis time") | G.1 row → framework invariant; G.4 + H.7 Tier 3 row → "non-override verification"; OQ-SM-4 closed; F.6 + Tier 3 routing forces Easy mode through `RewindPolicy.dying_window_frames` / `starting_tokens` |
 | **B3** | systems-designer F2 | D.2 input-buffer formula admits phantom input when `F_input == -1` and `F_lethal < B` (negative-frame arithmetic + sentinel false-positive) | Formula now reads `(F_input >= 0) ∧ ...` — sentinel guard encoded in expression, not prose; AC-17 extended with sentinel case |
 | **B4** | systems-designer F3 | DyingState intra-tick ordering unspecified — last-frame valid input race with `transition_to(DeadState)` + `damage.commit_death()` | D.5 added explicit 4-step ordering rule (poll → predicate → increment → expiry); rationale; new **AC-17a** added to H.4 |
 | **B5** | godot-specialist F2 | `get_first_node_in_group()` in `EchoLifecycleSM._ready()` returns null when ECHO subtree precedes TRC subtree → `.connect()` hard-crash | C.3.4 rewritten with `call_deferred("_connect_signals")` + null assertions on Damage / TRC / SceneManager lookups + explicit `CONNECT_DEFAULT` invariant; OQ-SM-6 closed; AC-14 verification rewritten to `Object.get_signal_connection_list()` post-deferred-flush |
@@ -44,7 +44,7 @@ Comparison to Damage GDD (4 rounds, behavioral negotiation) and Time Rewind GDD 
 - **R3** [ai-programmer F2 + creative-director D3] Lock parallel-sibling-SM pattern (PhaseSM × AttackSM) for boss phases. **User deferred to v2.**
 - **R4** [ai-programmer F3] Reconcile `compute_ai_velocity(frame_offset)` (ADR-0003) with `State.physics_update(delta)`. Recommend Path B: `EnemyState extends State` with virtual override.
 - **R5** [godot-specialist F1, F3] Add explicit `CONNECT_DEFAULT` invariant to C.3.4 + AC-14 (partially applied via B5/B8); expand P3 ban list to include `await create_timer().timeout`, `Tween` (TWEEN_PROCESS_IDLE), `Engine.get_process_frames()`, `await get_tree().process_frame`.
-- **R6** [godot-gdscript-specialist + godot-specialist MEDIUM] Type `Dictionary[StringName, Variant]`; emit `&""` not `""`; harden `current_state` via property setter with `push_error` (closes E-12 incorrect "정적 검사로 강제할 수 없으나" claim).
+- **R6** [godot-gdscript-specialist + godot-specialist MEDIUM] Type `Dictionary[StringName, Variant]`; emit `&""` not `""`; harden `current_state` via property setter with `push_error` (closes E-12 incorrect "cannot be enforced by static analysis" claim).
 - **R7** [ai-programmer F4] Squad coordination (30 drones × 29 subscribers = 870 connections per signal at Tier 1 cap) — flag as Enemy-AI-#10-blocking; suggest SquadCoordinator pattern.
 - **R8** [qa-lead #3, #10] Split H.7 gate (partially applied — Tier 1 framework-only vs integration gate added).
 - **R9** [qa-lead #8] AC-27 added (already applied as part of B8).
@@ -68,7 +68,7 @@ Comparison to Damage GDD (4 rounds, behavioral negotiation) and Time Rewind GDD 
 
 ### Director directive
 
-> "Round 2 차단 except (a) prototype empirical falsification of Locked Decision (B1–B8), (b) cross-doc contradiction with another GDD or ADR. 추가 발견은 post-Round-1 observations로 본 review-log에만 기록."
+> "Round 2 blocked except (a) prototype empirical falsification of Locked Decision (B1–B8), (b) cross-doc contradiction with another GDD or ADR. Additional findings go to post-Round-1 observations recorded in this review-log only."
 
 ### Files modified in Round 1 revision
 
@@ -96,7 +96,7 @@ All 8 verified PASS at fix sites. Mechanical traces:
 | ID | Fix Site | Status |
 |---|---|---|
 | **B1** B-range 2–6 | D.1 line 411, D.7 line 587, G.2 line 908 (with `range owner = time-rewind.md` attribution); cross-doc match: time-rewind.md D-glossary line 176 + RewindPolicy line 138 | ✅ |
-| **B2** pause_swallow_states framework invariant | G.1 line 900 (override 금지, Rule 18 cite); G.4 Tier 3 (non-override 검증); F.6 forbidden composition; OQ-SM-4 Resolved | ✅ |
+| **B2** pause_swallow_states framework invariant | G.1 line 900 (override prohibited, Rule 18 cite); G.4 Tier 3 (non-override verification); F.6 forbidden composition; OQ-SM-4 Resolved | ✅ |
 | **B3** D.2 sentinel guard | D.2 formula line 428 first clause `(F_input ≥ 0)`; AC-17 sentinel case verifies | ✅ |
 | **B4** D.5 intra-tick ordering | D.5 4-step rule + load-bearing rationale; new AC-17a verifies | ✅ |
 | **B5** call_deferred + null assert + CONNECT_DEFAULT | C.3.4 (call_deferred + 3 null asserts on Damage/TRC/SceneManager + CONNECT_DEFAULT invariant); OQ-SM-6 Resolved | ✅ |
@@ -114,12 +114,12 @@ All 8 verified PASS at fix sites. Mechanical traces:
 
 ### Residuals applied inline (Round 2 fixes)
 
-- **R2-1** [B8 residual] AC count math header → **28 = Logic 26 + Integration 2**. Mechanical row count via `grep -c "^| \*\*AC-"` returns 28; H.4 has 9 ACs (AC-14, 15, 16, 17, **17a**, 18, 19, 26, 27), not 8. AC-17a is a separately enumerated row with materially distinct verification (intra-tick ordering vs predicate evaluation), not a sub-clause of AC-17. Header line 945 + Round 1 fixes prose updated; H.7 Tier 1 row line 1011 now reads "AC-01 ~ AC-22 (AC-17a 포함, 별도 enumerated row) + AC-24 + AC-26 + AC-27 = **26 Logic ACs**".
-- **R2-2** [intra-doc tier inconsistency] `_state_history` ring buffer promoted Tier 2→Tier 1 in C.1.5. Justification: AC-12 + AC-24 are Tier 1 BLOCKING ACs that explicitly depend on `_state_history` (single-entry verification + 32-entry 1000-cycle hash compare); the previous "Tier 2 게이트 후 추가" placement created an unimplementable Tier 1 gate. Per-instance overhead (~512 B for 32 StringName entries) is well under solo-budget. Debug overlay label kept Tier 2 (UX-only, not gate-blocking).
+- **R2-1** [B8 residual] AC count math header → **28 = Logic 26 + Integration 2**. Mechanical row count via `grep -c "^| \*\*AC-"` returns 28; H.4 has 9 ACs (AC-14, 15, 16, 17, **17a**, 18, 19, 26, 27), not 8. AC-17a is a separately enumerated row with materially distinct verification (intra-tick ordering vs predicate evaluation), not a sub-clause of AC-17. Header line 945 + Round 1 fixes prose updated; H.7 Tier 1 row line 1011 now reads "AC-01 ~ AC-22 (AC-17a included, separately enumerated row) + AC-24 + AC-26 + AC-27 = **26 Logic ACs**".
+- **R2-2** [intra-doc tier inconsistency] `_state_history` ring buffer promoted Tier 2→Tier 1 in C.1.5. Justification: AC-12 + AC-24 are Tier 1 BLOCKING ACs that explicitly depend on `_state_history` (single-entry verification + 32-entry 1000-cycle hash compare); the previous "add after Tier 2 gate" placement created an unimplementable Tier 1 gate. Per-instance overhead (~512 B for 32 StringName entries) is well under solo-budget. Debug overlay label kept Tier 2 (UX-only, not gate-blocking).
 
 ### Required Before Implementation
 
-**None.** No new BLOCKING items rise per director directive ("Round 2 차단 except (a) prototype empirical falsification (b) cross-doc contradiction"). Both Round 2 residuals are intra-doc bookkeeping, not contract-level.
+**None.** No new BLOCKING items rise per director directive ("Round 2 blocked except (a) prototype empirical falsification (b) cross-doc contradiction"). Both Round 2 residuals are intra-doc bookkeeping, not contract-level.
 
 ### Recommended (carries forward to v2)
 
@@ -131,7 +131,7 @@ Single-session lean re-review — independent reviewer assessment: revision qual
 
 ### Director directive (carry forward)
 
-> "Round 3 차단 except (a) prototype empirical falsification of Locked Decision (B1–B8 + R2-1, R2-2), (b) cross-doc contradiction with another GDD or ADR. 추가 발견은 post-Round-2 observations로 본 review-log에만 기록."
+> "Round 3 blocked except (a) prototype empirical falsification of Locked Decision (B1–B8 + R2-1, R2-2), (b) cross-doc contradiction with another GDD or ADR. Additional findings go to post-Round-2 observations recorded in this review-log only."
 
 ### Files modified in Round 2 revision
 

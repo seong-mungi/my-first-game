@@ -25,32 +25,466 @@
 # STATUS VALUES: active | deprecated | superseded-by: TR-[system]-NNN
 
 version: 1
-last_updated: ""
+last_updated: "2026-05-14"
 
-requirements: []
-
-# --- EXAMPLE ENTRIES (remove when first real entries are added) ---
-#
-# - id: TR-combat-001
-#   system: combat
-#   gdd: design/gdd/combat-system.md
-#   requirement: "Player takes damage from enemies based on attack power minus defence"
-#   created: 2026-03-10
-#   revised: ""
-#   status: active
-#
-# - id: TR-combat-002
-#   system: combat
-#   gdd: design/gdd/combat-system.md
-#   requirement: "Combo window timing is 0.4 seconds between hits"
-#   created: 2026-03-10
-#   revised: "2026-04-01"
-#   status: active
-#
-# - id: TR-combat-003
-#   system: combat
-#   gdd: design/gdd/combat-system.md
-#   requirement: "Old damage formula using raw stats"
-#   created: 2026-03-10
-#   revised: ""
-#   status: superseded-by: TR-combat-001
+requirements:
+- id: TR-concept-001
+  system: concept
+  gdd: design/gdd/game-concept.md
+  title: "Concept"
+  requirement: "PC Steam single-player side-scrolling run-and-gun; no co-op."
+  domain: "Platform / Scope"
+  coverage: "Architecture principle"
+  created: "2026-05-14"
+  revised: ""
+  status: active
+- id: TR-concept-002
+  system: concept
+  gdd: design/gdd/game-concept.md
+  title: "Concept"
+  requirement: "One-hit death must convert into sub-second learning/retry loop."
+  domain: "Core loop"
+  coverage: "ADR-0001/0002/0004"
+  created: "2026-05-14"
+  revised: ""
+  status: active
+- id: TR-concept-003
+  system: concept
+  gdd: design/gdd/game-concept.md
+  title: "Concept"
+  requirement: "Revoke token restores safe pre-death state from 1.5s lookback, 0.15s restore depth."
+  domain: "Time rewind"
+  coverage: "ADR-0001/0002"
+  created: "2026-05-14"
+  revised: ""
+  status: active
+- id: TR-concept-004
+  system: concept
+  gdd: design/gdd/game-concept.md
+  title: "Concept"
+  requirement: "Deterministic patterns; luck must not cause death."
+  domain: "Determinism"
+  coverage: "ADR-0003/0005/0011"
+  created: "2026-05-14"
+  revised: ""
+  status: active
+- id: TR-concept-005
+  system: concept
+  gdd: design/gdd/game-concept.md
+  title: "Concept"
+  requirement: "Collage visual signature must survive clarity/performance constraints."
+  domain: "Rendering"
+  coverage: "ADR-0010"
+  created: "2026-05-14"
+  revised: ""
+  status: active
+- id: TR-sys-001
+  system: sys
+  gdd: design/gdd/systems-index.md
+  title: "Systems"
+  requirement: "18 MVP systems must be operational for Tier 1 prototype."
+  domain: "Scope"
+  coverage: "This document"
+  created: "2026-05-14"
+  revised: ""
+  status: active
+- id: TR-sys-002
+  system: sys
+  gdd: design/gdd/systems-index.md
+  title: "Systems"
+  requirement: "Foundation → Core → Feature → Presentation dependency ordering."
+  domain: "Architecture"
+  coverage: "This document"
+  created: "2026-05-14"
+  revised: ""
+  status: active
+- id: TR-sys-003
+  system: sys
+  gdd: design/gdd/systems-index.md
+  title: "Systems"
+  requirement: "MVP systems must avoid circular dependencies."
+  domain: "Architecture"
+  coverage: "ADR-0005"
+  created: "2026-05-14"
+  revised: ""
+  status: active
+- id: TR-input-001
+  system: input
+  gdd: design/gdd/input.md
+  title: "Input"
+  requirement: "Fixed 9-action catalog for Tier 1."
+  domain: "Input"
+  coverage: "ADR-0007"
+  created: "2026-05-14"
+  revised: ""
+  status: active
+- id: TR-input-002
+  system: input
+  gdd: design/gdd/input.md
+  title: "Input"
+  requirement: "Gameplay input polling occurs in `_physics_process` only."
+  domain: "Determinism"
+  coverage: "ADR-0003/0007"
+  created: "2026-05-14"
+  revised: ""
+  status: active
+- id: TR-input-003
+  system: input
+  gdd: design/gdd/input.md
+  title: "Input"
+  requirement: "Pause/menu callbacks are explicit exceptions, not gameplay logic."
+  domain: "UI / Input"
+  coverage: "ADR-0007"
+  created: "2026-05-14"
+  revised: ""
+  status: active
+- id: TR-input-004
+  system: input
+  gdd: design/gdd/input.md
+  title: "Input"
+  requirement: "Use `StringName` action constants, not inline action strings."
+  domain: "API"
+  coverage: "ADR-0007"
+  created: "2026-05-14"
+  revised: ""
+  status: active
+- id: TR-scene-001
+  system: scene
+  gdd: design/gdd/scene-manager.md
+  title: "Scene Manager"
+  requirement: "`SceneManager` owns scene lifecycle, checkpoint restart, stage clear transitions."
+  domain: "Foundation"
+  coverage: "ADR-0004"
+  created: "2026-05-14"
+  revised: ""
+  status: active
+- id: TR-scene-002
+  system: scene
+  gdd: design/gdd/scene-manager.md
+  title: "Scene Manager"
+  requirement: "`scene_will_change()` emitted exactly once before scene swap."
+  domain: "Eventing"
+  coverage: "ADR-0004/0005"
+  created: "2026-05-14"
+  revised: ""
+  status: active
+- id: TR-scene-003
+  system: scene
+  gdd: design/gdd/scene-manager.md
+  title: "Scene Manager"
+  requirement: "`scene_post_loaded(anchor, limits)` initializes camera and stage bounds."
+  domain: "Eventing"
+  coverage: "ADR-0004"
+  created: "2026-05-14"
+  revised: ""
+  status: active
+- id: TR-scene-004
+  system: scene
+  gdd: design/gdd/scene-manager.md
+  title: "Scene Manager"
+  requirement: "Restart path must fit within 60 physics frames."
+  domain: "Performance"
+  coverage: "ADR-0004"
+  created: "2026-05-14"
+  revised: ""
+  status: active
+- id: TR-state-001
+  system: state
+  gdd: design/gdd/state-machine.md
+  title: "State Machine"
+  requirement: "Entity-local `StateMachine` nodes; never Autoload state machines."
+  domain: "Foundation / Core"
+  coverage: "ADR-0008"
+  created: "2026-05-14"
+  revised: ""
+  status: active
+- id: TR-state-002
+  system: state
+  gdd: design/gdd/state-machine.md
+  title: "State Machine"
+  requirement: "Cross-entity transitions use signals, never direct foreign SM calls."
+  domain: "Eventing"
+  coverage: "ADR-0005"
+  created: "2026-05-14"
+  revised: ""
+  status: active
+- id: TR-state-003
+  system: state
+  gdd: design/gdd/state-machine.md
+  title: "State Machine"
+  requirement: "ECHO lifecycle states ALIVE/DYING/REWINDING/DEAD drive rewind/death flow."
+  domain: "Core"
+  coverage: "ADR-0008"
+  created: "2026-05-14"
+  revised: ""
+  status: active
+- id: TR-pm-001
+  system: pm
+  gdd: design/gdd/player-movement.md
+  title: "Player Movement"
+  requirement: "ECHO root is `CharacterBody2D`, process priority 0."
+  domain: "Core / Physics"
+  coverage: "ADR-0003/0008"
+  created: "2026-05-14"
+  revised: ""
+  status: active
+- id: TR-pm-002
+  system: pm
+  gdd: design/gdd/player-movement.md
+  title: "Player Movement"
+  requirement: "Snapshot-visible movement state is restored only through `restore_from_snapshot()`."
+  domain: "Time rewind"
+  coverage: "ADR-0002/0008"
+  created: "2026-05-14"
+  revised: ""
+  status: active
+- id: TR-pm-003
+  system: pm
+  gdd: design/gdd/player-movement.md
+  title: "Player Movement"
+  requirement: "Animation method-track side effects must be guarded during restore."
+  domain: "Animation"
+  coverage: "ADR-0008"
+  created: "2026-05-14"
+  revised: ""
+  status: active
+- id: TR-ps-001
+  system: ps
+  gdd: design/gdd/player-shooting.md
+  title: "Player Shooting"
+  requirement: "`WeaponSlot` owns `ammo_count` and is sole writer except snapshot restore path."
+  domain: "Core state"
+  coverage: "ADR-0002/0008"
+  created: "2026-05-14"
+  revised: ""
+  status: active
+- id: TR-ps-002
+  system: ps
+  gdd: design/gdd/player-shooting.md
+  title: "Player Shooting"
+  requirement: "`shot_fired(direction)` is the public event for VFX/audio/camera feedback."
+  domain: "Eventing"
+  coverage: "ADR-0005"
+  created: "2026-05-14"
+  revised: ""
+  status: active
+- id: TR-damage-001
+  system: damage
+  gdd: design/gdd/damage.md
+  title: "Damage"
+  requirement: "Damage owns HitBox/HurtBox contracts and cause taxonomy."
+  domain: "Combat"
+  coverage: "ADR-0009"
+  created: "2026-05-14"
+  revised: ""
+  status: active
+- id: TR-damage-002
+  system: damage
+  gdd: design/gdd/damage.md
+  title: "Damage"
+  requirement: "Damage emits lethal/boss/enemy signals in deterministic order."
+  domain: "Eventing"
+  coverage: "ADR-0005/0009"
+  created: "2026-05-14"
+  revised: ""
+  status: active
+- id: TR-damage-003
+  system: damage
+  gdd: design/gdd/damage.md
+  title: "Damage"
+  requirement: "Damage must not poll SM state; SM controls ECHO HurtBox monitorability."
+  domain: "Core boundary"
+  coverage: "ADR-0008/0009"
+  created: "2026-05-14"
+  revised: ""
+  status: active
+- id: TR-tr-001
+  system: tr
+  gdd: design/gdd/time-rewind.md
+  title: "Time Rewind"
+  requirement: "Capture 90-frame ring buffer at 60 fps."
+  domain: "Time rewind"
+  coverage: "ADR-0002"
+  created: "2026-05-14"
+  revised: ""
+  status: active
+- id: TR-tr-002
+  system: tr
+  gdd: design/gdd/time-rewind.md
+  title: "Time Rewind"
+  requirement: "Player-only rewind scope; enemies/projectiles/environment continue normal simulation."
+  domain: "Time rewind"
+  coverage: "ADR-0001"
+  created: "2026-05-14"
+  revised: ""
+  status: active
+- id: TR-tr-003
+  system: tr
+  gdd: design/gdd/time-rewind.md
+  title: "Time Rewind"
+  requirement: "TRC process priority 1, after PlayerMovement and before Damage/enemies/projectiles."
+  domain: "Determinism"
+  coverage: "ADR-0003"
+  created: "2026-05-14"
+  revised: ""
+  status: active
+- id: TR-enemy-001
+  system: enemy
+  gdd: design/gdd/enemy-ai.md
+  title: "Enemy AI"
+  requirement: "Enemies derive from deterministic `EnemyBase extends CharacterBody2D`."
+  domain: "AI / Physics"
+  coverage: "ADR-0003/0011"
+  created: "2026-05-14"
+  revised: ""
+  status: active
+- id: TR-enemy-002
+  system: enemy
+  gdd: design/gdd/enemy-ai.md
+  title: "Enemy AI"
+  requirement: "Enemy behavior uses authored/pure frame-based patterns, not random lethal decisions."
+  domain: "AI"
+  coverage: "ADR-0011"
+  created: "2026-05-14"
+  revised: ""
+  status: active
+- id: TR-boss-001
+  system: boss
+  gdd: design/gdd/boss-pattern.md
+  title: "Boss Pattern"
+  requirement: "STRIDER phases are authored deterministic scripts with discrete hit thresholds."
+  domain: "Combat / AI"
+  coverage: "ADR-0011"
+  created: "2026-05-14"
+  revised: ""
+  status: active
+- id: TR-boss-002
+  system: boss
+  gdd: design/gdd/boss-pattern.md
+  title: "Boss Pattern"
+  requirement: "Boss owns phase scripts; Damage owns hit/phase signal contract."
+  domain: "Boundary"
+  coverage: "ADR-0009/0011"
+  created: "2026-05-14"
+  revised: ""
+  status: active
+- id: TR-stage-001
+  system: stage
+  gdd: design/gdd/stage-encounter.md
+  title: "Stage"
+  requirement: "Stage owns room metadata, encounter activation, checkpoint anchors, camera limits."
+  domain: "Level / Scene"
+  coverage: "ADR-0004/0011"
+  created: "2026-05-14"
+  revised: ""
+  status: active
+- id: TR-stage-002
+  system: stage
+  gdd: design/gdd/stage-encounter.md
+  title: "Stage"
+  requirement: "Stage owns `Projectiles: Node2D` container presence/lifetime; projectile behavior remains Player Shooting/Damage-owned."
+  domain: "Boundary"
+  coverage: "ADR-0011"
+  created: "2026-05-14"
+  revised: ""
+  status: active
+- id: TR-camera-001
+  system: camera
+  gdd: design/gdd/camera.md
+  title: "Camera"
+  requirement: "Camera is scene-local, not Autoload; not included in PlayerSnapshot."
+  domain: "Presentation / Core"
+  coverage: "ADR-0002/0004/0005/0010"
+  created: "2026-05-14"
+  revised: ""
+  status: active
+- id: TR-camera-002
+  system: camera
+  gdd: design/gdd/camera.md
+  title: "Camera"
+  requirement: "Camera consumes scene/damage/weapon/rewind events for snap, limits, freeze, shake."
+  domain: "Eventing"
+  coverage: "ADR-0004/0005/0009/0010"
+  created: "2026-05-14"
+  revised: ""
+  status: active
+- id: TR-audio-001
+  system: audio
+  gdd: design/gdd/audio.md
+  title: "Audio"
+  requirement: "`AudioManager` owns bus hierarchy and all sound playback; gameplay emits events only."
+  domain: "Presentation"
+  coverage: "ADR-0012"
+  created: "2026-05-14"
+  revised: "2026-05-14"
+  status: active
+- id: TR-hud-001
+  system: hud
+  gdd: design/gdd/hud.md
+  title: "HUD"
+  requirement: "HUD is observer-only CanvasLayer; never mutates simulation state."
+  domain: "UI"
+  coverage: "ADR-0005/0007/0009/0010"
+  created: "2026-05-14"
+  revised: ""
+  status: active
+- id: TR-menu-001
+  system: menu
+  gdd: design/gdd/menu-pause.md
+  title: "Menu/Pause"
+  requirement: "PauseHandler controls pause lifecycle; Menu UI owns focus/navigation and session-only options."
+  domain: "UI / Input"
+  coverage: "ADR-0004/0005/0006/0007"
+  created: "2026-05-14"
+  revised: ""
+  status: active
+- id: TR-story-001
+  system: story
+  gdd: design/gdd/story-intro-text.md
+  title: "Story Intro"
+  requirement: "One passive five-line intro; no prompt gate or extra input actions."
+  domain: "Narrative / UI"
+  coverage: "ADR-0004/0007"
+  created: "2026-05-14"
+  revised: ""
+  status: active
+- id: TR-vfx-001
+  system: vfx
+  gdd: design/gdd/vfx-particle.md
+  title: "VFX"
+  requirement: "VFX owns non-HUD visual feedback; no gameplay collision/damage ownership."
+  domain: "Presentation"
+  coverage: "ADR-0005/0009/0010 (dedicated ADR waived)"
+  created: "2026-05-14"
+  revised: ""
+  status: active
+- id: TR-collage-001
+  system: collage
+  gdd: design/gdd/collage-rendering.md
+  title: "Collage Rendering"
+  requirement: "Layered collage pipeline must preserve 0.2s readability and draw/memory budgets."
+  domain: "Rendering"
+  coverage: "ADR-0010"
+  created: "2026-05-14"
+  revised: ""
+  status: active
+- id: TR-shader-001
+  system: shader
+  gdd: design/gdd/time-rewind-visual-shader.md
+  title: "Rewind Shader"
+  requirement: "Full-viewport rewind signature triggers from rewind lifecycle and remains budget-safe."
+  domain: "Rendering"
+  coverage: "ADR-0010"
+  created: "2026-05-14"
+  revised: ""
+  status: active
+- id: TR-persist-001
+  system: persist
+  gdd: design/gdd/systems-index.md
+  title: "Save/Settings"
+  requirement: "Save/settings persistence is Vertical Slice and must not be accidentally invented in Tier 1 systems."
+  domain: "Persistence"
+  coverage: "ADR-0006"
+  created: "2026-05-14"
+  revised: ""
+  status: active

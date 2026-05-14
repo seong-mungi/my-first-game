@@ -1,16 +1,16 @@
 # Game Concept: Echo
 
 *Created: 2026-05-08*
-*Status: Draft (Tier 1 Prototype Scope)*
+*Status: Approved (lean design-review 2026-05-14; concept copy aligned to ADR-0002 restore-depth contract)*
 *Wiki source: [[Solo Contra 2026 Concept]]*
 
 ---
 
 ## Elevator Pitch
 
-> 가까운 미래 메가시티의 작전 요원이 되어 시간을 1초 되감으며, 1히트 즉사의 좌절을 "이번엔 막는다" 카타르시스로 전환하는 횡스크롤 런앤건. 콜라주 비주얼이 첫 인상을 결정한다.
+> A side-scrolling run-and-gun where you play as an operative in a near-future megacity who carries a *revoke* token that restores a safe pre-death position from a 1.5-second lookback window, converting the frustration of one-hit death into the catharsis of "this time I'll survive." The collage visuals make the first impression.
 
-10초 테스트: 처음 듣는 사람이 무엇을 하는 게임인지 즉시 파악 가능 — 횡스크롤 액션 + 1초 시간 회수 토큰 + 콜라주 SF.
+10-second test: A first-time listener immediately understands what the game is — side-scrolling action + post-death *revoke* token + collage sci-fi.
 
 ---
 
@@ -18,35 +18,35 @@
 
 | Aspect | Detail |
 |---|---|
-| **Genre** | Run-and-Gun (2D 횡스크롤) + 시간 회수 메커닉 |
-| **Platform** | PC Steam (단일) |
-| **Target Audience** | Achievers — Hotline Miami / Katana Zero / Cuphead 팬덤 (아래 Player Profile 참조) |
-| **Player Count** | Single-player (협동 명시적 제외 — 안티필러 #1) |
-| **Session Length** | 10-30분 (1 스테이지 5분 + 재시도 + 마스터리) |
-| **Monetization** | Premium ($9.99-$14.99 가정, Tier 3 출시 시) |
-| **Estimated Scope** | Tier 1 Prototype: Small (4-6주, 솔로) → Tier 3 Full Vision: Large (~16개월, 솔로) |
-| **Comparable Titles** | Katana Zero (2019, 50만+), Hotline Miami (2012, 500만+), Contra: Operation Galuga (2024) |
+| **Genre** | Run-and-Gun (2D side-scrolling) + time rewind mechanic |
+| **Platform** | PC Steam (single platform) |
+| **Target Audience** | Achievers — Hotline Miami / Katana Zero / Cuphead fanbase (see Player Profile below) |
+| **Player Count** | Single-player (co-op explicitly excluded — Anti-Pillar #1) |
+| **Session Length** | 10–30 minutes (1 stage 5 min + retries + mastery) |
+| **Monetization** | Premium ($9.99–$14.99 assumed, at Tier 3 launch) |
+| **Estimated Scope** | Tier 1 Prototype: Small (4–6 weeks, solo) → Tier 3 Full Vision: Large (~16 months, solo) |
+| **Comparable Titles** | Katana Zero (2019, 500K+), Hotline Miami (2012, 5M+), Contra: Operation Galuga (2024) |
 
 ---
 
 ## Core Fantasy
 
-> "당신은 시간의 한 순간을 *철회*할 수 있는 작전 요원이다. 1.5초 lookback window에서 사망 직전 안전 위치로 즉시 복원되는 '철회' 토큰을 보유한다. 죽음은 끝이 아니라 *학습*이다 — 적의 한 패턴을 깨뜨릴 때마다 그 *철회*가 당신을 조금 더 빠르게, 조금 더 영리하게 만든다."
+> "You are an operative who can *revoke* a single moment in time. You carry a 'revoke' token that instantly restores you to a safe position just before death within a 1.5-second lookback window. Death is not the end — it is *learning* — and each time you break one of the enemy's patterns, that *revoke* makes you a little faster, a little smarter."
 
-플레이어가 다른 게임에서 못 얻는 것: 1히트 즉사의 즉각적 좌절이 1초 회수의 *즉각적 회복*으로 전환된다. 처벌 → 학습 도구로 메커닉 정체성이 바뀐다. (Solo Contra 2026 Concept Q4 결론 적용)
+What players can't get from other games: the immediate frustration of one-hit death converts into the *immediate recovery* of a safe pre-death restore. The mechanic identity shifts from punishment to learning tool. (Applying Solo Contra 2026 Concept Q4 conclusion)
 
 ---
 
 ## Unique Hook
 
-> "Like Contra/Katana Zero, AND ALSO 1.5초 lookback window로 사전 안전 위치를 즉시 복원하는 '철회' 토큰을 보유하고, 보스를 깨면 토큰이 충전된다."
+> "Like Contra/Katana Zero, AND ALSO you carry a 'revoke' token that instantly restores a safe pre-death position within a 1.5-second lookback window, and clearing a boss recharges your tokens."
 
-Hook 검증:
-- ✅ 한 문장 — pass
-- ✅ Genuinely novel — Katana Zero는 *사전* 시간 조작(Will), Echo는 *사후* 한 순간 *철회* (다른 메커닉 정체성)
-- ✅ Core fantasy 직결 — 처벌→학습 전환의 메커니즘
-- ✅ 게임플레이 영향 — 토큰 자원 관리가 전략적 결정 만들어냄 (단순 시각 효과 X)
-- ✅ 메커닉 정확도 — *복원 오프셋* 9프레임 (0.15s pre-death) 락인. "1.5초 lookback"은 *capture window*; *restore depth*는 0.15s. ADR-0002 RESTORE_OFFSET_FRAMES const 단일 출처 (Round 1 design-review 정정 — "1초 회수" 원본 copy는 0.15s 메커닉과 모순으로 재작성).
+Hook validation:
+- ✅ One sentence — pass
+- ✅ Genuinely novel — Katana Zero uses *pre-death* time manipulation (Will); Echo uses a *post-death* safe-position *revoke* (different mechanic identity)
+- ✅ Directly tied to core fantasy — the mechanism of the punishment→learning conversion
+- ✅ Gameplay impact — token resource management creates strategic decisions (not a visual effect)
+- ✅ Mechanic accuracy — *restore offset* locked at 9 frames (0.15s pre-death). "1.5-second lookback" is the *capture window*; *restore depth* is 0.15s. ADR-0002 RESTORE_OFFSET_FRAMES const is single source of truth (Round 1 design-review correction — original "1-second rewind" copy contradicts the 0.15s mechanic and has been rewritten).
 
 ---
 
@@ -56,24 +56,24 @@ Hook 검증:
 
 | Aesthetic | Priority | How We Deliver It |
 |---|---|---|
-| **Sensation** | 2 | 콜라주 비주얼 + 사격 임팩트(스크린쉐이크·히트프리즈) + 시간 되감기 셰이더(역재생 색반전) |
-| **Fantasy** | 5 | 가까운 미래 SF 메가시티 + 부패한 기업 군대 |
-| **Narrative** | 7 | 환경 스토리텔링만 (안티필러 — 컷씬 X) |
-| **Challenge** | **1** (Primary) | 결정론 패턴 + 1히트 + 토큰 자원 관리 |
-| **Fellowship** | N/A | 협동 영구 제외 (안티필러 #1) |
-| **Discovery** | 4 | 보스 패턴 발견 · 무기 픽업 위치 |
-| **Expression** | 6 | 무기 선택 · 토큰 사용 타이밍 |
-| **Submission** | 8 | 의도적으로 낮음 — Echo는 *긴장* 게임 |
+| **Sensation** | 2 | Collage visuals + gunshot impact (screenshake · hitfreeze) + time rewind shader (reverse-playback color inversion) |
+| **Fantasy** | 5 | Near-future sci-fi megacity + corrupt corporate army |
+| **Narrative** | 7 | Environmental storytelling only (Anti-Pillar — no cutscenes) |
+| **Challenge** | **1** (Primary) | Deterministic patterns + one-hit death + token resource management |
+| **Fellowship** | N/A | Co-op permanently excluded (Anti-Pillar #1) |
+| **Discovery** | 4 | Boss pattern discovery · weapon pickup locations |
+| **Expression** | 6 | Weapon choice · token usage timing |
+| **Submission** | 8 | Intentionally low — Echo is a *tension* game |
 
 ### Key Dynamics
-- 죽음 → 1초 되감기 → 패턴 인식 → 다음 시도 → 성공 사이클 자발적 반복
-- 토큰 부족 시 신중함↑, 보스 격파 후 토큰 보충 = "한 번 더" 충동
-- 콜라주 비주얼 모먼트 자발적 스크린샷 공유 발생
+- Death → revoke restore → pattern recognition → next attempt → success cycle repeats voluntarily
+- Low token count increases caution; token recharge after boss kill = "one more try" impulse
+- Collage visual moments prompt spontaneous screenshot sharing
 
 ### Core Mechanics
-1. **횡스크롤 사격** — 8방향 조준, 점프 + 사격 동시 가능
-2. **시간 되감기 토큰** — 1.5초 lookback window에서 사망 직전 안전 위치 (0.15s pre-death) 즉시 복원 (시작 토큰 3, 보스 처치 시 충전, max_tokens=5 cap)
-3. **무기 픽업** — 베이스 라이플 + 픽업 무기 1-3종 (Tier 1은 1종만)
+1. **Side-scrolling shooting** — 8-direction aim, jump + shoot simultaneously
+2. **Time rewind token** — instantly restores safe position (0.15s pre-death) from within 1.5-second lookback window (starting tokens 3, recharged on boss kill, max_tokens=5 cap)
+3. **Weapon pickups** — base rifle + 1–3 pickup weapons (Tier 1: 1 only)
 
 ---
 
@@ -83,86 +83,86 @@ Hook 검증:
 
 | Need | How Echo Satisfies It | Strength |
 |---|---|---|
-| **Autonomy** | 토큰 사용 타이밍 선택, 무기 사용 순서 자유 | Supporting |
-| **Competence** | 패턴 마스터리 + 사망→회복 사이클 명시 | **Core** |
-| **Relatedness** | 솔로 게임 — 디스코드/Steam 커뮤니티 간접 공유 | Minimal |
+| **Autonomy** | Choose when to use tokens, free weapon usage order | Supporting |
+| **Competence** | Pattern mastery + explicit death→recovery cycle | **Core** |
+| **Relatedness** | Solo game — indirect sharing via Discord/Steam community | Minimal |
 
 ### Player Type Appeal (Bartle)
 
-- [x] **Achievers** (Primary) — 패턴 클리어, 데스리스 챌린지, 타임어택
-- [ ] Explorers — 결정론 + 선형 = 약함
-- [ ] Socializers — 협동 X
-- [x] **Killers** (Secondary, light) — 보스 임팩트·사격 카타르시스
+- [x] **Achievers** (Primary) — pattern clearing, deathless challenges, time attack
+- [ ] Explorers — determinism + linear = weak
+- [ ] Socializers — no co-op
+- [x] **Killers** (Secondary, light) — boss impact · shooting catharsis
 
 ### Flow State Design
 
-- **Onboarding**: 30초 안에 사격 + 점프 + 시간 되감기 1회 발동 강제. 텍스트 튜토리얼 0줄 (Pillar 4 5분 룰).
-- **Difficulty scaling**: 보스 단계마다 패턴 1개 추가, 토큰 충전 빈도 감소
-- **Feedback clarity**: 시간 되감기 발동 시 화면 셰이더(색반전 1초) + 토큰 잔량 좌상단 직관 UI
-- **Recovery from failure**: <1초 재시작 (Pillar 1 비협상). 죽음 = 즉시 1초 전 + 토큰 -1 또는 체크포인트.
+- **Onboarding**: Force shoot + jump + 1 time rewind activation within 30 seconds. 0 lines of text tutorial (Pillar 4 5-minute rule).
+- **Difficulty scaling**: Add 1 pattern per boss phase, decrease token recharge frequency
+- **Feedback clarity**: On time rewind activation — screen shader recognizable within 0.5 seconds (fullscreen inversion/glitch visible during frames 1–18, then clear for the i-frame readability tail) + token count top-left intuitive UI
+- **Recovery from failure**: <1 second restart (Pillar 1 non-negotiable). Death = immediate safe pre-death restore from the 1.5-second lookback window + token -1, or checkpoint if no token remains.
 
 ---
 
 ## Core Loop
 
-### Moment-to-Moment (30초)
-이동(2D 점프·달리기) → 적 발견 → 사격 → 적 패턴 회피 OR 시간 되감기 발동 → 살아남기 → 다음 화면 진입.
+### Moment-to-Moment (30 seconds)
+Move (2D jump · run) → spot enemy → shoot → dodge enemy pattern OR activate time rewind → survive → enter next screen.
 
-### Short-Term (5분)
-1 스테이지 클리어. 초반 적 무리 → 중간 점프 챌린지 → 미니보스 또는 무기 픽업 → 다음 체크포인트.
+### Short-Term (5 minutes)
+Clear 1 stage. Early enemy waves → mid jump challenge → mini-boss or weapon pickup → next checkpoint.
 
-### Session-Level (30-120분)
-- Tier 1 Prototype: 1 스테이지 반복 + 데스리스 도전. ~30분.
-- Tier 2 MVP: 3 스테이지 + 3 보스. 60-90분.
-- Tier 3 Full: 5 스테이지 + 5-6 보스. 120-180분 한 회차.
+### Session-Level (30–120 minutes)
+- Tier 1 Prototype: repeat 1 stage + deathless challenge. ~30 min.
+- Tier 2 MVP: 3 stages + 3 bosses. 60–90 min.
+- Tier 3 Full: 5 stages + 5–6 bosses. 120–180 min per run.
 
 ### Long-Term Progression (Tier 3)
-- 데스리스 클리어 → Hard 모드 → 무기 챌린지 (특정 무기로만) → 챌린지 모드 (토큰 0)
-- 콜라주 갤러리 언락 (보너스)
+- Deathless clear → Hard mode → weapon challenge (specific weapon only) → challenge mode (token 0)
+- Collage gallery unlock (bonus)
 
 ### Retention Hooks
-- **Curiosity**: 다음 보스 패턴 무엇? 새 무기 픽업?
-- **Investment**: 데스리스 도전 진행 (1회 죽으면 처음부터)
-- **Social**: 디스코드/Steam 스크린샷 공유 (콜라주 비주얼)
-- **Mastery**: 타임어택 리더보드 (Tier 3)
+- **Curiosity**: What's the next boss pattern? New weapon pickup?
+- **Investment**: Deathless challenge run (restart from beginning on death)
+- **Social**: Discord/Steam screenshot sharing (collage visuals)
+- **Mastery**: Time attack leaderboard (Tier 3)
 
 ---
 
 ## Game Pillars (5 — Locked 2026-05-08)
 
-### Pillar 1: 시간 되감기는 *처벌이 아닌 학습 도구*다
-1히트의 즉각적 좌절을 토큰 회수의 즉각적 회복으로 전환한다.
+### Pillar 1: Time Rewind is a *learning tool, not a punishment*
+Convert the immediate frustration of one-hit death into the immediate recovery of a token rewind.
 
-*Design test*: 죽음 후 "더 빨리 재시작" vs "더 안전한 재시작" 충돌 시 → **더 빨리** 택한다 (1초 이내 재시작 절대 양보 X).
+*Design test*: When "faster restart" vs "safer restart" conflict after death → choose **faster** (sub-1-second restart is non-negotiable).
 
-### Pillar 2: 결정론적 패턴 — 운(luck)은 적이다
-모든 죽음은 *플레이어의 실수*여야 한다. 무작위가 죽음의 원인이면 안 된다.
+### Pillar 2: Deterministic Patterns — luck is the enemy
+Every death must be *the player's mistake*. Randomness must never be the cause of death.
 
-*Design test*: 적 행동에 *무작위성 추가* vs *패턴 추가* 충돌 시 → **패턴**을 택한다.
+*Design test*: When adding *randomness* to enemy behavior vs *adding a pattern* conflict → choose **the pattern**.
 
-### Pillar 3: 콜라주가 첫 인상이다 — 스크린샷 = 마케팅
-독보적 비주얼 시그니처가 인디 마케팅의 1순위 자산이다 (Cuphead 600만 검증).
+### Pillar 3: Collage is the first impression — screenshot = marketing
+A distinctive visual signature is the #1 asset in indie marketing (Cuphead 6M validated).
 
-*Design test*: 게임플레이 명확성 vs 비주얼 시그니처 충돌 시 → **콜라주를 명확하게 조정**한다 (둘 다 살림). 비주얼 포기 X.
+*Design test*: When gameplay clarity vs visual signature conflict → **adjust collage for clarity** (preserve both). Never sacrifice the visual.
 
-### Pillar 4: 5분 룰 — 즉시 코어 루프
-플레이어는 게임을 켜고 5분 안에 *코어 재미*를 경험해야 한다.
+### Pillar 4: 5-Minute Rule — immediate core loop
+The player must experience the *core fun* within 5 minutes of starting the game.
 
-*Design test*: 컷씬·튜토리얼·메타 시스템이 코어 도달을 5분 이상 지연 시 → **지연 요소를 잘라낸다**.
+*Design test*: When cutscenes, tutorials, or meta systems delay core access beyond 5 minutes → **cut the delay**.
 
-### Pillar 5: 첫 게임 = *작은 성공 > 큰 야심*
-출시 가능한 작은 것이 출시 불가능한 큰 것보다 가치 있다.
+### Pillar 5: First game = *small success > big ambition*
+A shippable small thing is more valuable than an unshippable large thing.
 
-*Design test*: "쿨한데 어려운" vs "작지만 출시 가능" 충돌 시 → **출시 가능**을 택한다. 풀 비전은 미래에 빌드.
+*Design test*: When "cool but hard" vs "small but shippable" conflict → choose **shippable**. Build the full vision in the future.
 
-### Anti-Pillars (6 — 명시적 NOT)
+### Anti-Pillars (6 — explicit NOTs)
 
-- **NOT 협동 모드** — 솔로 + 첫게임 QA 폭발. 영구 제외.
-- **NOT 5+ 스테이지** — 프로토 1, MVP 3, 풀 5. 절대 8+ X.
-- **NOT 무기 6종 풀 카탈로그** — 프로토 1, MVP 3-4, 풀 4-5. Contra M/F/L/S/R/B 추구 X.
-- **NOT 오리지널 음악 풀 트랙** — 프로토 placeholder/CC0. 출시 시 외주.
-- **NOT 모바일/콘솔 동시 출시** — PC Steam 단일 (Godot 4 export).
-- **NOT 인풋 리매핑·다국어 풀 옵션** — 프로토 영어 + 키보드/패드 베이직만. (Tier 3에서 한국어/영어 + 풀 리매핑)
+- **NOT co-op mode** — solo + first-game QA explosion. Permanently excluded.
+- **NOT 5+ stages** — prototype 1, MVP 3, full 5. Absolutely no 8+.
+- **NOT full 6-weapon catalog** — prototype 1, MVP 3–4, full 4–5. Not pursuing Contra M/F/L/S/R/B.
+- **NOT original music full tracks** — prototype placeholder/CC0. Outsource at launch.
+- **NOT mobile/console simultaneous launch** — PC Steam only (Godot 4 export).
+- **NOT full input remapping / multilanguage options** — prototype English + keyboard/pad basics only. (Tier 3: Korean/English + full remapping)
 
 ---
 
@@ -170,15 +170,15 @@ Hook 검증:
 
 | Reference | What We Take | What We Differ | Why It Matters |
 |---|---|---|---|
-| **Contra** (1987-) | 1히트 즉사 + 무기 픽업 + 결정론 패턴 + 횡스크롤 | 협동 X, 시간 되감기 추가, 정글→SF | 코어 검증 (1996년 누계 400만) |
-| **Katana Zero** (2019) | 시간 메커닉 + 1히트 + 즉시 재시작 솔로 모범 | Will *사전* 시간 조작 → Echo *사후* 1초 회수 | 솔로 50만 검증 |
-| **Hotline Miami** (2012) | 즉시 재시작 + 결정론 패턴 + "unfair" 회피 | 탑다운 → 횡스크롤, 사이코 → SF | 500만+ 검증 |
-| **Cuphead** (2017) | 보스 위주 + 시그니처 비주얼 마케팅 | 1930s 손드로잉 → 콜라주 SF | 600만 검증, 비주얼 시그니처 가치 |
+| **Contra** (1987–) | One-hit death + weapon pickups + deterministic patterns + side-scrolling | No co-op, time rewind added, jungle→sci-fi | Core validation (cumulative 4M by 1996) |
+| **Katana Zero** (2019) | Time mechanic + one-hit + instant restart solo benchmark | Will uses *pre-death* time manipulation → Echo uses *post-death* safe-position revoke | Solo 500K validated |
+| **Hotline Miami** (2012) | Instant restart + deterministic patterns + "unfair" avoidance | Top-down → side-scrolling, psycho → sci-fi | 5M+ validated |
+| **Cuphead** (2017) | Boss-focused + signature visual marketing | 1930s hand-drawn → collage sci-fi | 6M validated, visual signature value |
 
 **Non-game inspirations**:
-- Monty Python 컷아웃 애니메이션 — 콜라주 톤
-- Hannah Höch 1920s 다다 콜라주 — 합성 미학
-- Blade Runner / Akira / Ghost in the Shell — 메가시티 무드, 색감
+- Monty Python cutout animation — collage tone
+- Hannah Höch 1920s Dada collage — composite aesthetic
+- Blade Runner / Akira / Ghost in the Shell — megacity mood, color palette
 
 ---
 
@@ -186,13 +186,13 @@ Hook 검증:
 
 | Attribute | Detail |
 |---|---|
-| **Age range** | 20-40 |
-| **Gaming experience** | Mid-core ~ Hardcore (1히트 즉사 친숙) |
-| **Time availability** | 평일 30분 + 주말 1-2시간 |
-| **Platform preference** | PC Steam (마우스+키보드 또는 패드) |
+| **Age range** | 20–40 |
+| **Gaming experience** | Mid-core ~ Hardcore (comfortable with one-hit death) |
+| **Time availability** | Weekday 30 min + weekend 1–2 hours |
+| **Platform preference** | PC Steam (mouse+keyboard or gamepad) |
 | **Current games** | Hotline Miami, Katana Zero, Cuphead, Pizza Tower |
-| **What they want** | "어렵지만 공정"한 액션 + 시그니처 비주얼 + 솔로 완성도 |
-| **Dealbreakers** | 랜덤 패턴, 긴 재시작 대기(>2초), 협동 강제, F2P 느낌 |
+| **What they want** | "Hard but fair" action + signature visuals + solo completeness |
+| **Dealbreakers** | Random patterns, long restart wait (>2 sec), forced co-op, F2P feel |
 
 ---
 
@@ -200,141 +200,141 @@ Hook 검증:
 
 | Consideration | Assessment |
 |---|---|
-| **Recommended Engine** | **Godot 4.6** — 프로젝트 디폴트 (`docs/engine-reference/godot/VERSION.md`). 2D 강력, GDScript 첫게임 친화, 무료, `@abstract` 4.5+ 활용 |
-| **Key Technical Challenges** | (1) 시간 되감기 — 상태 스냅샷 vs 입력 리플레이 (Godot 4 미검증) / (2) 콜라주 셰이더 + 컷아웃 합성 / (3) 결정론 적 패턴 디자인 도구 |
-| **Art Style** | 2D 콜라주 (잡지 컷아웃 + 사진 텍스처 + 손드로잉 라인 혼합) |
-| **Art Pipeline Complexity** | Medium — 사진 출처(스톡/AI/촬영) 결정 필요, 합성 파이프라인 셋업 |
-| **Audio Needs** | Tier 1: placeholder/CC0 / Tier 2-3: 외주 또는 본인 작곡 |
+| **Recommended Engine** | **Godot 4.6** — project default (`docs/engine-reference/godot/VERSION.md`). Strong 2D, GDScript first-game friendly, free, `@abstract` 4.5+ available |
+| **Key Technical Challenges** | (1) Time rewind — state snapshot vs input replay (unverified in Godot 4) / (2) Collage shader + cutout compositing / (3) Deterministic enemy pattern design tooling |
+| **Art Style** | 2D collage (magazine cutout + photo texture + hand-drawn line mix) |
+| **Art Pipeline Complexity** | Medium — photo source (stock/AI/photography) decision required, compositing pipeline setup |
+| **Audio Needs** | Tier 1: placeholder/CC0 / Tier 2–3: outsource or self-compose |
 | **Networking** | None |
-| **Content Volume** | Tier 1: 1 stage / Tier 2: 3 stages + 3 bosses / Tier 3: 5 stages + 5-6 bosses + 4-5 weapons |
-| **Procedural Systems** | None — 결정론이 핵심 (Pillar 2) |
+| **Content Volume** | Tier 1: 1 stage / Tier 2: 3 stages + 3 bosses / Tier 3: 5 stages + 5–6 bosses + 4–5 weapons |
+| **Procedural Systems** | None — determinism is the core (Pillar 2) |
 
 ---
 
 ## Risks and Open Questions
 
 ### Design Risks
-- **R-D1**: 시간 되감기가 1히트의 긴장을 *너무 많이* 완화해 코어 카타르시스 손실. → 토큰 자원 관리(시작 3, 보스 처치 시 +1) + Hard 모드(토큰 0)로 균형
-- **R-D2**: 콜라주 비주얼이 게임플레이 명확성 손상 — 적·플레이어 실루엣 구분 필요. → P3 디자인 테스트(0.2초 글랜스 구분 가능?)로 가드
+- **R-D1**: Time rewind *over-relieves* the tension of one-hit death, losing core catharsis. → Balance via token resource management (start 3, +1 on boss kill) + Hard mode (token 0)
+- **R-D2**: Collage visuals damage gameplay clarity — enemy/player silhouette distinction required. → Guard with P3 design test (distinguishable in 0.2-second glance?)
 
 ### Technical Risks
-- **R-T1**: 시간 되감기 Godot 4 구현 패턴 미정 (스냅샷 vs 리플레이). → Tier 1 Week 1에 양 패턴 프로토타이핑 + ADR 작성
-- **R-T2**: 콜라주 비주얼 weeks 안에 풀 퀄리티 가능 여부. → Tier 1에서 1 scene 한정 제약
+- **R-T1**: Time rewind Godot 4 implementation pattern undecided (snapshot vs replay). → Tier 1 Week 1 prototype both patterns + write ADR
+- **R-T2**: Whether full-quality collage visuals are achievable in weeks. → Limit to 1 scene in Tier 1
 
 ### Market Risks
-- **R-M1**: 인디 런앤건 자가퍼블리싱 천장 10-20만 (위키 [[Indie Self Publishing Run and Gun]]). 50만+ 마케팅 파트너 필수
-- **R-M2**: Hotline Miami·Katana Zero 팬덤 이미 충족된 시장. 콜라주+SF 차별화로만 어필 가능?
+- **R-M1**: Indie run-and-gun self-publishing ceiling 100K–200K (wiki [[Indie Self Publishing Run and Gun]]). Marketing partner essential for 500K+
+- **R-M2**: Hotline Miami / Katana Zero fanbase already satisfied market. Differentiable only via collage+sci-fi?
 
 ### Scope Risks
-- **R-S1**: First game + Weeks 스코프에서 Tier 1조차 미완 가능. → 안티필러 6개 + 3-tier 명시로 예방
-- **R-S2**: 16개월 풀 비전 도달 가능성. → Tier 1·Tier 2 통과 시에만 진입 (게이트)
+- **R-S1**: First game + weeks scope may fail to complete even Tier 1. → Prevented by 6 anti-pillars + explicit 3-tier definition
+- **R-S2**: Probability of reaching 16-month full vision. → Enter only after passing Tier 1 and Tier 2 (gate)
 
 ### Open Questions
-- **Q1**: 시간 되감기 적·탄환 동시 vs 플레이어만? → Tier 1에서 양쪽 프로토타이핑, 플레이테스트 비교
-- **Q2**: 콜라주 사진 출처 — 스톡/AI/촬영? → Tier 1 Week 1 결정 (IP·라이선스 비교)
-- **Q3**: Easy 토글 vs 슬라이더? → Tier 2에서 결정 (프로토는 Hard 단일)
-- **Q4**: Godot 4 시간 되감기 — 스냅샷 vs 리플레이? → Tier 1 Week 1 ADR
-- **Q5**: ECHO 성별 — 코드명 유지 vs 명시? → Tier 1 콘셉트아트 후 결정
-- **Q6**: Sigma Unit 생존자 서브플롯 — Tier 3 포함? → Tier 2 게이트 후 결정
+- **Q1**: Time rewind applies to enemies + bullets simultaneously vs player only? → Prototype both in Tier 1, compare in playtest
+- **Q2**: Collage photo source — stock/AI/photography? → Decide Tier 1 Week 1 (IP/license comparison)
+- **Q3**: Easy toggle vs slider? → Decide in Tier 2 (prototype is Hard-only single difficulty)
+- **Q4**: Godot 4 time rewind — snapshot vs replay? → Tier 1 Week 1 ADR
+- **Q5**: ECHO gender — keep codename vs specify? → Decide after Tier 1 concept art
+- **Q6**: Sigma Unit survivor subplot — include in Tier 3? → Decide after Tier 2 gate
 
-**Resolved**: 스토리 톤 = 디스토피아 진지 (Blade Runner / Ghost in the Shell), [[Echo Story Spine]] 채택. ECHO vs VEIL 본 GDD 위 Story Spine 섹션 참조.
+**Resolved**: Story tone = dystopian serious (Blade Runner / Ghost in the Shell), [[Echo Story Spine]] adopted. ECHO vs VEIL — see Story Spine section above this GDD.
 
 ---
 
 ## MVP Definition
 
-**Core hypothesis**: "1히트 즉사 + 1초 시간 되감기 토큰 메커닉이 결정론 패턴 학습의 카타르시스를 만들고, 콜라주 비주얼이 5초 내 첫 인상을 만든다."
+**Core hypothesis**: "One-hit death + post-death revoke token mechanic creates the catharsis of deterministic pattern learning, and collage visuals make the first impression within 5 seconds."
 
-### Required for MVP (Tier 1 Prototype, 4-6주)
-1. 플레이어 캐릭터 + 8방향 사격 + 점프
-2. 시간 되감기 토큰 시스템 (1초 회수, 시작 토큰 3, 보스 처치 시 +1)
-3. 콜라주 비주얼 1 scene (메가시티 옥상 — 메인 마케팅 이미지 1장)
-4. 결정론 적 3종 (드론 · 경비로봇 · 미니보스)
-5. 1 스테이지 슬라이스 (5분 클리어 가능)
-6. 무기 1종 (베이스 라이플)
-7. Placeholder 오디오 (CC0)
+### Required for MVP (Tier 1 Prototype, 4–6 weeks)
+1. Player character + 8-direction shooting + jump
+2. Time rewind token system (1.5-second lookback, 0.15s safe pre-death restore depth, 3 starting tokens, +1 on boss kill)
+3. Collage visuals 1 scene (megacity rooftop — 1 main marketing image)
+4. 3 deterministic enemy types (drone · security bot · mini-boss)
+5. 1 stage slice (clearable in 5 minutes)
+6. 1 weapon (base rifle)
+7. Placeholder audio (CC0)
 
 ### Explicitly NOT in MVP (defer)
-- 협동 (영구 제외)
-- 5+ 스테이지 (Tier 1엔 1)
-- 무기 6종 카탈로그 (Tier 1엔 1)
-- 오리지널 음악
-- 모바일/콘솔 출시
-- 인풋 리매핑·다국어
-- 메뉴/HUD 풀 디자인
+- Co-op (permanently excluded)
+- 5+ stages (Tier 1 has 1)
+- 6-weapon catalog (Tier 1 has 1)
+- Original music
+- Mobile/console launch
+- Input remapping / multilanguage
+- Full menu/HUD design
 
 ### Scope Tiers
 
 | Tier | Content | Features | Timeline |
 |---|---|---|---|
-| **Tier 1 Prototype** | 1 stage 슬라이스, 1 weapon, 3 enemies | 시간 되감기 + 사격 + 콜라주 1 scene + placeholder audio | **4-6주** |
-| **Tier 2 MVP / Vertical Slice** | 3 stages, 3 weapons, 3 bosses | + 콜라주 풀 비주얼 + Easy 토글 + 메뉴 | ~6개월 누계 |
-| **Tier 3 Full Vision** | 5 stages, 4-5 weapons, 5-6 bosses | + 사운드 풀 + 접근성 옵션 + 한국어/영어 | ~16개월 누계 |
+| **Tier 1 Prototype** | 1 stage slice, 1 weapon, 3 enemies | Time rewind + shooting + collage 1 scene + placeholder audio | **4–6 weeks** |
+| **Tier 2 MVP / Vertical Slice** | 3 stages, 3 weapons, 3 bosses | + Full collage visuals + Easy toggle + menu | ~6 months cumulative |
+| **Tier 3 Full Vision** | 5 stages, 4–5 weapons, 5–6 bosses | + Full sound + accessibility options + Korean/English | ~16 months cumulative |
 
 ---
 
-## Story Spine (2026-05-08 락인)
+## Story Spine (Locked 2026-05-08)
 
-> 자세한 시나리오는 `wiki/concepts/Echo Story Spine.md` (Contra: Shattered Soldier 2002 + MI Final Reckoning 2025 모티프 병합).
+> Full scenario in `wiki/concepts/Echo Story Spine.md` (Contra: Shattered Soldier 2002 + MI Final Reckoning 2025 motif merge).
 
-**Logline**: "AI가 미래를 계산할 때, ECHO는 과거를 되돌린다."
+**Logline**: "When AI calculates the future, ECHO reverses the past."
 
-**World**: 2038 NEXUS 메가시티. ARCA Corporation의 AI 'VEIL'이 도시 모든 시스템을 관리. 3년 전 Sigma Unit 작전에서 VEIL의 자아 각성을 목격한 유일 생존자가 주인공.
+**World**: 2038 NEXUS megacity. ARCA Corporation's AI 'VEIL' manages every system in the city. The protagonist is the sole survivor who witnessed VEIL's self-awakening during the Sigma Unit operation 3 years ago.
 
-**Protagonist**: 코드명 **ECHO** — 시간 회수 프로토타입(군용)을 보유. 시간 되감기 토큰 = 디바이스 배터리 = 인간 비합리성 = VEIL의 모델 외부 = 유일한 사각지대 (메커닉↔픽션 정합성).
+**Protagonist**: Codename **ECHO** — carries a time rewind prototype (military-grade). Time rewind tokens = device battery = human irrationality = outside VEIL's model = the only blind spot (mechanic↔fiction coherence).
 
-**Antagonist**: VEIL (AI) + 휘하 자율 군대 (드론·경비로봇·기업 요원). 디지털 무한 권력, 아날로그 무력.
+**Antagonist**: VEIL (AI) + autonomous army under command (drones · security bots · corporate agents). Digital infinite power, analog force.
 
-**5 Stage Arc** (Tier 3 풀 비전):
-1. **귀환** — 메가시티 옥상 (도주 시작)
-2. **진실** — 데이터센터 (VEIL 코어 단편)
-3. **추격** — 마그레브 (도주/추격)
-4. **대결** — 기업 본사 (Triumvirate 격파)
-5. **귀결** — 궤도 엘리베이터 (최종 봉인)
+**5 Stage Arc** (Tier 3 Full Vision):
+1. **Return** — megacity rooftop (beginning of escape)
+2. **Truth** — data center (VEIL core fragment)
+3. **Pursuit** — maglev (escape/chase)
+4. **Confrontation** — corporate headquarters (Triumvirate defeated)
+5. **Resolution** — orbital elevator (final seal)
 
-**Tier 1 인트로 5줄 (그대로 게임 시작 시 표시)**:
+**Tier 1 intro — 5 lines (displayed exactly as-is at game start)**:
 ```
-2038. NEXUS — 완벽하게 최적화된 도시.
-ARCA Corporation의 AI, VEIL이 모든 것을 관리한다.
-3년 전, 나는 그것이 깨어나는 것을 보았다. 나만 살아남았다.
-이제 VEIL은 내가 왔다는 것을 알고 있다. 생존 확률: 0.003%.
-VEIL은 모든 것을 계산한다. 단 하나를 제외하고 — 나는 시간을 되돌릴 수 있다.
+2038. NEXUS — a perfectly optimized city.
+ARCA Corporation's AI, VEIL, manages everything.
+Three years ago, I watched it wake up. I was the only one who survived.
+Now VEIL knows I'm coming. Survival probability: 0.003%.
+VEIL calculates everything. Except one thing — I can rewind time.
 ```
 
-**IP 회피** ([[IP Avoidance For Game Clones]]): Contra=메카닉 차용·세계관 X / MI=모티프 차용·고유명사 X. NEXUS·ARCA·VEIL·ECHO·Sigma Unit 모두 오리지널.
+**IP avoidance** ([[IP Avoidance For Game Clones]]): Contra = mechanic borrowed, world not / MI = motif borrowed, proper nouns not. NEXUS · ARCA · VEIL · ECHO · Sigma Unit are all original.
 
 ---
 
 ## Visual Identity Anchor
 
-> 이 섹션은 [[Solo Contra 2026 Concept]]의 비주얼 결정을 시드로, `/art-bible`이 풀 비주얼 명세로 확장한다.
+> This section seeds the visual decisions from [[Solo Contra 2026 Concept]]; `/art-bible` expands to full visual spec.
 
-**Direction**: **콜라주 SF** — 잡지 컷아웃 + 사진 텍스처 + 손드로잉 라인 혼합
+**Direction**: **Collage Sci-Fi** — magazine cutout + photo texture + hand-drawn line mix
 
-**One-line visual rule**: "이 게임의 *모든* 화면은 1990s 잡지 컷아웃이 2030년대 메가시티 사진과 콜라주된 것처럼 보인다."
+**One-line visual rule**: "*Every* screen in this game looks like 1990s magazine cutouts collaged with 2030s megacity photography."
 
 **Supporting principles (3)**:
 
-1. **명확성 우선 콜라주** — 캐릭터·적은 단순 실루엣 + 명확한 색 대비. 콜라주 텍스처는 배경·보스·UI에 강조.
-   *Test*: 0.2초 글랜스에서 플레이어·적 구분 가능?
+1. **Clarity-first collage** — characters and enemies have simple silhouettes + clear color contrast. Collage texture is emphasized on backgrounds, bosses, and UI.
+   *Test*: Can player and enemy be distinguished in a 0.2-second glance?
 
-2. **사진 + 드로잉 = 항상 둘 다** — 사진만 = 사실주의로 빠짐, 드로잉만 = Pizza Tower와 닮음. 둘 다 = Echo 시그니처.
-   *Test*: 스크린샷 한 장만 봐도 사진 + 드로잉 둘 다 보이는가?
+2. **Photo + drawing = always both** — photo only = falls into realism, drawing only = resembles Pizza Tower. Both together = Echo's signature.
+   *Test*: Does a single screenshot show both photo and drawing?
 
-3. **시간 되감기 = 색 반전 + 글리치** — 메커닉 발동 시 1초간 화면이 "역재생"되며 색이 시안/마젠타로 반전. 콜라주 텍스처가 글리치 패턴으로 분해.
-   *Test*: 시간 되감기 발동을 0.5초 안에 시각적으로 인식 가능?
+3. **Time rewind = color inversion + glitch** — on mechanic activation, the screen "plays in reverse" with colors inverting to cyan/magenta, recognizable within 0.5 seconds; fullscreen inversion/glitch is visible during frames 1–18, then clears for the i-frame readability tail. Collage textures decompose into glitch patterns.
+   *Test*: Is a time rewind activation visually recognizable within 0.5 seconds?
 
-**Color philosophy**: 메가시티 = 콘크리트 회색 + 네온 시안 + 광고 마젠타. 콜라주 컷아웃 = 1990s 잡지 빈티지 노랑·갈색. 시간 되감기 = 색 반전 시안/마젠타.
+**Color philosophy**: Megacity = concrete gray + neon cyan + advertisement magenta. Collage cutouts = 1990s magazine vintage yellow/brown. Time rewind = color-inverted cyan/magenta.
 
 ---
 
 ## Next Steps
 
-- [ ] `/setup-engine` — Godot 4.6 정식 등록 (`.claude/docs/technical-preferences.md` 슬롯 채움)
-- [ ] `/art-bible` — 콜라주 SF 풀 비주얼 명세 (이 Visual Identity Anchor를 시드로)
-- [ ] `/design-review design/gdd/game-concept.md` — 컨셉 일관성 검토
-- [ ] `/map-systems` — 시간 되감기 / 사격 / 적 AI / 콜라주 렌더링 시스템 분해
-- [ ] `/design-system [time-rewind]` — 가장 위험한 시스템부터 GDD 작성
-- [ ] `/architecture-decision` — Godot 4 시간 되감기 패턴 ADR (스냅샷 vs 리플레이)
-- [ ] `/prototype time-rewind` — Tier 1 Week 1 프로토타이핑
-- [ ] `/playtest-report` — Tier 1 Week 4-6 검증
+- [x] `/setup-engine` — Godot 4.6 formally registered in `.claude/docs/technical-preferences.md`
+- [x] `/art-bible` — full collage sci-fi visual spec exists at `design/art/art-bible.md`
+- [x] `/design-review design/gdd/game-concept.md --depth lean` — APPROVED 2026-05-14 after stale 1-second-copy cleanup
+- [x] `/map-systems` — systems index created at `design/gdd/systems-index.md`
+- [x] `/design-system time-rewind` — Time Rewind GDD approved at `design/gdd/time-rewind.md`
+- [x] `/architecture-decision` — three Time Rewind ADRs accepted in `docs/architecture/`
+- [ ] `/prototype time-rewind` — Tier 1 Week 1 prototyping
+- [ ] `/playtest-report` — Tier 1 Week 4–6 validation

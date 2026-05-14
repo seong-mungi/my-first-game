@@ -37,7 +37,7 @@
 #   Each entry: name, status, source, referenced_by[], attributes{}, added, revised
 
 version: 1
-last_updated: "2026-05-12 — Session 25: Fix stale PlayerMovementSM state names in entity echo.player_movement_sm.states + PlayerMovementSM_state_count notes (IDLE/RUN/JUMPING/FALLING/REWINDING/DYING → idle/run/jump/fall/aim_lock/dead per DEC-PM-1). Previous: Session 22 Phase 5b: Camera System #3 GDD Designed (pending re-review) adds 6 new constants (DEADZONE_HALF_X=64, JUMP_LOOKAHEAD_UP_PX=20, FALL_LOOKAHEAD_DOWN_PX=52, LOOKAHEAD_LERP_FRAMES=8, MAX_SHAKE_PX=12, POSITION_SMOOTHING_SPEED=32.0). Previous (2026-05-11): Session 20 Phase 5b: Player Shooting #7 GDD Designed (pending re-review) adds 5 new constants (FIRE_COOLDOWN_FRAMES=10, MAGAZINE_SIZE=30, PROJECTILE_CAP=8, PROJECTILE_SPEED_PX_S=600.0, PROJECTILE_LIFETIME_FRAMES=90). Previous (2026-05-11): Session 17 Step 3 backfill: 1 entity (ECHO) + 3 formulas + 26 constants extracted from 5 Approved GDDs (Input #1 / State Machine #5 / Player Movement #6 / Damage #8 / Time Rewind #9) + 3 ADRs (0001 / 0002 with Amendment 1+2 / 0003) + Scene Manager #2 Phase 5d batch (restart_window_max_frames=60, cold_boot_max_seconds=300)."
+last_updated: "2026-05-14 — Menu / Pause #18 GDD Approved: pause/options-only Tier 1 contract reviewed; title shell/return-to-title deferred. Previous: Stage/Player Shooting projectile-container contract closed."
 
 # ─── ENTITIES ────────────────────────────────────────────────────────────────
 # Named game-world objects: enemies, NPCs, characters, factions, bosses.
@@ -58,6 +58,10 @@ entities:
       - design/gdd/state-machine.md
       - design/gdd/time-rewind.md
       - design/gdd/input.md
+      - design/gdd/boss-pattern.md
+      - design/gdd/hud.md
+      - design/gdd/vfx-particle.md
+      - design/gdd/story-intro-text.md
       - design/gdd/game-concept.md
       - docs/architecture/adr-0001-time-rewind-scope.md
       - docs/architecture/adr-0002-time-rewind-storage-format.md
@@ -77,6 +81,29 @@ entities:
         owner: design/gdd/state-machine.md
     notes: "ECHO is the player-controlled run-and-gun protagonist (Solo Contra 2026 Concept v0). Single-writer for 7 PlayerSnapshot fields (Amendment 2: Weapon owns 8th `ammo_count`; TRC owns 9th `captured_at_physics_frame`). One-hit die model with token-driven time rewind."
     added: 2026-05-11
+    revised: ""
+
+  - name: strider_tier1
+    status: active
+    source: design/gdd/boss-pattern.md
+    referenced_by:
+      - design/gdd/boss-pattern.md
+      - design/gdd/enemy-ai.md
+      - design/gdd/stage-encounter.md
+      - design/gdd/damage.md
+      - design/gdd/time-rewind.md
+      - design/gdd/vfx-particle.md
+    entity_id: "strider_tier1"
+    classification: tier1_mini_boss
+    base_host: EnemyBase
+    health_model: discrete_phase_thresholds
+    phase_hp_table: [3, 4, 5]
+    final_phase_index: 2
+    total_boss_hits: 12
+    process_physics_priority: 10
+    projectile_cause: "projectile_boss"
+    notes: "Tier 1 STRIDER mini-boss. Boss Pattern owns phases/projectiles/cleanup; Stage owns placement; Damage owns signal signatures; Time Rewind consumes boss_killed for token grant."
+    added: 2026-05-13
     revised: ""
 
 # Example (remove when first real entry is added):
@@ -269,10 +296,75 @@ constants:
       - design/gdd/player-movement.md
       - design/gdd/damage.md
       - design/gdd/audio.md               # D.1 duck tween hold phase + G.2 cross-knob invariant
+      - design/gdd/hud.md                 # Delayed HUD token display after rewind protection
+      - design/gdd/time-rewind-visual-shader.md
     value: 30
     unit: frames
     notes: "Post-rewind invincibility (i_frame_frames) = 0.5 s @ 60 Hz. Time Rewind GDD Rule 11."
     added: 2026-05-11
+    revised: ""
+
+  # ─── Time Rewind Visual Shader (Tier 1 fullscreen rewind signature) ───────
+  - name: rewind_shader_controller_frames
+    status: active
+    source: design/gdd/time-rewind-visual-shader.md
+    referenced_by:
+      - design/gdd/time-rewind-visual-shader.md
+      - design/gdd/time-rewind.md
+    value: 30
+    unit: frames
+    notes: "Internal Shader #16 protection-aligned controller agreement point. Mirrors REWIND_SIGNATURE_FRAMES; visible fullscreen shader intensity is zero by frame 19."
+    added: 2026-05-13
+    revised: ""
+
+  - name: rewind_shader_fullscreen_active_frames
+    status: active
+    source: design/gdd/time-rewind-visual-shader.md
+    referenced_by:
+      - design/gdd/time-rewind-visual-shader.md
+      - design/gdd/time-rewind.md
+      - design/art/art-bible.md
+    value: 18
+    unit: frames
+    notes: "Art Bible Principle C fullscreen inversion/glitch/restoration window: frames 1-18 after preflash. Frames 19-30 are reserved for local i-frame readability signal."
+    added: 2026-05-13
+    revised: ""
+
+  - name: rewind_shader_glitch_uv_max_px
+    status: active
+    source: design/gdd/time-rewind-visual-shader.md
+    referenced_by:
+      - design/gdd/time-rewind-visual-shader.md
+      - design/gdd/collage-rendering.md
+    value: 6
+    unit: px
+    notes: "Maximum decorative UV tear amplitude for Shader #16. Reduce before compromising gameplay readability or Collage #15 line-structure contrast."
+    added: 2026-05-13
+    revised: ""
+
+  - name: rewind_shader_max_gpu_us
+    status: active
+    source: design/gdd/time-rewind-visual-shader.md
+    referenced_by:
+      - design/gdd/time-rewind-visual-shader.md
+      - design/gdd/time-rewind.md
+      - design/art/art-bible.md
+    value: 500
+    unit: microseconds
+    notes: "Active-frame GPU budget for Shader #16 fullscreen pass. If exceeded, disable decorative UV glitch before altering gameplay timing."
+    added: 2026-05-13
+    revised: ""
+
+  - name: rewind_shader_draw_call_budget
+    status: active
+    source: design/gdd/time-rewind-visual-shader.md
+    referenced_by:
+      - design/gdd/time-rewind-visual-shader.md
+      - design/art/art-bible.md
+    value: 50
+    unit: draw_calls
+    notes: "Art Bible fullscreen shader pass allocation inside the project-wide <=500 draw-call budget."
+    added: 2026-05-13
     revised: ""
 
   - name: starting_tokens
@@ -280,6 +372,8 @@ constants:
     source: design/gdd/time-rewind.md
     referenced_by:
       - design/gdd/time-rewind.md
+      - design/gdd/boss-pattern.md
+      - design/gdd/hud.md
       - docs/architecture/adr-0002-time-rewind-storage-format.md
     value: 3
     unit: tokens
@@ -292,11 +386,51 @@ constants:
     source: design/gdd/time-rewind.md
     referenced_by:
       - design/gdd/time-rewind.md
+      - design/gdd/hud.md
       - docs/architecture/adr-0002-time-rewind-storage-format.md
     value: 5
     unit: tokens
     notes: "Maximum rewind token cap. grant_token() clamps via `min(_tokens + 1, max_tokens)` (Round 1 정정)."
     added: 2026-05-11
+    revised: ""
+
+  # ─── Boss Pattern System ───────────────────────────────────────────────────
+  - name: strider_tier1_phase_hp_table
+    status: active
+    source: design/gdd/boss-pattern.md
+    referenced_by:
+      - design/gdd/boss-pattern.md
+      - design/gdd/damage.md
+      - design/gdd/stage-encounter.md
+    value: [3, 4, 5]
+    unit: hits_per_phase
+    notes: "Internal discrete phase thresholds for STRIDER Tier 1. No production HP bar or hit counter exposes these values."
+    added: 2026-05-13
+    revised: ""
+
+  - name: strider_tier1_boss_projectile_cap
+    status: active
+    source: design/gdd/boss-pattern.md
+    referenced_by:
+      - design/gdd/boss-pattern.md
+      - design/gdd/stage-encounter.md
+      - design/gdd/enemy-ai.md
+    value: 16
+    unit: area2d_projectiles
+    notes: "Maximum live STRIDER boss projectile HitBoxes declared for Stage #12 Area2D preflight."
+    added: 2026-05-13
+    revised: ""
+
+  - name: strider_tier1_arena_min_size_px
+    status: active
+    source: design/gdd/boss-pattern.md
+    referenced_by:
+      - design/gdd/boss-pattern.md
+      - design/gdd/stage-encounter.md
+    value: "960x540"
+    unit: px
+    notes: "Minimum Tier 1 STRIDER arena bounds. Recommended authored room size is 1120x620 px inside Stage #12 camera limits."
+    added: 2026-05-13
     revised: ""
 
   # ─── PlayerSnapshot Schema ─────────────────────────────────────────────────
@@ -489,6 +623,7 @@ constants:
     source: docs/architecture/adr-0003-determinism-strategy.md
     referenced_by:
       - docs/architecture/adr-0003-determinism-strategy.md
+      - design/gdd/boss-pattern.md
     value: 10
     unit: priority_index
     notes: "Enemy AI runs after player/TRC/damage settle. Gap from damage (2) to enemies (10) reserves intermediate slots for future systems."
@@ -500,6 +635,7 @@ constants:
     source: docs/architecture/adr-0003-determinism-strategy.md
     referenced_by:
       - docs/architecture/adr-0003-determinism-strategy.md
+      - design/gdd/boss-pattern.md
     value: 20
     unit: priority_index
     notes: "Projectiles process last per tick. Allows projectile collision against post-movement enemy/player positions."
@@ -588,6 +724,7 @@ constants:
     source: design/gdd/player-shooting.md
     referenced_by:
       - design/gdd/player-shooting.md   # C.1 Rule 4 + D.5 + G.1.2 + V/A.5 + UI.1
+      - design/gdd/hud.md               # Ammo display ratio and Tier 1 weapon readout
     value: 30
     unit: rounds
     notes: "Magazine capacity — Tier 1 single base rifle. 5초 sustained fire @ 6 rps before auto-reload (Tier 1 reload_frames = 0 — instant). Tuning range 10..60 in assets/data/weapons.tres. ammo_count bound 0..MAGAZINE_SIZE (D.5 invariant post-fire {1..MAGAZINE_SIZE} via auto-reload)."
@@ -625,6 +762,120 @@ constants:
     unit: frames
     notes: "Projectile despawn threshold — frame-counter deterministic (NOT VisibleOnScreenNotifier2D, camera-relative violates ADR-0001 + ADR-0003 결정성). Tier 1 default = 1.5 s @ 60 Hz = ~900 px @ default speed. Tuning range 60..120 in assets/data/weapons.tres. Cross-knob invariant cap relationship (G.3 #1)."
     added: 2026-05-11
+    revised: ""
+
+  # ─── VFX / Particle System (Tier 1 presentation) ─────────────────────────
+  - name: near_miss_radius_px
+    status: active
+    source: design/gdd/vfx-particle.md
+    referenced_by:
+      - design/gdd/vfx-particle.md
+      - design/gdd/damage.md
+      - design/gdd/player-shooting.md
+    value: 24
+    unit: px
+    notes: "Passive presentation-only near-miss radius. VFX performs proximity checks without adding gameplay Area2D and suppresses near-miss when Damage hit emits in the same tick."
+    added: 2026-05-13
+    revised: ""
+
+  - name: near_miss_cooldown_frames
+    status: active
+    source: design/gdd/vfx-particle.md
+    referenced_by:
+      - design/gdd/vfx-particle.md
+      - design/gdd/damage.md
+    value: 10
+    unit: frames
+    notes: "Cooldown per target/cause pair to prevent near-miss spark spam while preserving DEC-3 no-hit-stun readability."
+    added: 2026-05-13
+    revised: ""
+
+  - name: vfx_peak_draw_call_limit
+    status: active
+    source: design/gdd/vfx-particle.md
+    referenced_by:
+      - design/gdd/vfx-particle.md
+      - design/art/art-bible.md
+      - design/gdd/camera.md
+    value: 100
+    unit: draw_calls
+    notes: "Tier 1 peak VFX allocation from Art Bible. VFX must reduce effect concurrency rather than exceed this when Collage Rendering #15 or Shader #16 pressure appears."
+    added: 2026-05-13
+    revised: ""
+
+  - name: vfx_one_shot_pool_size
+    status: active
+    source: design/gdd/vfx-particle.md
+    referenced_by:
+      - design/gdd/vfx-particle.md
+    value: 64
+    unit: nodes
+    notes: "Tier 1 warm pool target for one-shot combat VFX. No per-frame allocation allowed in normal combat after warmup."
+    added: 2026-05-13
+    revised: ""
+
+  # ─── Collage Rendering Pipeline (Tier 1 visual substrate) ────────────────
+  - name: max_collage_fragments_per_stage
+    status: active
+    source: design/gdd/collage-rendering.md
+    referenced_by:
+      - design/gdd/collage-rendering.md
+      - design/art/art-bible.md
+      - design/gdd/systems-index.md
+    value: 30
+    unit: fragments
+    notes: "Hard Tier 1 cap for independently placed Layer 3 collage fragments. Above cap requires merge/delete/defer or Art Bible + performance review."
+    added: 2026-05-13
+    revised: ""
+
+  - name: collage_draw_call_budget
+    status: active
+    source: design/gdd/collage-rendering.md
+    referenced_by:
+      - design/gdd/collage-rendering.md
+      - design/art/art-bible.md
+      - design/gdd/vfx-particle.md
+    value: 80
+    unit: draw_calls
+    notes: "Tier 1 Collage layer draw-call budget inside project-wide ≤500 draw-call ceiling. Matches Art Bible 60–80 call allocation."
+    added: 2026-05-13
+    revised: ""
+
+  - name: collage_photo_texture_budget_mb
+    status: active
+    source: design/gdd/collage-rendering.md
+    referenced_by:
+      - design/gdd/collage-rendering.md
+      - design/art/art-bible.md
+      - design/gdd/scene-manager.md
+    value: 60
+    unit: MB
+    notes: "Tier 1 per-stage photo-source texture budget. Multi-stage loading requires Tier 2 ADR for texture cache/release strategy before implementation."
+    added: 2026-05-13
+    revised: ""
+
+  - name: collage_total_stage_texture_target_mb
+    status: active
+    source: design/gdd/collage-rendering.md
+    referenced_by:
+      - design/gdd/collage-rendering.md
+      - design/gdd/scene-manager.md
+    value: 80
+    unit: MB
+    notes: "Tier 1 target for total stage collage textures including photo, atlas, and background strips."
+    added: 2026-05-13
+    revised: ""
+
+  - name: collage_memory_warning_fraction
+    status: active
+    source: design/gdd/collage-rendering.md
+    referenced_by:
+      - design/gdd/collage-rendering.md
+      - design/gdd/scene-manager.md
+    value: 0.75
+    unit: fraction_of_1_5GB_ceiling
+    notes: "Warn when resident memory approaches 75% of the 1.5 GB project ceiling during Collage soak/performance tests."
+    added: 2026-05-13
     revised: ""
 
   # ─── Camera System (Tier 1 follow + shake) ────────────────────────────────
@@ -692,6 +943,140 @@ constants:
     unit: exponential_decay_rate
     notes: "Godot 4.6 Camera2D `position_smoothing_speed` — exponential decay (실제로 `pos = pos.lerp(target, speed * delta)` per-frame, NOT 'points per second' linear). Tier 1 default; 안전 range 16.0..64.0. INV-CAM-3: 64 px step ≤ 5 frame settle; INV-CAM-6: `> 0.0` (lerp lock 방지)."
     added: 2026-05-12
+    revised: ""
+
+  # ─── Story Intro Text System (Tier 1 narrative entry beat) ───────────────
+  - name: story_intro_line_count
+    status: active
+    source: design/gdd/story-intro-text.md
+    referenced_by:
+      - design/gdd/story-intro-text.md
+      - design/gdd/systems-index.md
+      - design/gdd/scene-manager.md
+    value: 5
+    unit: lines
+    notes: "Tier 1 hard cap for the cold-boot story intro. Matches systems-index #17 '5-line intro only' scope and Scene Manager intro presentation mirror."
+    added: 2026-05-13
+    revised: ""
+
+  - name: story_intro_chars_per_second
+    status: active
+    source: design/gdd/story-intro-text.md
+    referenced_by:
+      - design/gdd/story-intro-text.md
+    value: 32.0
+    unit: chars_per_second
+    notes: "Default fixed-step typewriter reveal rate. Safe range 30.0..48.0; with the default 167-char copy and hold timings, total reveal = 7.41875 seconds. Cross-knob validation must keep total reveal ≤ Scene Manager intro_screen_duration_seconds=8.0."
+    added: 2026-05-13
+    revised: ""
+
+  - name: story_intro_max_line_chars
+    status: active
+    source: design/gdd/story-intro-text.md
+    referenced_by:
+      - design/gdd/story-intro-text.md
+    value: 64
+    unit: characters
+    notes: "Per-line content validation cap for Steam Deck readability and intro duration safety."
+    added: 2026-05-13
+    revised: ""
+
+  - name: story_intro_draw_call_budget
+    status: active
+    source: design/gdd/story-intro-text.md
+    referenced_by:
+      - design/gdd/story-intro-text.md
+      - design/art/art-bible.md
+    value: 12
+    unit: draw_calls
+    notes: "Tier 1 draw-call budget for intro background, watermark, text, and optional panel; stays within Art Bible UI/HUD allocation of 40."
+    added: 2026-05-13
+    revised: ""
+
+  # ─── Menu / Pause System (Tier 1 focusable UI shell) ─────────────────────
+  - name: menu_repeat_initial_frames
+    status: active
+    source: design/gdd/menu-pause.md
+    referenced_by:
+      - design/gdd/menu-pause.md
+      - design/gdd/input.md
+    value: 18
+    unit: frames
+    notes: "Default delay before held menu navigation repeats. Safe range 12..24; first press still moves on held_frames == 1."
+    added: 2026-05-13
+    revised: ""
+
+  - name: menu_repeat_interval_frames
+    status: active
+    source: design/gdd/menu-pause.md
+    referenced_by:
+      - design/gdd/menu-pause.md
+      - design/gdd/input.md
+    value: 6
+    unit: frames
+    notes: "Default repeat cadence after menu_repeat_initial_frames. Safe range 4..10."
+    added: 2026-05-13
+    revised: ""
+
+  - name: pause_overlay_open_latency_budget_frames
+    status: active
+    source: design/gdd/menu-pause.md
+    referenced_by:
+      - design/gdd/menu-pause.md
+      - design/gdd/input.md
+      - design/gdd/state-machine.md
+    value: 2
+    unit: frames
+    notes: "Accepted pause input must produce visible focused overlay within <=2 frames when EchoLifecycleSM allows pause."
+    added: 2026-05-13
+    revised: ""
+
+  - name: menu_ui_draw_call_budget
+    status: active
+    source: design/gdd/menu-pause.md
+    referenced_by:
+      - design/gdd/menu-pause.md
+      - design/art/art-bible.md
+      - design/gdd/hud.md
+    value: 40
+    unit: draw_calls
+    notes: "Tier 1 pause/options draw-call ceiling; title shell/return-to-title is deferred outside Tier 1. Values above 40 require visual merge/delete before implementation."
+    added: 2026-05-13
+    revised: ""
+
+  - name: menu_focus_repair_max_frames
+    status: active
+    source: design/gdd/menu-pause.md
+    referenced_by:
+      - design/gdd/menu-pause.md
+    value: 1
+    unit: frames
+    notes: "Godot 4.6 mouse-vs-keyboard/gamepad focus divergence must repair to the keyboard/gamepad-focused item within one frame."
+    added: 2026-05-13
+    revised: ""
+
+  - name: ui_sfx_min_separation_frames
+    status: active
+    source: design/gdd/menu-pause.md
+    referenced_by:
+      - design/gdd/menu-pause.md
+      - design/gdd/audio.md
+    value: 4
+    unit: frames
+    notes: "Minimum spacing before replaying rapid menu selection ticks through the single AudioManager.play_ui stream path. Safe range 0..8."
+    added: 2026-05-13
+    revised: ""
+
+  - name: session_volume_step
+    status: active
+    source: design/gdd/menu-pause.md
+    referenced_by:
+      - design/gdd/menu-pause.md
+      - design/gdd/audio.md
+    value: 0.05
+    unit: normalized_volume
+    notes: "Tier 1 session-only slider step for Master/Music/SFX/UI volume. Safe range 0.01..0.10; no persistence until Save/Settings #21."
+    added: 2026-05-13
     revised: ""
 
 # Example:
