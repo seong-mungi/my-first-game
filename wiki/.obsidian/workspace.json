@@ -37,16 +37,16 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "questions/Research Run and Gun Development Base.md",
+                "file": "log.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Research Run and Gun Development Base"
+              "title": "log"
             }
           }
         ],
-        "currentTab": 2
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -78,7 +78,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "CCGS",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -103,7 +103,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200
+    "width": 406.5
   },
   "right": {
     "id": "7092b65be1e76349",
@@ -218,12 +218,17 @@
       "obsidian-memos:Thino Super": false
     }
   },
-  "active": "2762ca55ab8c1903",
+  "active": "10742fc42d00afcd",
   "lastOpenFiles": [
-    "meta/dashboard.md",
-    "meta/lint-report-2026-05-12.md",
-    "meta",
+    "2026-05-13.md",
     "log.md",
+    "meta/lint-report-2026-05-12.md",
+    "sources/Research CCGS Fork Landscape.md",
+    "concepts/CCGS Framework.md",
+    "concepts/Brownfield Project Onboarding.md",
+    "questions/Research Run and Gun Development Base.md",
+    "meta/dashboard.md",
+    "meta",
     "2026-05-12.md",
     "Furi (The Game Bakers).md",
     "무제.base",
@@ -235,7 +240,6 @@
     "concepts/Run and Gun Bullet System Pattern.md",
     "concepts/Run and Gun Player Character Architecture.md",
     "concepts/Run and Gun Enemy AI Archetypes.md",
-    "questions/Research Run and Gun Development Base.md",
     "concepts/Boss Rush Design Fundamentals.md",
     "questions/Research Boss Rush Development Base.md",
     "sources/Research Boss Rush GitHub Baseline Repos.md",
@@ -244,10 +248,6 @@
     "sources/GDC Boss Battle Design Talks.md",
     "entities/Cuphead.md",
     "concepts/Shmup Boss Design Factors.md",
-    "concepts/Boss Identity Framework.md",
-    "concepts/Steam Indie Genre Revenue Matrix 2024-2025.md",
-    "concepts/Bullet Heaven Survivors-like Dev Pattern.md",
-    "concepts/Steam Genre Competition Density Matrix.md",
     "wiki/questions/zhc-cosmetics-execution-plan-presentation.html",
     "wiki/questions/zhc-cosmetics-proposal-2026-04-28.html",
     "bin/setup-vault.sh",
