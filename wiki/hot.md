@@ -107,10 +107,10 @@ Most-relevant pages for current project context. Read this first when picking up
 
 ## Cross-Reference Density
 
-- Concepts: **60** (+4: Run and Gun Enemy AI Archetypes, Run and Gun Player Character Architecture, Run and Gun Bullet System Pattern, Run and Gun Level Design Patterns)
+- Concepts: **61** (+1: Echo ADR Foundation Steps)
 - Reference games: 23
 - Characters / fictional entities: 1
-- Sources catalogued: **29** (+3: Godot 4 Run and Gun GitHub Repos, Godot 4 Run and Gun Tutorial Resources, Run and Gun Dev Community Resources)
-- Synthesis pages: **19** (+1: Research Run and Gun Development Base)
+- Sources catalogued: **30** (+1: ADR Foundation Core Steps Explanation)
+- Synthesis pages: 19
 - Design baselines: 1 · Story spines: 1
-- Total wiki files: **139** (.md, +8 — 런앤건 개발 베이스 리서치)
+- Total wiki files: **141** (.md, +2 — ADR Foundation ingest)
